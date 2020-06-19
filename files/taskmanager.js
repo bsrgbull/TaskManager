@@ -115,6 +115,14 @@ webix.ready(function () {
                 {   
                     id:"kanban",
                     view:"kanban",
+                    on:{
+                        onListIconClick: function(iconId, itemId){
+                          webix.message("Icon '"+iconId+"' has been clicked in '"+this.getItem(itemId).text+"' item")
+                        },
+                        onListItemClick: function(id,e,node,list){
+                            webix.message("Item '"+this.getItem(id).text+"' has been clidcked.");
+                        },
+                      },
                     cols:[
                         { header:"Создано", body:{ id:"kanbanlist1", view:"kanbanlist",
                           status:"Создано", on:{ onBeforeDrop:dropHandler1, onListIconClick:addTaskHandler
