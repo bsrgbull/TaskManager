@@ -1,4 +1,83 @@
+'use strict'
+
+
+
 webix.ready(function () {
+
+    webix.i18n.locales["ru-RU"].kanban = {
+        "copy" : "Копировать",
+        "dnd" : "Бросайте файлы сюда",
+        "remove" : "Удалить",
+        "save" : "Сохранить",
+        "confirm" : "Вы собираетесь навсегда удалить эту карточку. Вы уверены?",
+        "editor":{
+            "add" : "Добавить карточку",
+            "assign" : "Назначить",
+            "attachments" : "Вложения",
+            "color" : "Цвет",
+            "head" : "Редактор",
+            "status" : "Статус",
+            "tags" : "Метки",
+            "text" : "Текст",
+            "upload" : "Загрузить"
+        },
+        "menu":{
+            "copy": "Копировать",
+            "edit": "Редактировать",
+            "remove": "Удалить"
+        }
+    };
+    
+    webix.i18n.setLocale("ru-RU");
+
+
+    //Обработка drop в kabanlist2
+    let dropHandler1 = function(context, e) {
+        let status = $$("kanban").getItem(context.start).status;
+
+        if (status != "Назначено"){
+            return false;
+        } else return true;
+    }
+
+    //Обработка drop в kabanlist2
+    let dropHandler2 = function(context, e) {
+        let status = $$("kanban").getItem(context.start).status;
+
+        if (status != "Создано"){
+            return false;
+        } else return true;
+    }
+
+    //Обработка drop в kabanlist3
+    let dropHandler3 = function(context, e) {
+        let status = $$("kanban").getItem(context.start).status;
+
+        if (status == "Создано"){
+            return false;
+        } else return true;
+    }
+
+    //Обработка drop в kabanlist4
+    let dropHandler4 = function(context, e) {
+        let status = $$("kanban").getItem(context.start).status;
+
+        if (status == "Создано" || status == "Назначено"){
+            return false;
+        } else return true;
+    }
+
+    let addTaskHandler = function(iconId, itemId) {
+       alert(id);
+       return false;
+    }
+
+    //Здесь можно настроить обработку Drag&Drop у каждого столбца
+    webix.protoUI({
+        name:"mykanbanlistsolved",
+        $dragCreate:function(){ return false },
+    }, webix.ui.kanbanlist);
+    
     webix.ui({
         rows:[
             {
@@ -10,9 +89,12 @@ webix.ready(function () {
                 //Кнопки сверху
                 cols:[
                     { id:"toolbarButtonsON",cols:[
-                        { id:"myProjectsButton", view: "button",  label: "Мои проекты", width: 150},
-                        { id:"employeesButton", view: "button",  label: "Сотрудники", width: 150},
-                        { id:"addTaskButton", view: "button",  label: "+", width: 50, hidden:true},
+                        { id:"myProjectsButton", view: "button",  label: "Мои проекты",
+                            click:"showProjectPage()", width: 150},
+                        { id:"employeesButton", view: "button",  label: "Сотрудники",
+                            click:"showEmployeesPage()",width: 150},
+                        { id:"addTaskButton", view: "button",  label: "+", width: 50, hidden:true,
+                        click:() => { $$("kanban").showEditor();}  },
                         { id:"projectName", view: "label", label: "Название текущего проекта", hidden:true},
                         { id:"search", view: "search", placeholder:"Поиск..", width: 300, hidden:true},
                     ], hidden:false},
@@ -30,28 +112,45 @@ webix.ready(function () {
             { 
                 //Задачи
                 cols:[
-                {
+                {   
+                    id:"kanban",
                     view:"kanban",
                     cols:[
-                        { header:"Назначено", body:{ view:"kanbanlist", status:"new"} },
-                        { header:"В работе", body:{ view:"kanbanlist", status:"work"} },
-                        { header:"Решено", body:{ view:"kanbanlist", status:"solved"} }
+                        { header:"Создано", body:{ id:"kanbanlist1", view:"kanbanlist",
+                          status:"Создано", on:{ onBeforeDrop:dropHandler1, onListIconClick:addTaskHandler
+                          /*onAfterAdd:addTaskHandler, onAfterRender:addTaskHandler*/}} },
+                        { header:"Назначено", body:{ id:"kanbanlist2", view:"kanbanlist",
+                          status:"Назначено", on:{ onBeforeDrop:dropHandler2},} },
+                        { header:"В работе", body:{ id:"kanbanlist3", view:"kanbanlist",
+                          status:"В работе", on:{ onBeforeDrop:dropHandler3},} },
+                        { header:"Завершено", body:{ id:"kanbanlist4", view:"mykanbanlistsolved",
+                          status:"Завершено", on:{ onBeforeDrop:dropHandler4}, } 
+                        }
                     ],
-                    editor:true,    
+                    editor:true,
+                    comments:true, 
+                    userList:true, 
+                    drag:false,
                     data:[
-                        { id:1, status:"new", text:"Задача №1"},
-                        { id:2, status:"new", text:"Задача №2"},
-                        { id:3, status:"new", text:"Задача №3"},
-                        { id:4, status:"new", text:"Задача №4"},
-                        { id:5, status:"new", text:"Задача №5"},
-                        { id:6, status:"work", user_id: 5, text:"Задача №6"},
-                        { id:7, status:"work", user_id: 5, text:"Задача №7"},
-                        { id:8, status:"work", user_id: 5, text:"Задача №8"},
-                        { id:9, status:"solved", user_id: 5, text:"Задача №9"},
-                        { id:10, status:"solved", user_id: 5, text:"Задача №10"},
-                        { id:11, status:"solved", user_id: 5, text:"Задача №11"},
-                        { id:12, status:"solved", user_id: 5, text:"Задача №12"},
-                    ]
+                        { id:"task1", status:"Создано", text:"Задача №1", comments:[
+                            { id:"comment6", user_id:4, date:"2018-06-14 23:01", text:"Комментарий"} ] },
+                        { id:"task2", status:"Создано", text:"Задача №2"},
+                        { id:"task3", status:"Создано", text:"Задача №3"},
+                        { id:"task4", status:"Создано", text:"Задача №4"},
+                        { id:"task5", status:"Создано", text:"Задача №5"},
+                        { id:"task6", status:"В работе", text:"Задача №6"},
+                        { id:"task7", status:"В работе", text:"Задача №7"},
+                        { id:"task8", status:"В работе", text:"Задача №8"},
+                        { id:"task9", status:"Завершено", text:"Задача №9"},
+                        { id:"task10", status:"Завершено", text:"Задача №10"},
+                        { id:"task11", status:"Завершено", text:"Задача №11"},
+                        { id:"task12", status:"Завершено", text:"Задача №12"},
+                        { id:"task13", status:"Назначено", text:"Задача №13"},
+                        { id:"task14", status:"Назначено", text:"Задача №14"},
+                    ],
+                    users:[
+                        { id:"user1", value:"Margaret Atwood", }
+                    ],
                 },
                 {   
                     rows:[
@@ -68,12 +167,8 @@ webix.ready(function () {
                                 { id:5, title:"Пользователь №5"},
                             ]
                         },
-                        {
-                            view:"button", 
-                            id:"invite", 
-                            value:"Пригласить", 
-                            inputWidth:180 
-                        },
+                        { id:"deleteEmployee", view:"button", value:"Удалить", inputWidth:180 },
+                        { id:"addEmployee", view:"button", value:"Добавить", inputWidth:180 },
                     ]
                 },    
             ], hidden:true, id:"tasksPage"
@@ -138,8 +233,8 @@ webix.ready(function () {
                     },
                     { cols:[
                         { rows:[
-                            { view:"text", label:"Название", hidden:true},
-			                { margin:5, hidden:true, cols:[
+                            { view:"text", label:"Название", hidden:false},
+			                { margin:5, hidden:false, cols:[
 				                    { view:"button", value:"Создать" , css:"webix_primary" },
 				                    { view:"button", value:"Отмена" }
 			                ]},
@@ -169,10 +264,20 @@ webix.ready(function () {
             },
         ]
     });
-//    showProjectPage();
-//    showEmployeesPage();
+    
     showTaskPage();
+    
+ //   alert($$("user1"));
+ //   $$("kanban").disable();
 });
+
+projectTab = new ProjectTab();
+employeesTab = new EmployeesTab();
+tasksView = new TasksView();
+
+function start() {
+
+}
 
 
 function showProjectPage() {
@@ -221,3 +326,4 @@ function showTaskPage() {
     $$("registrationButton").show();
     $$("startLabel").show();
 }*/
+
