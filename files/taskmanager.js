@@ -4,6 +4,10 @@
 
 webix.ready(function () {
 
+    //В этой переменной запоминаем id задачи, по иконке которой нажали
+    let idOfTaskClicked;
+
+    //русификация
     webix.i18n.locales["ru-RU"].kanban = {
         "copy" : "Копировать",
         "dnd" : "Бросайте файлы сюда",
@@ -19,7 +23,8 @@ webix.ready(function () {
             "status" : "Статус",
             "tags" : "Метки",
             "text" : "Текст",
-            "upload" : "Загрузить"
+            "upload" : "Загрузить",
+            "edit": "Редактировать"
         },
         "menu":{
             "copy": "Копировать",
@@ -31,22 +36,29 @@ webix.ready(function () {
     webix.i18n.setLocale("ru-RU");
 
 
-    //Обработка drop в kabanlist2
+    //Обработка drop в kabanlist1, если перемещение в Создано, то удаляем Сотрудника
     let dropHandler1 = function(context, e) {
         let status = $$("kanban").getItem(context.start).status;
 
         if (status != "Назначено"){
             return false;
-        } else return true;
+        } else {
+            $$("kanban").getItem(context.start).user_id = null;
+            $$("kanban").updateItem(context.start);
+            return true;
+        }
     }
 
     //Обработка drop в kabanlist2
     let dropHandler2 = function(context, e) {
-        let status = $$("kanban").getItem(context.start).status;
+        let task = $$("kanban").getItem(context.start);
 
-        if (status != "Создано"){
+        if (task.status != "Создано"){
             return false;
-        } else return true;
+        } else if (task.user_id != undefined && task.user_id != null 
+            && task.user_id != "" ) {
+            return true;
+        } else return false;
     }
 
     //Обработка drop в kabanlist3
@@ -67,10 +79,36 @@ webix.ready(function () {
         } else return true;
     }
 
-    let addTaskHandler = function(iconId, itemId) {
-       alert(id);
-       return false;
+    //Обработчик кнопки Добавить 
+    let addEmployeeHandler = function(id,event){
+        $$("listOfEmployees").add({
+            title: document.getElementById("title").value,
+            year: document.getElementById("year").value
+        },0);
     }
+
+    //Обработчик кнопки Удалить 
+    let deleteEmployeeHandler = function(id,event){
+    //    alert($$("listOfEmployees").getSelectedId());
+        if ($$("listOfEmployees").getSelectedId() != "" ) {
+            webix.modalbox({
+                title:"Вы уверены что хотите удалить пользователя?",
+                buttons:["Да", "Отмена"],
+                width:500,
+                text:""
+            }).then(function(result) {
+            let type = "";
+            if(result == 0) {
+                $$("listOfEmployees").remove($$("listOfEmployees").getSelectedId());
+                type = "success";
+            } else if(result == 1) type = "error";
+    
+            });
+        }
+    }
+
+
+    
 
     //Здесь можно настроить обработку Drag&Drop у каждого столбца
     webix.protoUI({
@@ -117,16 +155,29 @@ webix.ready(function () {
                     view:"kanban",
                     on:{
                         onListIconClick: function(iconId, itemId){
-                          webix.message("Icon '"+iconId+"' has been clicked in '"+this.getItem(itemId).text+"' item")
+                          webix.message("1Icon '"+iconId+"' has been clicked in '"+this.getItem(itemId).text+"' item")
                         },
-                        onListItemClick: function(id,e,node,list){
-                            webix.message("Item '"+this.getItem(id).text+"' has been clidcked.");
+                        onAvatarClick: function(id){
+
+                            if ($$("kanban").getItem(id).status == "Завершено") {
+                                alert(this.name);
+
+                            }
+
+                            idOfTaskClicked = id;
+//                            return avatarClickHandler($$("kanban").getItem(id).status);
                         },
+                        //Запрет открывать editor в завершенном столбце
+                       /* onBeforeEditorShow:(editor,obj) => {
+                            if (obj.status == "Завершено"){
+                                editor.disable();
+                                return true;
+                            }
+                        },*/
                       },
                     cols:[
                         { header:"Создано", body:{ id:"kanbanlist1", view:"kanbanlist",
-                          status:"Создано", on:{ onBeforeDrop:dropHandler1, onListIconClick:addTaskHandler
-                          /*onAfterAdd:addTaskHandler, onAfterRender:addTaskHandler*/}} },
+                          status:"Создано", on:{ onBeforeDrop:dropHandler1,},} },
                         { header:"Назначено", body:{ id:"kanbanlist2", view:"kanbanlist",
                           status:"Назначено", on:{ onBeforeDrop:dropHandler2},} },
                         { header:"В работе", body:{ id:"kanbanlist3", view:"kanbanlist",
@@ -157,26 +208,30 @@ webix.ready(function () {
                         { id:"task14", status:"Назначено", text:"Задача №14"},
                     ],
                     users:[
-                        { id:"user1", value:"Margaret Atwood", }
+                        { id:"user1", value:"Быков Сергей", },
+                        { id:"user2", value:"Margaret Atwood", }
                     ],
                 },
                 {   
                     rows:[
                         {
+                            id:"listOfEmployees",
                             view:"list",
                             width:180,
                             template:"#title#",
                             select:true,
                             data:[
-                                { id:1, title:"Пользователь №1"},
-                                { id:2, title:"Пользователь №2"},
-                                { id:3, title:"Пользователь №3"},
-                                { id:4, title:"Пользователь №4"},
-                                { id:5, title:"Пользователь №5"},
+                                { id:"employee1", title:"Пользователь №1"},
+                                { id:"employee2", title:"Пользователь №2"},
+                                { id:"employee3", title:"Пользователь №3"},
+                                { id:"employee4", title:"Пользователь №4"},
+                                { id:"employee5", title:"Пользователь №5"},
                             ]
                         },
-                        { id:"deleteEmployee", view:"button", value:"Удалить", inputWidth:180 },
-                        { id:"addEmployee", view:"button", value:"Добавить", inputWidth:180 },
+                        { id:"deleteEmployee", view:"button", value:"Удалить",
+                          inputWidth:180, click:deleteEmployeeHandler },
+                        { id:"addEmployee", view:"button", value:"Добавить",
+                          inputWidth:180, click:addEmployeeHandler },
                     ]
                 },    
             ], hidden:true, id:"tasksPage"
@@ -273,15 +328,119 @@ webix.ready(function () {
         ]
     });
     
+    //Обработка изменений в editor
+    $$("kanban").attachEvent("onBeforeEditorAction",function(action,editor,data){
+        /*for (var key in data) {
+            // этот код будет вызван для каждого свойства объекта
+            // ..и выведет имя свойства и его значение
+          
+            alert( "Ключ: " + key + " значение: " + data[key] );
+          }*/
+ //       alert(data.status);
+ //       alert(editor.getValues().status);
+        if (action === "save"){
+
+            switch (data.status) {
+
+                case "Создано":
+
+                    if (data.$list == 3 || data.$list == 2 ) {
+                        return false;
+                    } else {    
+                        if (data.$list == 1 && (data.user_id == undefined 
+                            || data.user_id == null || data.user_id == "" ) ) {
+                            return false;
+                        }
+                        //Если назначается Сотрудник, то перемещаем его сразу в колонку 2
+                        if (data.user_id != $$("kanban").getItem(data.id).user_id
+                        && data.user_id != undefined && data.user_id != null) {
+                            data.$list = 1;
+                        }
+                        return true;
+                    }
+                    break;
+                
+                case "Назначено":
+
+                    if (data.$list == 3) {
+                        return false;
+                    } else {    //Если перемещаем в Создано, то удаляем Сотрудника
+                        if (data.$list == 0 ) {
+                            data.user_id = null;
+                        } else if (data.user_id != $$("kanban").getItem(data.id).user_id) {
+                            return false;
+                        }
+                        return true;
+                    }
+
+                    break;
+
+                case "В работе":
+
+                    if (data.$list == 0 || data.$list == 1 ) {
+                        return false;
+                    } else {    //Запрет на изменение Сотрудника
+                        if (data.user_id != $$("kanban").getItem(data.id).user_id) {
+                            return false;
+                        }
+                        return true;
+                    }
+
+                    break;
+
+                case "Завершено":
+
+                    return false;
+                    break;
+            }
+        }
+    
+        if (action === "remove"){
+            if (data.status == "Создано") {
+                return true;
+            } else {
+                alert("Нельзя удалить назначенное задание");
+                return false;
+            }
+        }
+        $$("kanban").refresh(data.id);
+    });
+
+
+    //Обрабатываем изменение сотрудника, 
+    //разрешаем изменять сотрудника только в колонке Создано
+    $$("kanban").getUserList().attachEvent("onBeforeSelect", function (id, selection) {
+        
+        let status = $$("kanban").getItem(idOfTaskClicked).status;
+
+        if (status != "Создано") {
+            return false;
+        }
+
+    })
+
+    //Если меняем сотрудника в колонке Создано,
+    //то сразу перемещаем его в колонку Назначено
+    $$("kanban").getUserList().attachEvent("onAfterSelect", function (id) {
+
+        let status = $$("kanban").getItem(idOfTaskClicked).status;
+       
+        if (status == "Создано") {
+            $$("kanban").getItem(idOfTaskClicked).status = "Назначено";
+            $$("kanban").updateItem(idOfTaskClicked);
+        }
+
+    })
+
+
+    
     showTaskPage();
     
- //   alert($$("user1"));
- //   $$("kanban").disable();
 });
 
-projectTab = new ProjectTab();
-employeesTab = new EmployeesTab();
-tasksView = new TasksView();
+//projectTab = new ProjectTab();
+//employeesTab = new EmployeesTab();
+//tasksView = new TasksView();
 
 function start() {
 
@@ -323,6 +482,7 @@ function showTaskPage() {
     $$("registrationButton").hide();
     $$("startLabel").hide();
 }
+
 
 /*function showStartPage() {
     $$("taskButtonsON").hide();
