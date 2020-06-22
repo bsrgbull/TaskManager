@@ -7,7 +7,7 @@ webix.ready(function () {
     //В этой переменной запоминаем id задачи, по иконке которой нажали
     let idOfTaskClicked;
 
-    //русификация
+    //Русификация
     webix.i18n.locales["ru-RU"].kanban = {
         "copy" : "Копировать",
         "dnd" : "Бросайте файлы сюда",
@@ -82,8 +82,7 @@ webix.ready(function () {
     //Обработчик кнопки Добавить 
     let addEmployeeHandler = function(id,event){
         $$("listOfEmployees").add({
-            title: document.getElementById("title").value,
-            year: document.getElementById("year").value
+            title: "Сотрудник",
         },0);
     }
 
@@ -133,7 +132,7 @@ webix.ready(function () {
                             click:"showEmployeesPage()",width: 150},
                         { id:"addTaskButton", view: "button",  label: "+", width: 50, hidden:true,
                         click:() => { $$("kanban").showEditor();}  },
-                        { id:"projectName", view: "label", label: "Название текущего проекта", hidden:true},
+                        { id:"projectName", template:"Название текущего проекта", type:"header" },
                         { id:"search", view: "search", placeholder:"Поиск..", width: 300, hidden:true},
                     ], hidden:false},
                     { id:"taskButtonsOff", cols:[ {}, {}, {}, {} ], hidden:false},
@@ -214,6 +213,7 @@ webix.ready(function () {
                 },
                 {   
                     rows:[
+                        { id:"listOfEmployeesInProject", template:"Список сотрудников", type:"header" },
                         {
                             id:"listOfEmployees",
                             view:"list",
@@ -221,11 +221,11 @@ webix.ready(function () {
                             template:"#title#",
                             select:true,
                             data:[
-                                { id:"employee1", title:"Пользователь №1"},
-                                { id:"employee2", title:"Пользователь №2"},
-                                { id:"employee3", title:"Пользователь №3"},
-                                { id:"employee4", title:"Пользователь №4"},
-                                { id:"employee5", title:"Пользователь №5"},
+                                { id:"employee1", title:"Сотрудник №1"},
+                                { id:"employee2", title:"Сотрудник №2"},
+                                { id:"employee3", title:"Сотрудник №3"},
+                                { id:"employee4", title:"Сотрудник №4"},
+                                { id:"employee5", title:"Сотрудник №5"},
                             ]
                         },
                         { id:"deleteEmployee", view:"button", value:"Удалить",
@@ -438,9 +438,11 @@ webix.ready(function () {
     
 });
 
-//projectTab = new ProjectTab();
-//employeesTab = new EmployeesTab();
-//tasksView = new TasksView();
+let taskk = new Task("aslf", "id123");
+alert(taskk.getText());
+//let projectTab = new ProjectTab();
+//let employeesTab = new EmployeesTab();
+//let tasksView = new TasksView();
 
 function start() {
 

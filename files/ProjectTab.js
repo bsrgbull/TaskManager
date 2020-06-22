@@ -2,15 +2,20 @@
 
 class ProjectTab {
 
-    #projectView = new ProjectView();
-    #projectModel = new ProjectModel();
+    #projectView;
+    #projectModel;
+
+    constructor() {
+        this.#projectView = new ProjectView();
+        this.#projectModel = new ProjectModel();
+    }
 
     getProjectView() {
-
+        return this.#projectView;
     }
 
     getProjectModel() {
-
+        return this.#projectModel
     }
 
     show() {

@@ -2,21 +2,27 @@
 
 class EmployeesModel {
 
-    #employees = []
+    #mapOfEmployees;
 
-    getAllEmployees() {
+    constructor() {
+        this.#mapOfEmployees = new Map();
+    }
+
+    getAllEmployeesSurnamesAndNames() {
 
     }
 
     getEmployee(id) {
-
+        return this.#mapOfEmployees.get(id);
     }
 
-    addEmployee() {
-
+    addEmployee(employee) {
+        if (employee instanceof Employee) {
+            this.#mapOfEmployees.set(employee.getId(), employee);
+        } else alert("Ошибка: в EmployeeModel можно добавлять только объекты типа Employee");
     }
 
     deleteEmployee(id) {
-
+        this.#mapOfEmployees.delete(id);
     }
 }
