@@ -8,7 +8,10 @@ class EmployeesModel {
     constructor() {
         this.#mapOfEmployees = new Map();
 
-        this.addEmployee(new Employee("Сергей", "Быков", "123"));
+        let myEmployee = new Employee("Сергей", "Быков", "123");
+        myEmployee.setEmail("bsrg.bull@gmail.com");
+        myEmployee.setLogin("bsrgbull");
+        this.addEmployee(myEmployee);
         this.addEmployee(new Employee("Дмитрий", "Кудрявцев", "123"));
         this.addEmployee(new Employee("Вадим", "Сафонов", "123"));
         this.addEmployee(new Employee("Алёна", "Фадеева", "123"));
@@ -27,6 +30,10 @@ class EmployeesModel {
 
     getEmployee(id) {
         return this.#mapOfEmployees.get(id);
+    }
+
+    getMapOfEmployees() {
+        return this.#mapOfEmployees;
     }
 
     addEmployee(employee) {

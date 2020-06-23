@@ -20,12 +20,12 @@ class EmployeesTab {
 
     addEmployee(employee) {
         this.#employeesModel.addEmployee(employee);
-        this.#employeesView.addEmployee(employee);
+        this.show();
     }
 
     deleteEmployee(id) {
         this.#employeesModel.deleteEmployee(id);
-        this.#employeesView.deleteEmployee(id);
+        this.show();
     }
 
     getEmployee(id) {
@@ -34,6 +34,7 @@ class EmployeesTab {
 
     show() {
 
+        this.#employeesView.showEmployeesPage(this.#employeesModel);
     }
 
     hide() {

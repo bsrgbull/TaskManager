@@ -2,7 +2,10 @@
 
 class EmployeesView {
 
-    showEmployeesPage() {
+    showEmployeesPage(employeesModel) {
+
+        $$("employeesTable").clearAll();
+
         $$("toolbarButtonsON").show();
         $$("addTaskButton").hide();
         $$("projectName").hide();
@@ -11,22 +14,19 @@ class EmployeesView {
         $$("projectPage").hide();
         $$("employeesPage").show();
         $$("taskButtonsOff").hide();
-    }
 
-    showEmployeeInfo(id) {
+        let addemployee = this.addEmployee;
 
-    }
-
-    newEmployeeForm() {
-
-    }
-
-    hideNewProjectForm() {
+        employeesModel.getMapOfEmployees().forEach(function(item, index, array) {
+            addemployee(item);
+        });
 
     }
+
 
     addEmployee(employee) {
         $$("employeesTable").add({ 
+            idOfEmployee:`${employee.getId()}`,
             nameOfEmployee:`${employee.getName()}`,
             surnameOfEmployee:`${employee.getSurname()}`,
             login:`${employee.getLogin()}`,
@@ -38,7 +38,7 @@ class EmployeesView {
         $$("employeesTable").remove(id);
     }
 
-    hideAll() {
-        
+    clearAll() {
+        $$("employeesTable").clearAll();
     }
 }

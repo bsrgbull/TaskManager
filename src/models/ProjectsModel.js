@@ -32,7 +32,7 @@ class ProjectsModel {
         this.addProject(project1);
     }
 
-   /* getAllProjects() {
+    /* getAllProjects() {
         return this.#mapOfProjects.get(id);
     }*/
 

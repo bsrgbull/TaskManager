@@ -20,12 +20,12 @@ class ProjectsTab {
 
     addProject(project) {
         this.#projectsModel.addProject(project);
-        this.#projectView.addProject(project);
+        this.show();
     }
 
     deleteProject(id) {
         this.#projectsModel.deleteProject(id);
-        this.#projectView.deleteProject(id);
+        this.show();
     }
 
     getProject(id) {
@@ -33,7 +33,7 @@ class ProjectsTab {
     }
 
     show() {
-
+        this.#projectView.showProjectPage(this.#projectsModel);  
     }
 
     hide() {

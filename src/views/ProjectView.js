@@ -2,7 +2,10 @@
 
 class ProjectView {
 
-    showProjectPage() {
+    showProjectPage(projectsModel) {
+
+        $$("projectsList").clearAll();
+
         $$("toolbarButtonsON").show();
         $$("myProjectsButton").show();
         $$("addTaskButton").hide();
@@ -12,18 +15,12 @@ class ProjectView {
         $$("projectPage").show();
         $$("employeesPage").hide();
         $$("taskButtonsOff").hide();
-    }
 
-    showProjectInfo(id) {
+        let addproject = this.addProject;
 
-    }
-
-    showProjectForm() {
-
-    }
-
-    hideProjectForm() {
-
+        projectsModel.getMapOfProjects().forEach(function(item, index, array) {
+            addproject(item);
+        });
     }
 
     addProject(project) {
@@ -34,11 +31,10 @@ class ProjectView {
     }
 
     deleteProject(id) {
-    //    alert(id);
         $$("projectsList").remove(id);
     }
 
-    hideAll() {
-        
+    clearAll() {
+        $$("projectsList").clearAll();
     }
 }

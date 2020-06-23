@@ -1,8 +1,20 @@
 'use strict'
 
+let projectsTab;
+let employeesTab;
+let projectsModel;
+let tasksTab;
+let projectView;
+let employeesView;
 
+let webixReady = webix.ready(function () {
 
-webix.ready(function () {
+    projectsTab = new ProjectsTab();
+    employeesTab = new EmployeesTab();
+    projectsModel = projectsTab.getProjectsModel();
+    tasksTab = new TasksTab();
+    projectView = projectsTab.getProjectView();
+    employeesView = employeesTab.getEmployeesView();
 
     //В этой переменной запоминаем id задачи, по иконке которой нажали
     let idOfTaskClicked;
@@ -137,7 +149,8 @@ webix.ready(function () {
     }
 
     //Обработчик кнопки Удалить из проекта
-    let deleteEmployeeHandler = function(id, event) {;
+    let deleteEmployeeHandler = function(id, event) {
+
         if ($$("listOfEmployees").getSelectedId() != "" ) {
             webix.modalbox({
                 title:"Вы уверены что хотите удалить сотрудника?",
@@ -157,7 +170,8 @@ webix.ready(function () {
 
     //Обработчик кнопки Удалить сотрудника
     let deleteEmployee = function(id, event) {
-        let empId = $$("employeesTable").getSelectedId();
+        let empId = $$("employeesTable").getSelectedItem().idOfEmployee;
+
         if (empId != "" && empId != undefined ) {
                 webix.modalbox({
                     title:"Вы собираетесь навсегда удалить этого сотрудника. Вы уверены?",
@@ -175,6 +189,7 @@ webix.ready(function () {
         }
     }
 
+    //Обработчик кнопки Новый проект
     let addProjectHandler = function(id, event) {
         webix.ui({
             id:"modalWindowForProjects",
@@ -265,9 +280,9 @@ webix.ready(function () {
                 cols:[
                     { id:"toolbarButtonsON",cols:[
                         { id:"myProjectsButton", view: "button",  label: "Мои проекты",
-                            click:"projectView.showProjectPage()", width: 150},
+                            click:"projectsTab.show()", width: 150},
                         { id:"employeesButton", view: "button",  label: "Сотрудники",
-                            click:"employeesView.showEmployeesPage()",width: 150},
+                            click:"employeesTab.show()",width: 150},
                         { id:"addTaskButton", view: "button",  label: "+", width: 50, hidden:true,
                         click:() => { $$("kanban").showEditor();}  },
                         { id:"projectName", template:"Проект", type:"header", borderless:true },
@@ -384,15 +399,22 @@ webix.ready(function () {
 				                    { view:"button", value:"Создать" , css:"webix_primary" },
 				                    { view:"button", value:"Отмена" }
 			                ]},
-                            { view:"list", id:"projectsList",
-                                template:"#title#",
-                                width: 300,
-                                select:true,
+                            { view:"list",
+                              id:"projectsList",
+                              template:"#title#",
+                              width: 300,
+                              select:true,
+                              on:{
+                                    onItemClick: function(id, e, node){
+                                        $$("projectInfo").define("template", projectsTab.getProject(id).getProjectInfo());
+                                        $$("projectInfo").refresh();
+                                    },
+                                 },
                             },
                         ]},
                         { type:"clean", rows:[
                             { id:"projectsViews", cells:[
-                                { view:"template", id:"prtpl", template:"Информация о проекте" },
+                                { view:"template", id:"projectInfo", template:"Информация о проекте" },
                             ]}
                         ]}
                     ]}
@@ -409,6 +431,7 @@ webix.ready(function () {
                     {   //Таблица на странице Сотрудники
                         view:"datatable", id:"employeesTable",
                         columns:[
+                            { id:"idOfEmployee", hidden:true},
                             { id:"nameOfEmployee",    header:"Имя",              width:200},
                             { id:"surnameOfEmployee",   header:"Фамилия",    width:200},
                             { id:"login",    header:"Логин",      width:200},
@@ -440,7 +463,7 @@ webix.ready(function () {
         ]
     });
     
-    //Обработка изменений в editor
+    //Обработка изменений в editor. $list: 0 - "Создано"; 1 - "Назначено"; 2 - "В работе"; 3 - "Завершено"
     $$("kanban").attachEvent("onBeforeEditorAction",function(action,editor,data){
         /*for (var key in data) {
             // этот код будет вызван для каждого свойства объекта
@@ -448,8 +471,6 @@ webix.ready(function () {
           
             alert( "Ключ: " + key + " значение: " + data[key] );
           }*/
- //       alert(data.status);
- //       alert(editor.getValues().status);
         if (action === "save"){
 
             switch (data.status) {
@@ -544,43 +565,49 @@ webix.ready(function () {
 
     })
 
+    function start() {  
+        projectsTab.show();
+    }
 
-    
-//    showTaskPage();
     start();
 });
 
+let arrayOfScripts = [
+    "./src/models/Employee.js",
+    "./src/models/EmployeesModel.js",
+    "./src/models/Project.js",
+    "./src/models/ProjectsModel.js",
+    "./src/models/Task.js",
+    "./src/controllers/EmployeesTab.js",
+    "./src/controllers/ProjectsTab.js",
+    "./src/views/EmployeesView.js",
+    "./src/views/ProjectView.js",
+    "./src/views/TasksTab.js",
+];
 
-let projectsTab = new ProjectsTab();
-let employeesTab = new EmployeesTab();
-let projectsModel = projectsTab.getProjectsModel();
-let tasksTab = new TasksTab();
-let projectView = projectsTab.getProjectView();
-let employeesView = employeesTab.getEmployeesView();
+let loadScript = function(src) {
+    let script = document.createElement('script');
+    script.src = src;
+    script.async = false;
 
-
-function start() {  
-    projectView.showProjectPage();
-
-    let projectsMap = projectsModel.getMapOfProjects();
-
-    projectsMap.forEach(function(item, index, array) {
-        projectView.addProject(item);
-    });
-
-    
-
+    let head = document.head;
+    head.appendChild(script);
 }
 
+//Эта конструкция гарантирует загрузку всех скриптов
+//до начала выполнения основного(этого) скрипта
+arrayOfScripts.forEach(function(item, index, array) {
+    if (index < array.length - 1) {
+        loadScript(item);
+    } else {
+        let script = document.createElement('script');
+        script.src = item;
+        script.async = false;   
 
-/*function showStartPage() {
-    $$("taskButtonsON").hide();
-    $$("exitButton").hide();
-    $$("tasksPage").hide();
-    $$("projectPage").hide();
-    $$("taskButtonsOff").show();
-    $$("loginButton").show();
-    $$("registrationButton").show();
-    $$("startLabel").show();
-}*/
+        script.onreadystatechange = webixReady;
+        script.onload = webixReady;
 
+        let head = document.head;
+        head.appendChild(script);
+    }
+});

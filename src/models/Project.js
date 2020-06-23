@@ -24,7 +24,8 @@ class Project {
     }
 
     getProjectInfo() {
-        return this.#aimOfTheProject + "\n\nПроект создан: " + "сотрудник по id" + "\n\n" +
+        return this.#aimOfTheProject + "\n\nСоздатель проекта: " + 
+        employeesTab.getEmployee(this.#creatorId).getSurnameAndName() + "\n\n" +
         "Над проектом работают: " + this.getEmployeesInfo();
     }
 

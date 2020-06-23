@@ -3,6 +3,9 @@
 class TasksTab {
 
     showTaskPage(project) {
+
+        $$("kanban").clearAll();
+
         $$("toolbarButtonsON").show();
         $$("addTaskButton").show();
         $$("projectName").show();
@@ -14,13 +17,12 @@ class TasksTab {
         $$("registrationButton").hide();
         $$("startLabel").hide();
 
-        $$("kanban").clearAll();
-
         let addtask = this.addTask;
         let map = project.getMap();
+        
         map.forEach(function(item, index, array) {
             addtask(item);
-          });
+        });
     }
     
     addTask(task) {
