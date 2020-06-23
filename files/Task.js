@@ -9,12 +9,18 @@ class Task {
     #status;
     #creatorId;
     #assignedToId;
-    static #nextId = 0;
+    static nextId = 0;
+
+    static getNextId() {
+        this.nextId++;
+        return this.nextId;
+    }
 
     constructor(text, creatorId) {
         this.#text = text;
         this.#creatorId = creatorId;
-        this.#id = "task" + Task.#nextId++;  //Проверить, работает ли счётчик
+        this.#id = "task" + Task.getNextId();
+        this.#status = "Создано";
     }
 
     getText() {

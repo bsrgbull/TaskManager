@@ -8,14 +8,19 @@ class Project {
     #mapOfEmployees;
     #creatorId;
     #aimOfTheProject
-    static #nextId;
+    static nextId = 0;
+
+    static getNextId() {
+        this.nextId++;
+        return this.nextId;
+    }
 
     constructor(name, creatorId) {
         this.#mapOfTasks = new Map();
-        this.#mapOfEmployees = new Map()
+        this.#mapOfEmployees = new Map();
         this.#name = name;
         this.#creatorId = creatorId;
-        this.#id = "project" + Project.#nextId++;  //Проверить, работает ли счётчик
+        this.#id = "project" + Project.getNextId();
     }
 
     getProjectInfo() {
@@ -30,9 +35,23 @@ class Project {
     getTask(id) {
         return this.#mapOfTasks.get(id);
     }
+
+   /* getCopyOfMapOfTasks() {
+        let map = this.#mapOfTasks;
+        return map.slice(); //Возвращаем копию массива
+    }*/
+
+    getMap() {
+        return this.#mapOfTasks;
+    }
+
+    getLengthOfMap() {
+        return this.#mapOfTasks.length;
+    }
     
     addTask(task) {
-        if (typeof task == Task) {
+
+        if (task instanceof Task) {
             this.#mapOfTasks.set(task.getId(), task);
         } else alert("Ошибка: в проект можно добавлять только объекты типа Task");
     }
@@ -69,5 +88,9 @@ class Project {
 
     setAimOfTheProject(aim) {
         this.#aimOfTheProject = aim;
+    }
+
+    getId() {
+        return this.#id;
     }
 }

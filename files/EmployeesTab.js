@@ -18,6 +18,20 @@ class EmployeesTab {
         return this.#employeesModel
     }
 
+    addEmployee(employee) {
+        this.#employeesModel.addEmployee(employee);
+        this.#employeesView.addEmployee(employee);
+    }
+
+    deleteEmployee(id) {
+        this.#employeesModel.deleteEmployee(id);
+        this.#employeesView.deleteEmployee(id);
+    }
+
+    getEmployee(id) {
+        return this.#employeesModel.getEmployee(id);
+    }
+
     show() {
 
     }

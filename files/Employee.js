@@ -8,17 +8,22 @@ class Employee {
     #email;
     #password;
     #id;
-    static #nextId;
+    static nextId = 0;
+
+    static getNextId() {
+        this.nextId++;
+        return this.nextId;
+    }
 
     constructor(name, surname, password) {
         this.#name = name;
         this.#surname = surname;
         this.#password = password;
-        this.#id = "employee" + Employee.#nextId++;  //Проверить, работает ли счётчик
+        this.#id = "employee" + Employee.getNextId();
     }
 
     getSurnameAndName() {
-        return this.#surname + this.#name;
+        return this.#surname + " " + this.#name;
     }
 
     getName() {
@@ -38,6 +43,9 @@ class Employee {
     }
 
     getLogin() {
+        if (this.#login == undefined || this.#login == null) {
+            return "";
+        }
         return this.#login;
     }
 
@@ -46,6 +54,9 @@ class Employee {
     }
 
     getEmail() {
+        if (this.#email == undefined || this.#email == null) {
+            return "";
+        }
         return this.#email;
     }
 

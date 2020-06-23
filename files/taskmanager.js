@@ -79,19 +79,68 @@ webix.ready(function () {
         } else return true;
     }
 
-    //Обработчик кнопки Добавить 
+    //Обработчик кнопки Добавить в проект
     let addEmployeeHandler = function(id,event){
         $$("listOfEmployees").add({
             title: "Сотрудник",
         },0);
     }
 
-    //Обработчик кнопки Удалить 
-    let deleteEmployeeHandler = function(id,event){
-    //    alert($$("listOfEmployees").getSelectedId());
+    //Обработчик кнопки Добавить сотрудника
+    let addEmployee = function(id,event){
+        webix.ui({
+            id:"modalWindowForEmployees",
+            view:"window",
+            head:"Новый сотрудник:",
+            width: 500,
+            height: 500,
+            modal:true,
+            close:true,
+            position: "center",
+            body: {
+                view: "form",
+                elements: [
+                    { id:"modalEmployeeName", view: "text", label: 'Имя*', name: "name" },
+                    { id:"modalEmployeeSurname", view: "text", label: 'Фамилия*', name: "surname" },
+                    { id:"modalEmployeeEmail", view: "text", label: 'Email', name: "email" },
+                    { id:"modalEmployeeLogin", view: "text", label: 'Логин', name: "login" },
+                    { id:"modalEmployeePassword", view: "text", label: 'Пароль*', name: "password" },
+                    { template:"* поле обязательно для заполнения" },
+                    { cols:[
+                        { view: "button", value: "Добавить", click:function(id,event){
+                            let name = $$("modalEmployeeName").getValue();
+                            let surname = $$("modalEmployeeSurname").getValue();
+                            let email = $$("modalEmployeeEmail").getValue();
+                            let login = $$("modalEmployeeLogin").getValue();
+                            let password = $$("modalEmployeePassword").getValue();
+
+                            if (name == "" || surname == "" || password == "") {
+                                return;
+                            }
+
+                            let newEmp = (new Employee(name, surname, password));
+                            newEmp.setLogin(login);
+                            newEmp.setEmail(email);
+                            employeesTab.addEmployee(newEmp);
+                            $$("modalWindowForEmployees").close();
+                        } },
+                        { view: "button", value: "Отмена", click:function(id,event){
+                            $$("modalWindowForEmployees").close();
+                        } }
+                    ]},
+                ],
+                elementsConfig: {
+                  labelPosition: "top",
+                }
+              },
+          }).show()
+    }
+
+    //Обработчик кнопки Удалить из проекта
+    let deleteEmployeeHandler = function(id, event) {;
         if ($$("listOfEmployees").getSelectedId() != "" ) {
             webix.modalbox({
-                title:"Вы уверены что хотите удалить пользователя?",
+                title:"Вы уверены что хотите удалить сотрудника?",
                 buttons:["Да", "Отмена"],
                 width:500,
                 text:""
@@ -106,7 +155,96 @@ webix.ready(function () {
         }
     }
 
+    //Обработчик кнопки Удалить сотрудника
+    let deleteEmployee = function(id, event) {
+        let empId = $$("employeesTable").getSelectedId();
+        if (empId != "" && empId != undefined ) {
+                webix.modalbox({
+                    title:"Вы собираетесь навсегда удалить этого сотрудника. Вы уверены?",
+                    buttons:["Удалить", "Отмена"],
+                    width:500,
+                    text:""
+                }).then(function(result) {
+                let type = "";
+                if(result == 0) {
+                    employeesTab.deleteEmployee(empId);
+                    type = "success";
+                } else if(result == 1) type = "error";
+        
+                });
+        }
+    }
 
+    let addProjectHandler = function(id, event) {
+        webix.ui({
+            id:"modalWindowForProjects",
+            view:"window",
+            head:"Новый проект:",
+            width: 500,
+            height: 300,
+            modal:true,
+            close:true,
+            position: "center",
+            body: {
+                view: "form",
+                elements: [
+                    { id:"modalProjectName", view: "text", label: 'Название*', name: "name" },
+                    { id:"modalProjectAim", view: "text", label: 'Цель проекта', name: "aim" },
+                    { template:"* поле обязательно для заполнения" },
+                    { cols:[
+                        { view: "button", value: "Добавить", click:function(id,event){
+                            let name = $$("modalProjectName").getValue();
+                            let aim = $$("modalProjectAim").getValue();
+                            if (name == "") {
+                                return;
+                            }
+                            let newPr = new Project(name, "employee1");
+                            newPr.setAimOfTheProject(aim);
+                            projectsTab.addProject(newPr);
+
+                            $$("modalWindowForProjects").close();
+                        } },
+                        { view: "button", value: "Отмена", click:function(id,event){
+                            $$("modalWindowForProjects").close();
+                        } }
+                    ]},
+                ],
+                elementsConfig: {
+                    labelPosition: "top",
+                }
+              },
+          }).show()
+    }
+
+    //Удаление проекта
+    let deleteProjectHandler = function(id, event) {
+        let prId = $$("projectsList").getSelectedId();
+        if (prId != "" && prId != undefined ) {
+                webix.modalbox({
+                    title:"Вы собираетесь навсегда удалить этот проект. Вы уверены?",
+                    buttons:["Удалить", "Отмена"],
+                    width:500,
+                    text:""
+                }).then(function(result) {
+                let type = "";
+                if(result == 0) {
+                    projectsTab.deleteProject(prId);
+                    type = "success";
+                } else if(result == 1) type = "error";
+        
+                });
+        }
+    }
+
+    //Изменяем заголовок при заходе в проект
+    let openProjectHandler = function(id, event) {
+        if ($$("projectsList").getSelectedId() != "" ){
+            let pr = projectsTab.getProject($$("projectsList").getSelectedId() );
+            tasksTab.showTaskPage(pr);
+            $$("projectName").define("template", pr.getName());
+            $$("projectName").refresh();
+        }
+    }
     
 
     //Здесь можно настроить обработку Drag&Drop у каждого столбца
@@ -127,12 +265,12 @@ webix.ready(function () {
                 cols:[
                     { id:"toolbarButtonsON",cols:[
                         { id:"myProjectsButton", view: "button",  label: "Мои проекты",
-                            click:"showProjectPage()", width: 150},
+                            click:"projectView.showProjectPage()", width: 150},
                         { id:"employeesButton", view: "button",  label: "Сотрудники",
-                            click:"showEmployeesPage()",width: 150},
+                            click:"employeesView.showEmployeesPage()",width: 150},
                         { id:"addTaskButton", view: "button",  label: "+", width: 50, hidden:true,
                         click:() => { $$("kanban").showEditor();}  },
-                        { id:"projectName", template:"Название текущего проекта", type:"header" },
+                        { id:"projectName", template:"Проект", type:"header", borderless:true },
                         { id:"search", view: "search", placeholder:"Поиск..", width: 300, hidden:true},
                     ], hidden:false},
                     { id:"taskButtonsOff", cols:[ {}, {}, {}, {} ], hidden:false},
@@ -189,23 +327,6 @@ webix.ready(function () {
                     comments:true, 
                     userList:true, 
                     drag:false,
-                    data:[
-                        { id:"task1", status:"Создано", text:"Задача №1", comments:[
-                            { id:"comment6", user_id:4, date:"2018-06-14 23:01", text:"Комментарий"} ] },
-                        { id:"task2", status:"Создано", text:"Задача №2"},
-                        { id:"task3", status:"Создано", text:"Задача №3"},
-                        { id:"task4", status:"Создано", text:"Задача №4"},
-                        { id:"task5", status:"Создано", text:"Задача №5"},
-                        { id:"task6", status:"В работе", text:"Задача №6"},
-                        { id:"task7", status:"В работе", text:"Задача №7"},
-                        { id:"task8", status:"В работе", text:"Задача №8"},
-                        { id:"task9", status:"Завершено", text:"Задача №9"},
-                        { id:"task10", status:"Завершено", text:"Задача №10"},
-                        { id:"task11", status:"Завершено", text:"Задача №11"},
-                        { id:"task12", status:"Завершено", text:"Задача №12"},
-                        { id:"task13", status:"Назначено", text:"Задача №13"},
-                        { id:"task14", status:"Назначено", text:"Задача №14"},
-                    ],
                     users:[
                         { id:"user1", value:"Быков Сергей", },
                         { id:"user2", value:"Margaret Atwood", }
@@ -249,10 +370,11 @@ webix.ready(function () {
                 rows:[	
                     { view:"toolbar", cols:[
                         { view:"button", value:"Открыть", width:150,
-                        css:"webix_danger", align:"left"},
+                        css:"webix_danger", align:"left", click:openProjectHandler},
                         { view:"button", value:"Новый проект", width:150, align:"left",
-                        css:"webix_primary"},
-                        { view:"button", value:"Удалить", width:100, align:"left"},
+                        css:"webix_primary", click:addProjectHandler},
+                        { view:"button", value:"Удалить", width:100, align:"left",
+                        click:deleteProjectHandler},
                         ]
                     },
                     { cols:[
@@ -266,16 +388,6 @@ webix.ready(function () {
                                 template:"#title#",
                                 width: 300,
                                 select:true,
-                                data:[
-                                    { id:"pr1", title:"Проект №1"},
-                                    { id:"pr2", title:"Проект №2"},
-                                    { id:"pr3", title:"Проект №3"},
-                                    { id:"pr4", title:"Проект №4"},
-                                    { id:"pr5", title:"Проект №5"},
-                                ],
-                                /*on:{
-                                    onItemClick:open_new_tab
-                                }*/
                             },
                         ]},
                         { type:"clean", rows:[
@@ -290,11 +402,21 @@ webix.ready(function () {
                 rows:[	
                     { view:"toolbar", cols:[
                         { view:"button", value:"Добавить", width:150, align:"left",
-                         css:"webix_primary"},
-                        { view:"button", value:"Удалить", width:100, align:"left"},
+                         css:"webix_primary", click:addEmployee},
+                        { view:"button", value:"Удалить", width:100, align:"left", click:deleteEmployee},
                         ]
                     },
-                    { cols:[
+                    {   //Таблица на странице Сотрудники
+                        view:"datatable", id:"employeesTable",
+                        columns:[
+                            { id:"nameOfEmployee",    header:"Имя",              width:200},
+                            { id:"surnameOfEmployee",   header:"Фамилия",    width:200},
+                            { id:"login",    header:"Логин",      width:200},
+                            { id:"email",   header:"email",         width:300}
+                        ],
+                        select:true,
+                    },
+                   /* { cols:[
                         { rows:[
                             { view:"text", label:"Название", hidden:false},
 			                { margin:5, hidden:false, cols:[
@@ -305,24 +427,14 @@ webix.ready(function () {
                                 template:"#title#",
                                 width: 300,
                                 select:true,
-                                data:[
-                                    { id:"emp1", title:"Сотрудник №1"},
-                                    { id:"emp2", title:"Сотрудник №2"},
-                                    { id:"emp3", title:"Сотрудник №3"},
-                                    { id:"emp4", title:"Сотрудник №4"},
-                                    { id:"emp5", title:"Сотрудник №5"},
-                                ],
-                                /*on:{
-                                    onItemClick:open_new_tab
-                                }*/
                             },
                         ]},
-                        { type:"clean", rows:[
+                        /*{ type:"clean", rows:[
                             { id:"employeesViews", cells:[
                                 { view:"template", id:"emptpl", template:"Информация о сотруднике" },
                             ]}
                         ]}
-                    ]}
+                    ]}*/
                 ], hidden:true, id:"employeesPage"
             },
         ]
@@ -434,55 +546,30 @@ webix.ready(function () {
 
 
     
-    showTaskPage();
-    
+//    showTaskPage();
+    start();
 });
 
-let taskk = new Task("aslf", "id123");
-alert(taskk.getText());
-//let projectTab = new ProjectTab();
-//let employeesTab = new EmployeesTab();
-//let tasksView = new TasksView();
 
-function start() {
-
-}
+let projectsTab = new ProjectsTab();
+let employeesTab = new EmployeesTab();
+let projectsModel = projectsTab.getProjectsModel();
+let tasksTab = new TasksTab();
+let projectView = projectsTab.getProjectView();
+let employeesView = employeesTab.getEmployeesView();
 
 
-function showProjectPage() {
-    $$("toolbarButtonsON").show();
-    $$("myProjectsButton").show();
-    $$("addTaskButton").hide();
-    $$("projectName").hide();
-    $$("exitButton").show();
-    $$("tasksPage").hide();
-    $$("projectPage").show();
-    $$("employeesPage").hide();
-    $$("taskButtonsOff").hide();
-}
+function start() {  
+    projectView.showProjectPage();
 
-function showEmployeesPage() {
-    $$("toolbarButtonsON").show();
-    $$("addTaskButton").hide();
-    $$("projectName").hide();
-    $$("exitButton").show();
-    $$("tasksPage").hide();
-    $$("projectPage").hide();
-    $$("employeesPage").show();
-    $$("taskButtonsOff").hide();
-}
+    let projectsMap = projectsModel.getMapOfProjects();
 
-function showTaskPage() {
-    $$("toolbarButtonsON").show();
-    $$("addTaskButton").show();
-    $$("projectName").show();
-    $$("exitButton").show();
-    $$("tasksPage").show();
-    $$("projectPage").hide();
-    $$("taskButtonsOff").hide();
-    $$("loginButton").hide();
-    $$("registrationButton").hide();
-    $$("startLabel").hide();
+    projectsMap.forEach(function(item, index, array) {
+        projectView.addProject(item);
+    });
+
+    
+
 }
 
 
