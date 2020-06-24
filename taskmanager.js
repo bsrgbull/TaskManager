@@ -11,10 +11,26 @@ let webixReady = webix.ready(function () {
 
     projectsTab = new ProjectsTab();
     employeesTab = new EmployeesTab();
-    projectsModel = projectsTab.getProjectsModel();
     tasksTab = new TasksTab();
+    projectsModel = projectsTab.getProjectsModel();
     projectView = projectsTab.getProjectView();
     employeesView = employeesTab.getEmployeesView();
+
+    projectsModel.getProject("project1").addEmployee(employeesTab.getEmployee("employee1"));
+    projectsModel.getProject("project1").addEmployee(employeesTab.getEmployee("employee2"));
+
+    projectsModel.getProject("project2").addEmployee(employeesTab.getEmployee("employee1"));
+    projectsModel.getProject("project2").addEmployee(employeesTab.getEmployee("employee3"));
+    projectsModel.getProject("project2").addEmployee(employeesTab.getEmployee("employee4"));
+    projectsModel.getProject("project2").addEmployee(employeesTab.getEmployee("employee5"));
+    projectsModel.getProject("project2").addEmployee(employeesTab.getEmployee("employee6"));
+
+    projectsModel.getProject("project3").addEmployee(employeesTab.getEmployee("employee1"));
+    projectsModel.getProject("project3").addEmployee(employeesTab.getEmployee("employee7"));
+    projectsModel.getProject("project3").addEmployee(employeesTab.getEmployee("employee8"));
+
+    projectsModel.getProject("project4").addEmployee(employeesTab.getEmployee("employee1"));
+
 
     //В этой переменной запоминаем id задачи, по иконке которой нажали
     let idOfTaskClicked;
@@ -89,13 +105,61 @@ let webixReady = webix.ready(function () {
         if (status == "Создано" || status == "Назначено"){
             return false;
         } else return true;
-    }
+    }  
 
     //Обработчик кнопки Добавить в проект
     let addEmployeeHandler = function(id,event){
-        $$("listOfEmployees").add({
-            title: "Сотрудник",
-        },0);
+        //Удаляет предыдущее окно, если оно создавалось
+        if ($$("modalWindowForAddingEmployeesToProject")) {
+            $$("modalWindowForAddingEmployeesToProject").close();
+        }
+
+        webix.ui({
+            id:"modalWindowForAddingEmployeesToProject",
+            view:"window",
+            head:"Добавить сотрудника:",
+            width: 500,
+            height: 500,
+            modal:true,
+            close:true,
+            position: "center",
+            body: { 
+                rows:[
+                    {
+                        //Таблица на странице Проектов
+                        view:"datatable", id:"employeesTableInModalWindow",
+                        columns:[
+                            { id:"idOfEmployeeInModalWindow", hidden:true},
+                            { id:"nameOfEmployeeInModalWindow",    header:"Имя",              width:200},
+                            { id:"surnameOfEmployeeInModalWindow",   header:"Фамилия",    width:200},
+                        ],
+                        select:true,
+                    },
+                    { cols:[
+                        { view: "button", value: "Добавить", click:function(id,event){
+
+                            let emplId;
+                            
+                            if ($$("employeesTableInModalWindow").getSelectedItem() != undefined) {
+                                emplId = $$("employeesTableInModalWindow").getSelectedItem().idOfEmployeeInModalWindow;
+                            }
+
+                            if (emplId != "" && emplId != undefined ) {
+                                lastProject.addEmployee(employeesTab.getEmployee(emplId));
+                                projectsModel.addEmployeeToProject(lastProject, emplId);
+                                tasksTab.showTaskPage(lastProject);
+                                $$("modalWindowForAddingEmployeesToProject").close();
+                            }
+                        } },
+                        { view: "button", value: "Отмена", click:function(id,event){
+                            $$("modalWindowForAddingEmployeesToProject").close();
+                        } }
+                    ]},
+                ]
+            },
+        }).show()
+
+        tasksTab.addEmployeesInModalWindow(employeesTab.getEmployeesModel(), lastProject);
     }
 
     //Обработчик кнопки Добавить сотрудника
@@ -151,7 +215,9 @@ let webixReady = webix.ready(function () {
     //Обработчик кнопки Удалить из проекта
     let deleteEmployeeHandler = function(id, event) {
 
-        if ($$("listOfEmployees").getSelectedId() != "" ) {
+        let selectedId = $$("listOfEmployees").getSelectedId();
+
+        if (selectedId != "" ) {
             webix.modalbox({
                 title:"Вы уверены что хотите удалить сотрудника?",
                 buttons:["Да", "Отмена"],
@@ -160,7 +226,8 @@ let webixReady = webix.ready(function () {
             }).then(function(result) {
             let type = "";
             if(result == 0) {
-                $$("listOfEmployees").remove($$("listOfEmployees").getSelectedId());
+                lastProject.deleteEmployee(selectedId);
+                $$("listOfEmployees").remove(selectedId);
                 type = "success";
             } else if(result == 1) type = "error";
     
@@ -170,7 +237,12 @@ let webixReady = webix.ready(function () {
 
     //Обработчик кнопки Удалить сотрудника
     let deleteEmployee = function(id, event) {
-        let empId = $$("employeesTable").getSelectedItem().idOfEmployee;
+
+        let empId;
+        
+        if ($$("employeesTable").getSelectedItem() != undefined) {
+            empId = $$("employeesTable").getSelectedItem().idOfEmployee;
+        }
 
         if (empId != "" && empId != undefined ) {
                 webix.modalbox({
@@ -215,6 +287,7 @@ let webixReady = webix.ready(function () {
                             }
                             let newPr = new Project(name, "employee1");
                             newPr.setAimOfTheProject(aim);
+                            newPr.addEmployee(employeesTab.getEmployee("employee1"));
                             projectsTab.addProject(newPr);
 
                             $$("modalWindowForProjects").close();
@@ -250,11 +323,14 @@ let webixReady = webix.ready(function () {
                 });
         }
     }
+    //В этой переменной последний открытый проект
+    let lastProject;
 
     //Изменяем заголовок при заходе в проект
     let openProjectHandler = function(id, event) {
         if ($$("projectsList").getSelectedId() != "" ){
             let pr = projectsTab.getProject($$("projectsList").getSelectedId() );
+            lastProject = pr;
             tasksTab.showTaskPage(pr);
             $$("projectName").define("template", pr.getName());
             $$("projectName").refresh();
@@ -356,13 +432,6 @@ let webixReady = webix.ready(function () {
                             width:180,
                             template:"#title#",
                             select:true,
-                            data:[
-                                { id:"employee1", title:"Сотрудник №1"},
-                                { id:"employee2", title:"Сотрудник №2"},
-                                { id:"employee3", title:"Сотрудник №3"},
-                                { id:"employee4", title:"Сотрудник №4"},
-                                { id:"employee5", title:"Сотрудник №5"},
-                            ]
                         },
                         { id:"deleteEmployee", view:"button", value:"Удалить",
                           inputWidth:180, click:deleteEmployeeHandler },
@@ -411,12 +480,12 @@ let webixReady = webix.ready(function () {
                                     },
                                  },
                             },
-                        ]},
-                        { type:"clean", rows:[
-                            { id:"projectsViews", cells:[
-                                { view:"template", id:"projectInfo", template:"Информация о проекте" },
-                            ]}
-                        ]}
+                        ], height:1000},
+                        {
+                            template: ' ',
+                            autoheight:true,
+                            id:"projectInfo",
+                        },
                     ]}
                 ], hidden:false, id:"projectPage"
             },

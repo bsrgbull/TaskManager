@@ -24,26 +24,40 @@ class Project {
     }
 
     getProjectInfo() {
-        return this.#aimOfTheProject + "\n\nСоздатель проекта: " + 
-        employeesTab.getEmployee(this.#creatorId).getSurnameAndName() + "\n\n" +
-        "Над проектом работают: " + this.getEmployeesInfo();
+
+        let aim = "";
+
+        if (this.#aimOfTheProject != undefined && this.#aimOfTheProject != null) {
+            aim = "<p>Цель проекта: " + this.#aimOfTheProject + "</p>";
+        }  
+
+        return aim + "<p>" + "Создатель проекта: " + 
+        employeesTab.getEmployee(this.#creatorId).getSurnameAndName() + "</p>" + "<p>" +
+        "Над проектом работают: " + this.getEmployeesInfo() + "<p>";
     }
 
     getEmployeesInfo() {
-        return "";
+
+        let employeesInfo = "";
+
+        this.#mapOfEmployees.forEach((value, key, map) => {
+            employeesInfo += value.getSurnameAndName() + ", ";
+        });;
+
+        employeesInfo = employeesInfo.substring(0, employeesInfo.length - 2);
+        return employeesInfo;
     }
 
     getTask(id) {
         return this.#mapOfTasks.get(id);
     }
 
-   /* getCopyOfMapOfTasks() {
-        let map = this.#mapOfTasks;
-        return map.slice(); //Возвращаем копию массива
-    }*/
-
     getMap() {
         return this.#mapOfTasks;
+    }
+
+    getMapOfEmployees() {
+        return this.#mapOfEmployees;
     }
 
     getLengthOfMap() {
@@ -69,13 +83,13 @@ class Project {
         this.#name = name;
     }
 
-    getEmployee() {
+    getEmployee(id) {
         return this.#mapOfEmployees.get(id);
     }
 
     addEmployee(employee) {
         if (employee instanceof Employee) {
-            this.#mapOfTasks.set(employee.getId(), employee);
+            this.#mapOfEmployees.set(employee.getId(), employee);
         } else alert("Ошибка: необходим объект типа Employee");
     }
 

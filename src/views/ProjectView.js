@@ -5,6 +5,8 @@ class ProjectView {
     showProjectPage(projectsModel) {
 
         $$("projectsList").clearAll();
+        $$("projectInfo").define("template", " ");
+        $$("projectInfo").refresh();
 
         $$("toolbarButtonsON").show();
         $$("myProjectsButton").show();

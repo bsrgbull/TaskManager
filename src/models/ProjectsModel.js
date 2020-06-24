@@ -26,6 +26,8 @@ class ProjectsModel {
         project1.addTask(new Task("Логика открывания проекта", "employee1"));
         project1.addTask(new Task("Логика информации о проекте", "employee1"));
 
+        project1.setAimOfTheProject("Разработать Task Manager - программу для управления проектами небольших групп людей. Это инструмент, который позволяет разработчикам вести учет задач проекта, планировать и отслеживать процесс выполнения. Требования: учёт проектов; учёт задач; учёт сотрудников; логика состояний для задач. Под учётом подразумеваются CRUD операции. Технологии, которые необходимо использовать: для фронтэнда - Webix, для бэкэнда: Revel");
+
         this.addProject(project4);
         this.addProject(project3);
         this.addProject(project2);
@@ -52,5 +54,13 @@ class ProjectsModel {
 
     deleteProject(id) {
         this.#mapOfProjects.delete(id);
+    }
+
+    addEmployeeToProject(projectId, employeeId) {
+        
+    }
+
+    deleteEmployeeFromProject(projectId, employeeId) {
+
     }
 }

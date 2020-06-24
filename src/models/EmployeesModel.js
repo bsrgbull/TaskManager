@@ -8,10 +8,11 @@ class EmployeesModel {
     constructor() {
         this.#mapOfEmployees = new Map();
 
-        let myEmployee = new Employee("Сергей", "Быков", "123");
-        myEmployee.setEmail("bsrg.bull@gmail.com");
-        myEmployee.setLogin("bsrgbull");
-        this.addEmployee(myEmployee);
+        let myEmployee1 = new Employee("Сергей", "Быков", "123");
+        myEmployee1.setEmail("bsrg.bull@gmail.com");
+        myEmployee1.setLogin("bsrgbull");
+        this.addEmployee(myEmployee1);
+        this.addEmployee(new Employee("Игорь", "Коваценко", "123"));
         this.addEmployee(new Employee("Дмитрий", "Кудрявцев", "123"));
         this.addEmployee(new Employee("Вадим", "Сафонов", "123"));
         this.addEmployee(new Employee("Алёна", "Фадеева", "123"));
