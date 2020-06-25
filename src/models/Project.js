@@ -31,9 +31,9 @@ class Project {
             aim = "<p>Цель проекта: " + this.#aimOfTheProject + "</p>";
         }  
 
-        return aim + "<p>" + "Создатель проекта: " + 
-        employeesTab.getEmployee(this.#creatorId).getSurnameAndName() + "</p>" + "<p>" +
-        "Над проектом работают: " + this.getEmployeesInfo() + "<p>";
+        return aim + "<p>" + 
+      //"Создатель проекта: " + employeesTab.getEmployee(this.#creatorId).getSurnameAndName() + "</p>" +
+        "<p>" + "Над проектом работают: " + this.getEmployeesInfo() + "<p>";
     }
 
     getEmployeesInfo() {
@@ -49,7 +49,7 @@ class Project {
     }
 
     getTask(id) {
-        return this.#mapOfTasks.get(id);
+        return this.#mapOfTasks.get(String(id));
     }
 
     getMap() {
@@ -67,12 +67,12 @@ class Project {
     addTask(task) {
 
         if (task instanceof Task) {
-            this.#mapOfTasks.set(task.getId(), task);
+            this.#mapOfTasks.set(String(task.getId()), task);
         } else alert("Ошибка: в проект можно добавлять только объекты типа Task");
     }
 
     deleteTask(id) {
-        this.#mapOfTasks.delete(id);
+        this.#mapOfTasks.delete(String(id));
     }
 
     getName() {
@@ -84,17 +84,17 @@ class Project {
     }
 
     getEmployee(id) {
-        return this.#mapOfEmployees.get(id);
+        return this.#mapOfEmployees.get(String(id));
     }
 
     addEmployee(employee) {
         if (employee instanceof Employee) {
-            this.#mapOfEmployees.set(employee.getId(), employee);
+            this.#mapOfEmployees.set(String(employee.getId()), employee);
         } else alert("Ошибка: необходим объект типа Employee");
     }
 
     deleteEmployee(id) {
-        this.#mapOfEmployees.delete(id);
+        this.#mapOfEmployees.delete(String(id));
     }
 
     getAimOfTheProject() {
@@ -107,5 +107,9 @@ class Project {
 
     getId() {
         return this.#id;
+    }
+
+    getCreatorId() {
+        return this.#creatorId;
     }
 }

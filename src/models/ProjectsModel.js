@@ -43,21 +43,25 @@ class ProjectsModel {
     }
 
     getProject(id) {
-        return this.#mapOfProjects.get(id);
+        return this.#mapOfProjects.get(String(id));
     }
 
     addProject(project) {
         if (project instanceof Project) {
-            this.#mapOfProjects.set(project.getId(), project);
+            this.#mapOfProjects.set(String(project.getId()), project);
         } else alert("Ошибка: в ProjectModel можно добавлять только объекты типа Project");
     }
 
     deleteProject(id) {
-        this.#mapOfProjects.delete(id);
+        this.#mapOfProjects.delete(String(id));
     }
 
     addEmployeeToProject(projectId, employeeId) {
         
+    }
+
+    addTaskToProject(projectId, task) {
+        this.#mapOfProjects.get(String(projectId)).addTask(task);
     }
 
     deleteEmployeeFromProject(projectId, employeeId) {

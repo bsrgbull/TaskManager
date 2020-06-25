@@ -6,6 +6,15 @@ class TasksTab {
 
         $$("kanban").clearAll();
         $$("listOfEmployees").clearAll();
+      /*  for (var key in $$("kanban").getUserList()) {
+            // этот код будет вызван для каждого свойства объекта
+            // ..и выведет имя свойства и его значение
+//            if ($$("kanban").getUserList()[key] == 9) {
+                alert( "Ключ: " + key + " значение: " + $$("kanban").getUserList()[key] );
+//            }
+          }*/
+        $$("kanban").getUserList().$height = 650;
+//        $$("kanban").getUsers().clearAll();
 
         $$("toolbarButtonsON").show();
         $$("addTaskButton").show();
@@ -18,15 +27,23 @@ class TasksTab {
         $$("registrationButton").hide();
         $$("startLabel").hide();
 
-        let addtask = this.addTask;
         let map = project.getMap();
+
+        let addtask = this.addTask;
         
         map.forEach(function(item, index, array) {
             addtask(item);
         });
 
-        let addemployee = this.addEmployee;
         let mapOfEmployees = project.getMapOfEmployees();
+
+/*        let addemployeeinlist = this.addEmployeeInList;
+
+        mapOfEmployees.forEach(function(item, index, array) {
+            addemployeeinlist(item);
+        });*/
+
+        let addemployee = this.addEmployee;
 
         mapOfEmployees.forEach(function(item, index, array) {
             addemployee(item);
@@ -34,7 +51,11 @@ class TasksTab {
     }
     
     addTask(task) {
-        $$("kanban").add({ id:`${task.getId()}`, status:`${task.getStatus()}`, text:`${task.getText()}`},0);
+        $$("kanban").add({ id:`${task.getId()}`,
+                           status:`${task.getStatus()}`,
+                           text:`${task.getText()}`,
+                           user_id:`${task.getAssignedToId()}`
+                        },0);
     }
 
     deleteTask(id) {
@@ -66,5 +87,13 @@ class TasksTab {
             }
         });
 
+    }
+
+    addEmployeeInList(employee) {
+        let users = $$("kanban").getUsers();
+        users.add({ 
+            id: employee.getId(),
+            value: employee.getSurnameAndName(), 
+        });
     }
 }

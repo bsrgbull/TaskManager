@@ -32,6 +32,10 @@ class ProjectsTab {
         return this.#projectsModel.getProject(id);
     }
 
+    addTaskToProject(projectId, task) {
+        this.#projectsModel.addTaskToProject(projectId, task);
+    }
+
     show() {
         this.#projectView.showProjectPage(this.#projectsModel);  
     }
