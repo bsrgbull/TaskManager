@@ -449,7 +449,6 @@ let webixReady = webix.ready(function () {
                         onListIconClick: function(id, itemId){
                             idOfTaskClicked = itemId;
                             changeUserList(itemId);
-                            webix.message("Icon '"+itemId+"' has been clicked in '"+this.getItem(itemId).text+"' item")
                         },
                         onListItemClick: function(id,ev,node,list){
                             idOfTaskClicked = id;
@@ -483,7 +482,11 @@ let webixReady = webix.ready(function () {
                           status:"Завершено", on:{ onBeforeDrop:dropHandler4}, } 
                         }
                     ],
-                    editor:true,
+                    editor:/*/[                                                
+                        { view:"text", name:"text", label:"Task" },         
+                        { view:"text", name:"tags", label:"Tags" },         
+                        { view:"text", name:"color", label:"Line Color" }   
+                    ],*/true,
                     comments:true, 
                  //   userList:true, 
                     userList:{                  
