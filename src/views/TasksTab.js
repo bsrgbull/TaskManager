@@ -67,6 +67,12 @@ class TasksTab {
     }
 
     addEmployee(employee) {
+
+      /*  $$("user_Id").getList().add({ 
+            user_id: employee.getId(),
+            value: employee.getSurnameAndName(), 
+        });*/
+
         $$("listOfEmployees").add({
             id: employee.getId(),
             title: employee.getSurnameAndName(),
@@ -91,6 +97,17 @@ class TasksTab {
 
     addEmployeeInList(employee) {
         let users = $$("kanban").getUsers();
+     /*   $$("user_Id").getList().add({ 
+            user_id: employee.getId(),
+            value: employee.getSurnameAndName(), 
+        });*/
+    /*    alert($$("kanban").$view.innerHTML);
+          for (var key in $$("kanban").$view.innerH) {
+            // этот код будет вызван для каждого свойства объекта
+            // ..и выведет имя свойства и его значение
+          
+            alert( "Ключ: " + key + " значение: " + $$("kanban").$view[key] );
+          }*/
         users.add({ 
             id: employee.getId(),
             value: employee.getSurnameAndName(), 

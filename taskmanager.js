@@ -75,6 +75,7 @@ let webixReady = webix.ready(function () {
         } else {
             $$("kanban").getItem(context.start).user_id = null;
             $$("kanban").updateItem(context.start);
+            lastProject.getTask(context.start).setStatus("Создано");
             return true;
         }
     }
@@ -87,17 +88,23 @@ let webixReady = webix.ready(function () {
             return false;
         } else if (task.user_id != undefined && task.user_id != null 
             && task.user_id != "" ) {
+            return false;
+        } else {
+            lastProject.getTask(context.start).setStatus("Назначено");
             return true;
-        } else return false;
+        }
     }
 
     //Обработка drop в kabanlist3
     let dropHandler3 = function(context, e) {
         let status = $$("kanban").getItem(context.start).status;
-
+        
         if (status == "Создано"){
             return false;
-        } else return true;
+        } else {
+            lastProject.getTask(context.start).setStatus("В работе");
+            return true;
+        }
     }
 
     //Обработка drop в kabanlist4
@@ -106,7 +113,10 @@ let webixReady = webix.ready(function () {
 
         if (status == "Создано" || status == "Назначено"){
             return false;
-        } else return true;
+        } else {
+            lastProject.getTask(context.start).setStatus("Завершено");
+            return true;
+        }
     }  
 
     //Обработчик кнопки Добавить в проект
@@ -166,6 +176,11 @@ let webixReady = webix.ready(function () {
 
     //Обработчик кнопки Добавить сотрудника
     let addEmployee = function(id,event){
+        //Удаляет предыдущее окно, если оно создавалось
+        if ($$("modalWindowForEmployees")) {
+            $$("modalWindowForEmployees").close();
+        }   
+
         webix.ui({
             id:"modalWindowForEmployees",
             view:"window",
@@ -265,6 +280,11 @@ let webixReady = webix.ready(function () {
 
     //Обработчик кнопки Новый проект
     let addProjectHandler = function(id, event) {
+        //Удаляет предыдущее окно, если оно создавалось
+        if ($$("modalWindowForProjects")) {
+            $$("modalWindowForProjects").close();
+        } 
+
         webix.ui({
             id:"modalWindowForProjects",
             view:"window",
@@ -328,6 +348,11 @@ let webixReady = webix.ready(function () {
 
     //Добавление новой карточки
     let addNewTask = function(id, event) {
+        //Удаляет предыдущее окно, если оно создавалось
+        if ($$("modalWindowForAddingTasks")) {
+            $$("modalWindowForAddingTasks").close();
+        }        
+
         webix.ui({
             id:"modalWindowForAddingTasks",
             view:"window",
@@ -462,10 +487,11 @@ let webixReady = webix.ready(function () {
                             changeUserList(id);
 //                            return avatarClickHandler($$("kanban").getItem(id).status);
                         },*/
+                        /*onBeforeEditorShow:(editor,obj) => {
 
-                        //Запрет открывать editor в завершенном столбце
-                       /* onBeforeEditorShow:(editor,obj) => {
-                            if (obj.status == "Завершено"){
+                            alert(editor.user_id);
+
+                         /*   if (obj.status == "Завершено"){
                                 editor.disable();
                                 return true;
                             }
@@ -482,12 +508,20 @@ let webixReady = webix.ready(function () {
                           status:"Завершено", on:{ onBeforeDrop:dropHandler4}, } 
                         }
                     ],
-                    editor:/*/[                                                
-                        { view:"text", name:"text", label:"Task" },         
-                        { view:"text", name:"tags", label:"Tags" },         
-                        { view:"text", name:"color", label:"Line Color" }   
+                    editor:/*[                                                
+                        { view:"textarea", name:"text", label:"Текст", height:100 }, 
+                        { cols:[
+                            { id: "estimatedTime", view:"text", name:"time", label:"Оценочное время:" },
+                            { id: "startTime", view:"text", name:"time", label:"Время старта:" },
+                            { id: "spentTime", view:"text", name:"time", label:"Затраченное время:" },
+                        ]},
+                        { cols:[       
+                            { id: "user_Id", view:"richselect", name:"name", label:"Назначить", options:[] },   
+                            { id: "color", view:"richselect", name:"color", label:"Цвет", options:[] },
+                            { id: "status", view:"richselect", name:"$list", label:"Статус", options:[] }     
+                        ]},
                     ],*/true,
-                    comments:true, 
+                    comments:false, 
                  //   userList:true, 
                     userList:{                  
                      //   yCount:9,   
@@ -645,11 +679,14 @@ let webixReady = webix.ready(function () {
                         if (data.$list == 0 ) {
                             data.user_id = null;
                             lastProject.getTask(data.id).deleteAssignedToId();
+                            lastProject.getTask(data.id).setStatus("Создано");
+                            return true;
                         } else if (data.user_id != $$("kanban").getItem(data.id).user_id ||
                         data.text != $$("kanban").getItem(data.id).text) {
                             alert("Нельзя изменять назначенное задание");
                             return false;
                         }
+                        lastProject.getTask(data.id).setStatus("В работе");
                         return true;
                     }
 
@@ -661,6 +698,7 @@ let webixReady = webix.ready(function () {
                     data.text != $$("kanban").getItem(data.id).text) {
                         return false;   //Запрет на изменение Сотрудника
                     } else {
+                        lastProject.getTask(data.id).setStatus("Завершено");
                         return true;
                     }
 
