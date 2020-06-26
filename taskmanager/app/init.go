@@ -1,8 +1,18 @@
 package app
 
 import (
+	//"taskmanager/app/controllers"
+
+	"database/sql"
+	"fmt"
+
 	"github.com/revel/revel"
+
+	//database
+	_ "github.com/lib/pq"
 )
+
+var DB *sql.DB
 
 var (
 	// AppVersion revel app version (ldflags)
@@ -11,6 +21,19 @@ var (
 	// BuildTime revel app build-time (ldflags)
 	BuildTime string
 )
+
+func InitDB() {
+	connStr := "user=postgres password=12348765 dbname=taskManagerDB sslmode=disable"
+	var err error
+	DB, err = sql.Open("postgres", connStr)
+
+	if err != nil {
+		fmt.Println("DB Error", err)
+		//		revel.INFO.Println("DB Error", err)
+	}
+	fmt.Println("DB Connected")
+	//	revel.INFO.Println("DB Connected")
+}
 
 func init() {
 	// Filters is the default set of global filters.
@@ -34,8 +57,9 @@ func init() {
 	// revel.DevMode and revel.RunMode only work inside of OnAppStart. See Example Startup Script
 	// ( order dependent )
 	// revel.OnAppStart(ExampleStartupScript)
-	// revel.OnAppStart(InitDB)
+	revel.OnAppStart(InitDB)
 	// revel.OnAppStart(FillCache)
+	//controllers.App.start()
 }
 
 // HeaderFilter adds common security headers

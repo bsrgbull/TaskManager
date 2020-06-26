@@ -6,8 +6,21 @@
 module:testrunner
 # module:jobs
 
+GET     /                                       App.TaskManager
+GET     /employee                               App.getAllEmployees
+GET     /employee/:id                           App.getEmployee
+POST    /employee/:id                           App.addEmployee
+DELETE  /employee/:id                           App.deleteEmployee
 
-GET     /                                       App.Index
+GET     /project                                App.getAllProjects
+GET     /project/:id                            App.getProject
+POST    /project/:id                            App.addProject
+DELETE  /project/:id                            App.deleteProject
+POST    /project/:id/:taskid                    App.addTaskToProject
+
+
+
+#GET     /                                       App.Index
 
 # Ignore favicon requests
 GET     /favicon.ico                            404
