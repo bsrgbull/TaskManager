@@ -108,6 +108,7 @@ class TasksTab {
           
             alert( "Ключ: " + key + " значение: " + $$("kanban").$view[key] );
           }*/
+
         users.add({ 
             id: employee.getId(),
             value: employee.getSurnameAndName(), 
