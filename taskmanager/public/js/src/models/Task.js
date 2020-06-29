@@ -4,7 +4,6 @@ class Task {
 
     #text;
     #estimatedTime;
-    #startTime;
     #spentTime;
     #id;
     #status;
@@ -22,7 +21,8 @@ class Task {
         this.#creatorId = creatorId;
         this.#id = "task" + Task.getNextId();
         this.#status = "Создано";
-//        this.setEstimatedTime("1");
+        this.#estimatedTime = 0;
+        this.#spentTime = 0;
     }
 
     getText() {
@@ -39,14 +39,6 @@ class Task {
 
     setEstimatedTime(time) {
         this.#estimatedTime = String(time);
-    }
-
-    getStartTime() {
-        return this.#startTime;
-    }
-
-    setStartTime(time) {
-        this.#startTime = String(time);
     }
 
     getSpentTime(time) {

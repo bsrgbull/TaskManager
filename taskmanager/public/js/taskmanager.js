@@ -99,7 +99,9 @@ let webixReady = webix.ready(function () {
     let dropHandler3 = function(context, e) {
         let status = $$("kanban").getItem(context.start).status;
         
-        if (status == "Создано"){
+        if ( status == "Создано" || $$("estimatedTime").getValue() == "" 
+            || $$("estimatedTime").getValue() == undefined 
+            || $$("estimatedTime").getValue() == null ){
             return false;
         } else {
             lastProject.getTask(context.start).setStatus("В работе");
@@ -111,7 +113,10 @@ let webixReady = webix.ready(function () {
     let dropHandler4 = function(context, e) {
         let status = $$("kanban").getItem(context.start).status;
 
-        if (status == "Создано" || status == "Назначено"){
+        if (status == "Создано" || status == "Назначено" 
+            || $$("spentTime").getValue() == "" 
+            || $$("spentTime").getValue() == undefined 
+            || $$("spentTime").getValue() == null ){
             return false;
         } else {
             lastProject.getTask(context.start).setStatus("Завершено");
@@ -136,7 +141,7 @@ let webixReady = webix.ready(function () {
         }*/
 ////////////////////////////////////////////        
 /////////////////////////////////////////////// POST
-        let xhr = new XMLHttpRequest();
+      /*  let xhr = new XMLHttpRequest();
 
         let json = JSON.stringify({
             Name: "Александр",
@@ -154,7 +159,7 @@ let webixReady = webix.ready(function () {
 
         // Отсылаем объект в формате JSON и с Content-Type application/json
         // Сервер должен уметь такой Content-Type принимать и раскодировать
-        xhr.send(json);
+        xhr.send(json);*/
 
 ////////////////////////////////////////////////
         //Удаляет предыдущее окно, если оно создавалось
@@ -555,6 +560,7 @@ let webixReady = webix.ready(function () {
             				$$("userListInEditor").refresh();
 
             				$$("estimatedTime").setValue(lastProject.getTask(idOfTaskClicked).getEstimatedTime());
+                            $$("spentTime").setValue(lastProject.getTask(idOfTaskClicked).getSpentTime());
                         },
                       },
                     cols:[
@@ -569,21 +575,22 @@ let webixReady = webix.ready(function () {
                         }
                     ],
                   //  colors:colors,
-                    editor:[                                                
-                        { view:"textarea", name:"text", label:"Текст", height:100 }, 
+                    editor:[    
                         { cols:[
-                            { id: "estimatedTime", view:"text", inputAlign:"right", name:"time", label:"Оценочное время:" },
-                            { id: "startTime", view:"text", inputAlign:"right", name:"time", label:"Время старта:" },
-                            { id: "spentTime", view:"text", inputAlign:"right", name:"time", label:"Затраченное время:" },
-                        ]},
+                            { rows:[
+                                { id: "estimatedTime", view:"counter", inputAlign:"right", name:"time", step:15, label:"Оценка времени" },
+                                { id: "spentTime", view:"counter", inputAlign:"right", name:"time", step:15, label:"Время" },
+                                ]},
+                            { view:"textarea", name:"text", width:380, label:"Текст", height:120 }, 
+                        ]},                                                                 
                         { cols:[       
-                        	{ id:"userListInEditor", view:"richselect", name:"name", label:"Назначить", value:"", options: [] },
+                        	{ id: "userListInEditor", view:"richselect", name:"name", label:"Назначить", value:"", options: [] },
                             { id: "testings", view:"richselect", name:"name", label:"Назначить", options:[], hidden:true },   
                             { id: "color", view:"richselect", name:"colors", label:"Приоритет", options:[
-                            		{id:1, value:"Низкий", color:"green"}, 
-        							{id:2, value:"Нормальный", color:"orange"},   
-        							{id:3, value:"Срочно", color:"red"}    
-        						] },
+                                    {id:1, value:"Низкий", color:"green"}, 
+                                    {id:2, value:"Нормальный", color:"orange"},   
+                                    {id:3, value:"Срочно", color:"red"}    
+                            ] },
                             { id: "status", view:"richselect", name:"$list", label:"Статус", options:[] }     
                         ]},
                     ],//true,
@@ -729,6 +736,10 @@ let webixReady = webix.ready(function () {
                             || dataUserId == null || dataUserId == "" ) ) {
                             return false;
                         }
+                        if ($$("spentTime").getValue() != lastProject.getTask(data.id).getSpentTime()) {
+                            alert("Итоговое время можно менять только у задач в работе");
+                            return false;
+                        }
 
                         //Если назначается Сотрудник, то перемещаем его сразу в колонку 2
                         if (dataUserId != lastProject.getTask(idOfTaskClicked).getAssignedToId()
@@ -779,6 +790,11 @@ let webixReady = webix.ready(function () {
                             return false;
                         }
                         if (data.$list == 2) {
+                            if ($$("estimatedTime").getValue() == "" || $$("estimatedTime").getValue() == undefined ||
+                                $$("estimatedTime").getValue() == null ) {
+                                alert("Оцените время выполнения задачи, перед сменой статуса");;
+                                return false;
+                            }
                         	lastProject.getTask(data.id).setStatus("В работе");
                     	}
                         lastProject.getTask(data.id).setEstimatedTime($$("estimatedTime").getValue());
@@ -794,7 +810,9 @@ let webixReady = webix.ready(function () {
                     $$("estimatedTime").getValue() != lastProject.getTask(data.id).getEstimatedTime()) {
                     	alert("Нельзя изменять задание c этим статусом");
                         return false;   //Запрет на изменение
-                    } else if (data.$list == 3) {    
+                    } else if (data.$list == 3 && $$("spentTime").getValue() != "" 
+                        && $$("spentTime").getValue() != undefined 
+                        && $$("spentTime").getValue() != null ) {    
                         lastProject.getTask(data.id).setStatus("Завершено");
                         return true;
                     }
