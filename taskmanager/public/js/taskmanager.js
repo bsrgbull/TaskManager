@@ -121,10 +121,12 @@ let webixReady = webix.ready(function () {
 
     //Обработчик кнопки Добавить в проект
     let addEmployeeHandler = function(id,event){
-/////////////////////////////////////////
-/*        var xhr = new XMLHttpRequest();
+///////////////////////////////////////// GET
+/*      let xhr = new XMLHttpRequest();
+
         xhr.open('GET', 'http://localhost:9000/employee', false);
         xhr.send();
+
         if (xhr.status != 200) {
             // обработать ошибку
             alert( xhr.status + ': ' + xhr.statusText ); // пример вывода: 404: Not Found
@@ -133,6 +135,28 @@ let webixReady = webix.ready(function () {
             alert(value.employee[0].email);
         }*/
 ////////////////////////////////////////////        
+/////////////////////////////////////////////// POST
+        let xhr = new XMLHttpRequest();
+
+        let json = JSON.stringify({
+            Name: "Александр",
+            Surname: "Балабай",
+            Login: "nicknamee",
+            Email: "balabai@gmail.com",
+            Password: "123",
+            EmployeeID: "employee14"
+        });
+
+        xhr.open("POST", 'http://localhost:9000/employee')
+        xhr.setRequestHeader('Content-type', 'application/json; charset=utf-8');
+
+        // xhr.onreadystatechange = ...;
+
+        // Отсылаем объект в формате JSON и с Content-Type application/json
+        // Сервер должен уметь такой Content-Type принимать и раскодировать
+        xhr.send(json);
+
+////////////////////////////////////////////////
         //Удаляет предыдущее окно, если оно создавалось
         if ($$("modalWindowForAddingEmployeesToProject")) {
             $$("modalWindowForAddingEmployeesToProject").close();
@@ -556,8 +580,8 @@ let webixReady = webix.ready(function () {
                         	{ id:"userListInEditor", view:"richselect", name:"name", label:"Назначить", value:"", options: [] },
                             { id: "testings", view:"richselect", name:"name", label:"Назначить", options:[], hidden:true },   
                             { id: "color", view:"richselect", name:"colors", label:"Приоритет", options:[
-                            		{id:1, value:"Нормально", color:"green"}, 
-        							{id:2, value:"Средне", color:"orange"},   
+                            		{id:1, value:"Низкий", color:"green"}, 
+        							{id:2, value:"Нормальный", color:"orange"},   
         							{id:3, value:"Срочно", color:"red"}    
         						] },
                             { id: "status", view:"richselect", name:"$list", label:"Статус", options:[] }     

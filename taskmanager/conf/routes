@@ -6,19 +6,20 @@
 module:testrunner
 # module:jobs
 
-GET     /                                       App.TaskManager
-GET     /employee                               App.getAllEmployees
-GET     /employee/:id                           App.getEmployee
-POST    /employee/:id                           App.addEmployee
-DELETE  /employee/:id                           App.deleteEmployee
+GET     /                                       CIndex.TaskManager
 
-GET     /project                                App.getAllProjects
-GET     /project/:id                            App.getProject
-POST    /project/:id                            App.addProject
-DELETE  /project/:id                            App.deleteProject
-POST    /project/:id/:taskid                    App.addTaskToProject
+GET     /employee                               CEmployee.getAllEmployees
+GET     /employee/:id                           CEmployee.getEmployee
+POST    /employee                               CEmployee.addOrUpdateEmployee
+DELETE  /employee/:id                           CEmployee.deleteEmployee
 
+GET     /project                                CProject.getAllProjects
+GET     /project/:id                            CProject.getProject
+POST    /project                                CProject.addOrUpdateProject
+DELETE  /project/:id                            CProject.deleteProject
 
+GET     /project/:id/:taskid                    CProject.getTaskFromProject
+POST    /project/:id/                           CProject.addOrUpdateTask
 
 #GET     /                                       App.Index
 

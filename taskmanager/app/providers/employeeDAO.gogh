@@ -36,18 +36,21 @@ func GetAllEmployeesInJSON(DB *sql.DB) *[]employee {
 }
 
 func GetEmployeeInJSON(DB *sql.DB, id string) *employee {
-	fmt.Println(id)
-	row, err := DB.Query("select * from employees where id = '$1'", id)
+	row, err := DB.Query("select * from employees")
 	if err != nil {
-		fmt.Println(err)
+		panic(err)
 	}
-	defer row.Close()
-	empl := employee{}
-	//	row.Next()
-	err = row.Scan(empl.Name, empl.Surname, empl.Login, empl.Email, empl.Password, empl.EmployeeID)
-	if err != nil {
-		fmt.Println(err)
-	}
+	defer rows.Close()
+	employees := []employee{}
 
-	return &empl
+	for row.Next() {
+		i := employee{}
+		err := row.Scan(&i.Name, &i.Surname, &i.Login, &i.Email, &i.Password, &i.EmployeeID)
+		if err != nil {
+			fmt.Println(err)
+			continue
+		}
+		employees = append(employees, i)
+	}
+	return &employees[0]
 }
