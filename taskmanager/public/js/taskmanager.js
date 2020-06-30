@@ -141,15 +141,15 @@ let webixReady = webix.ready(function () {
         }*/
 ////////////////////////////////////////////        
 /////////////////////////////////////////////// POST
-      /*  let xhr = new XMLHttpRequest();
+        let xhr = new XMLHttpRequest();
 
         let json = JSON.stringify({
-            Name: "Александр",
-            Surname: "Балабай",
-            Login: "nicknamee",
-            Email: "balabai@gmail.com",
-            Password: "123",
-            EmployeeID: "employee14"
+            Name: "Виктор",
+            Surname: "Грибанов",
+            Login: "nickname",
+            Email: "gribanov@gmail.com",
+            Password: "1234",
+            Id: "employee15"
         });
 
         xhr.open("POST", 'http://localhost:9000/employee')
@@ -159,7 +159,7 @@ let webixReady = webix.ready(function () {
 
         // Отсылаем объект в формате JSON и с Content-Type application/json
         // Сервер должен уметь такой Content-Type принимать и раскодировать
-        xhr.send(json);*/
+        xhr.send(json);
 
 ////////////////////////////////////////////////
         //Удаляет предыдущее окно, если оно создавалось
@@ -273,6 +273,15 @@ let webixReady = webix.ready(function () {
     //Обработчик кнопки Удалить из проекта
     let deleteEmployeeHandler = function(id, event) {
 
+////////////////////////////////////////////////////////////////////        
+
+let xhr = new XMLHttpRequest();
+
+        xhr.open("DELETE", 'http://localhost:9000/employee/employee15')
+        xhr.setRequestHeader('Content-type', 'application/json; charset=utf-8');
+        xhr.send();
+
+////////////////////////////////////////////////////////////////////
         let selectedId = $$("listOfEmployees").getSelectedId();
 
         if (selectedId != "" ) {

@@ -1,24 +1,40 @@
 package providers
 
-func GetAllProjects() error {
-	return nil
+import (
+	"taskmanager/app/entities"
+	"taskmanager/app/mappers"
+)
+
+type PProject struct {
+	m mappers.MProject
 }
 
-func GetProjects(id string) error {
-	return nil
+func (p PProject) Before() {
+	p.m = mappers.MProject{}
 }
 
-func AddOrUpdateProject() error {
-	return nil
-}
-func DeleteProject(id string) error {
-	return nil
+//Возвращает все проекты в виде массива объектов и ошибку
+func (p PProject) GetAllProjects() (*[]entities.Project, error) {
+
+	projects, err := p.m.GetAllProjects()
+
+	return projects, err
 }
 
-func AddOrUpdateTask(projectId string) error {
-	return nil
+//Возвращает проект в виде объекта, и ошибку
+func (p PProject) GetProject(id string) (*entities.Project, error) {
+
+	project, err := p.m.GetProject(id)
+
+	return project, err
 }
 
-func GetTaskFromProject(taskId string) error {
-	return nil
+func (p PProject) AddOrUpdateProject(newProject *entities.Project) error {
+
+	return p.m.AddOrUpdateProject(newProject)
+}
+
+func (p PProject) DeleteProject(id string) error {
+
+	return p.m.DeleteProject(id)
 }

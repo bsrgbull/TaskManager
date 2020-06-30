@@ -1,46 +1,40 @@
 package providers
 
 import (
+	"taskmanager/app/entities"
 	"taskmanager/app/mappers"
-
-	"github.com/mitchellh/mapstructure"
 )
 
-//возвращает всех сотрудников в виде карты
-func GetAllEmployees() map[string]interface{} {
-
-	employees, err := mappers.GetAllEmployees()
-
-	data := make(map[string]interface{})
-	data["error"] = err
-
-	data["employee"] = employees
-
-	return data
+type PEmployee struct {
+	m mappers.MEmployee
 }
 
-//возвращает сотрудника в виде карты
-func GetEmployee(id string) map[string]interface{} {
-
-	employee, err := mappers.GetEmployee(id)
-
-	data := make(map[string]interface{})
-	data["error"] = err
-
-	data["employee"] = employee
-
-	return data
+func (p PEmployee) Before() {
+	p.m = mappers.MEmployee{}
 }
 
-func AddOrUpdateEmployee(jsonData *map[string]interface{}) error {
-	var newEmployee mappers.Employee
-	mapstructure.Decode(jsonData, &newEmployee)
+//Возвращает всех сотрудников в виде массива объектов и ошибку
+func (p PEmployee) GetAllEmployees() (*[]entities.Employee, error) {
 
-	err := mappers.AddOrUpdateEmployee(&newEmployee)
+	employees, err := p.m.GetAllEmployees()
 
-	return err
+	return employees, err
 }
 
-func DeleteEmployee(id string) error {
-	return nil
+//Возвращает сотрудника в виде объекта, и ошибку
+func (p PEmployee) GetEmployee(id string) (*entities.Employee, error) {
+
+	employee, err := p.m.GetEmployee(id)
+
+	return employee, err
+}
+
+func (p PEmployee) AddOrUpdateEmployee(newEmployee *entities.Employee) error {
+
+	return p.m.AddOrUpdateEmployee(newEmployee)
+}
+
+func (p PEmployee) DeleteEmployee(id string) error {
+
+	return p.m.DeleteEmployee(id)
 }
