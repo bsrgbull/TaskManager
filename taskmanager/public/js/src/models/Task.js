@@ -7,6 +7,7 @@ class Task {
     #spentTime;
     #id;
     #status;
+    #color
     #creatorId;
     #assignedToId;
     static nextId = 0;
@@ -75,5 +76,13 @@ class Task {
 
     deleteAssignedToId() {
         this.#assignedToId = null;
+    }
+
+    setColor(color) {
+        this.#color = color
+    }
+
+    getColor() {
+        return this.#color
     }
 }

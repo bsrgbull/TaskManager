@@ -6,12 +6,16 @@ let projectsModel;
 let tasksTab;
 let projectView;
 let employeesView;
+let loginView;
+let loginTab;
 
 let webixReady = webix.ready(function () {
 
     projectsTab = new ProjectsTab();
     employeesTab = new EmployeesTab();
     tasksTab = new TasksTab();
+    loginTab = new LoginTab();
+    loginTab.setEmployeesModel(employeesTab.getEmployeesModel());
     projectsModel = projectsTab.getProjectsModel();
     projectView = projectsTab.getProjectView();
     employeesView = employeesTab.getEmployeesView();
@@ -84,11 +88,12 @@ let webixReady = webix.ready(function () {
     let dropHandler2 = function(context, e) {
         let task = $$("kanban").getItem(context.start);
 
-        if (task.status != "Создано"){
+        if (task.status != "Создано" || (task.user_id != undefined 
+            && task.user_id != null 
+            && task.user_id != "" )) {
+
             return false;
-        } else if (task.user_id != undefined && task.user_id != null 
-            && task.user_id != "" ) {
-            return false;
+
         } else {
             lastProject.getTask(context.start).setStatus("Назначено");
             return true;
@@ -99,10 +104,14 @@ let webixReady = webix.ready(function () {
     let dropHandler3 = function(context, e) {
         let status = $$("kanban").getItem(context.start).status;
         
-        if ( status == "Создано" || $$("estimatedTime").getValue() == "" 
-            || $$("estimatedTime").getValue() == undefined 
-            || $$("estimatedTime").getValue() == null ){
+        let estimatedTime = lastProject.getTask(idOfTaskClicked).getEstimatedTime();
+
+        if ( status == "Создано" || estimatedTime == "" 
+            || estimatedTime == undefined || estimatedTime == null 
+            || estimatedTime == 0){
+
             return false;
+
         } else {
             lastProject.getTask(context.start).setStatus("В работе");
             return true;
@@ -113,11 +122,14 @@ let webixReady = webix.ready(function () {
     let dropHandler4 = function(context, e) {
         let status = $$("kanban").getItem(context.start).status;
 
-        if (status == "Создано" || status == "Назначено" 
-            || $$("spentTime").getValue() == "" 
-            || $$("spentTime").getValue() == undefined 
-            || $$("spentTime").getValue() == null ){
+        let spentTime = lastProject.getTask(idOfTaskClicked).getSpentTime();
+
+        if (status == "Создано"  || status == "Назначено" 
+            || spentTime == ""   || spentTime == undefined 
+            || spentTime == null || spentTime == 0){
+
             return false;
+
         } else {
             lastProject.getTask(context.start).setStatus("Завершено");
             return true;
@@ -126,6 +138,9 @@ let webixReady = webix.ready(function () {
 
     //Обработчик кнопки Добавить в проект
     let addEmployeeHandler = function(id,event){
+        ////////////////////////////////////////////
+   // let ifLogin = loginTab.getLoginView().showLoginPage();
+   ////////////////////////////////////////////////
 ///////////////////////////////////////// GET
 /*      let xhr = new XMLHttpRequest();
 
@@ -396,6 +411,42 @@ let xhr = new XMLHttpRequest();
         }
     }
 
+    //Обработка нажатия на кнопку Войти
+    let loginForm = function() {
+        //Удаляет предыдущее окно, если оно создавалось
+        if ($$("modalLogin")) {
+            $$("modalLogin").close();
+        }        
+
+        webix.ui({
+            id:"modalLogin",
+            view:"window",
+            head:{
+                view:"toolbar", cols:[
+                    { view:"label", type:"header", label: `<span class='addCard'>Войти в систему</span>`,},
+                    { view:"button", label: 'X', width: 100, align: 'right',
+                      click:function(){ $$('modalLogin').close(); }}
+                ]
+            },
+            width: 400,
+            height: 250,
+            modal:true,
+            close:true,
+            position: "center",
+            body: {
+                view: "form",
+                elements: [
+                    { id: "userLogin", view:"text", label:'Логин/Email', name:"user.login" },
+                    { id: "userPassword", view:"text", label:'Пароль', name:"user.password" },
+                    { id: "submit", view:"button", value: "Войти", click:tryToLogin}
+                ],
+                elementsConfig: {
+                    labelPosition: "top",
+                }
+            },
+          }).show()
+    }
+
     //Добавление новой карточки
     let addNewTask = function(id, event) {
         //Удаляет предыдущее окно, если оно создавалось
@@ -460,6 +511,12 @@ let xhr = new XMLHttpRequest();
         }
     }
     
+    let tryToLogin = function (id) {
+        
+        loginTab.login($$("userLogin").getValue(), $$("userPassword").getValue(), employeesTab.getEmployeesModel());
+
+    }
+
     //Изменение списка сотрудников в зависимости от статуса карточки
     function changeUserList(id) {
         $$("kanban").getUsers().clearAll();
@@ -508,7 +565,7 @@ let xhr = new XMLHttpRequest();
                         { id:"exitButton", view: "button", type: "form",
                          label: "Выйти", width: 150, hidden:true},
                         { id:"loginButton", view: "button", type: "form",
-                         label: "Войти", width: 150, hidden:false},
+                         label: "Войти", width: 150, hidden:false, click:() => { loginForm(); }},
                         { id:"registrationButton", view: "button", type: "form", 
                          label: "Зарегистрироваться", width: 200, hidden:false},
                     ], hidden:true},
@@ -561,15 +618,12 @@ let xhr = new XMLHttpRequest();
             					});
                         	}
 
-                        //	$$("userListInEditor").getList().parse($$("kanban").getUsers());
-                        //	$$("testings").define({ value:"", options: []});
-                        //	$$("userListInEditor").define({ value:"employee1"});
-
             				$$("userListInEditor").define({ value:lastProject.getTask(idOfTaskClicked).getAssignedToId()});
             				$$("userListInEditor").refresh();
 
-            				$$("estimatedTime").setValue(lastProject.getTask(idOfTaskClicked).getEstimatedTime());
-                            $$("spentTime").setValue(lastProject.getTask(idOfTaskClicked).getSpentTime());
+            				$$("estimatedTime").setValue(Number(lastProject.getTask(idOfTaskClicked).getEstimatedTime()));
+                            $$("spentTime").setValue(Number(lastProject.getTask(idOfTaskClicked).getSpentTime()));
+                            $$("priority").setValue(lastProject.getTask(idOfTaskClicked).getColor());
                         },
                       },
                     cols:[
@@ -587,19 +641,21 @@ let xhr = new XMLHttpRequest();
                     editor:[    
                         { cols:[
                             { rows:[
-                                { id: "estimatedTime", view:"counter", inputAlign:"right", name:"time", step:15, label:"Оценка времени" },
-                                { id: "spentTime", view:"counter", inputAlign:"right", name:"time", step:15, label:"Время" },
+                                { id: "estimatedTime", view:"counter", inputAlign:"right", name:"time", step:Number(1,25), label:"Оценка времени" },
+                                { id: "spentTime", view:"counter", inputAlign:"right", name:"time", step:Number(1,25), value: 68, label:"Время, ч" },
+                                { view:"counter", name:"time", hidden:true },
                                 ]},
                             { view:"textarea", name:"text", width:380, label:"Текст", height:120 }, 
                         ]},                                                                 
                         { cols:[       
                         	{ id: "userListInEditor", view:"richselect", name:"name", label:"Назначить", value:"", options: [] },
                             { id: "testings", view:"richselect", name:"name", label:"Назначить", options:[], hidden:true },   
-                            { id: "color", view:"richselect", name:"colors", label:"Приоритет", options:[
-                                    {id:1, value:"Низкий", color:"green"}, 
-                                    {id:2, value:"Нормальный", color:"orange"},   
-                                    {id:3, value:"Срочно", color:"red"}    
+                            { id: "priority", view:"richselect", label:"Приоритет", value:"", options:[
+                                    {id:"green", value:"Низкий", color:"green"}, 
+                                    {id:"orange", value:"Нормальный", color:"orange"},   
+                                    {id:"red", value:"Срочно", color:"red"}    
                             ] },
+                            { view:"richselect", name:"color", hidden:true},
                             { id: "status", view:"richselect", name:"$list", label:"Статус", options:[] }     
                         ]},
                     ],//true,
@@ -723,16 +779,16 @@ let xhr = new XMLHttpRequest();
     
     //Обработка изменений в editor. $list: 0 - "Создано"; 1 - "Назначено"; 2 - "В работе"; 3 - "Завершено"
     $$("kanban").attachEvent("onBeforeEditorAction",function(action,editor,data){
-        /*for (var key in data) {
+        /*for (var key in $$("kanban").getItem(idOfTaskClicked)) {
             // этот код будет вызван для каждого свойства объекта
             // ..и выведет имя свойства и его значение
           
-            alert( "Ключ: " + key + " значение: " + data[key] );
+            alert( "Ключ: " + key + " значение: " + $$("kanban").getItem(idOfTaskClicked)[key] );
           }*/
 
         let dataUserId = $$("userListInEditor").data.value;
 
-        if (action === "save"){
+        if (action === "save"){          
 
             switch (data.status) {
 
@@ -759,73 +815,99 @@ let xhr = new XMLHttpRequest();
                         }
                         lastProject.getTask(data.id).setText(data.text);  
                         lastProject.getTask(data.id).setEstimatedTime($$("estimatedTime").getValue());
+                        lastProject.getTask(data.id).setColor($$("priority").getValue());
+
+                        $$("kanban").getItem(idOfTaskClicked).color = $$("priority").getValue();
+
                         return true;
                     }
                     break;
-
-                   /* if (data.$list == 3 || data.$list == 2 ) {
-                        return false;
-                    } else {    
-                        if (data.$list == 1 && (data.user_id == undefined 
-                            || data.user_id == null || data.user_id == "" ) ) {
-                            return false;
-                        }
-                        //Если назначается Сотрудник, то перемещаем его сразу в колонку 2
-                        if (data.user_id != $$("kanban").getItem(data.id).user_id
-                        && data.user_id != undefined && data.user_id != null) {
-                            data.$list = 1;            
-                            lastProject.getTask(data.id).setAssignedToId(data.user_id);
-                            lastProject.getTask(data.id).setStatus("Назначено");
-                        }
-                        return true;
-                    }
-                    break;*/
                 
                 case "Назначено":
 
                     if (data.$list == 3) {
+
                         return false;
-                    } else {    //Если перемещаем в Создано, то удаляем Сотрудника
+
+                    } else {    
+
+                        if ($$("spentTime").getValue() != lastProject.getTask(data.id).getSpentTime()) {
+                            alert("Итоговое время можно менять только у задач в работе");
+                            return false;
+                        }
+
                         if (data.$list == 0 ) {
-                            dataUserId = null;
+
+                            dataUserId = null;  //Если перемещаем в Создано, то удаляем Сотрудника
                             lastProject.getTask(data.id).deleteAssignedToId();
                             lastProject.getTask(data.id).setStatus("Создано");
                             lastProject.getTask(data.id).setText(data.text);
                             lastProject.getTask(data.id).setEstimatedTime($$("estimatedTime").getValue());
+                            lastProject.getTask(data.id).setColor($$("priority").getValue());
+                        
+                            $$("kanban").getItem(idOfTaskClicked).color = $$("priority").getValue();
+
                             return true;
+
                         } else if (dataUserId != lastProject.getTask(idOfTaskClicked).getAssignedToId() ||
                         data.text != $$("kanban").getItem(data.id).text) {
+
                             alert("Нельзя изменять назначенное задание");
                             return false;
+
                         }
                         if (data.$list == 2) {
+
                             if ($$("estimatedTime").getValue() == "" || $$("estimatedTime").getValue() == undefined ||
                                 $$("estimatedTime").getValue() == null ) {
                                 alert("Оцените время выполнения задачи, перед сменой статуса");;
                                 return false;
                             }
+
                         	lastProject.getTask(data.id).setStatus("В работе");
                     	}
+                        lastProject.getTask(data.id).setColor($$("priority").getValue());
                         lastProject.getTask(data.id).setEstimatedTime($$("estimatedTime").getValue());
+
+                        $$("kanban").getItem(idOfTaskClicked).color = $$("priority").getValue();
+
                         return true;
                     }
 
                     break;
 
                 case "В работе":
-                    if (data.$list == 0 || data.$list == 1 ||
-                    dataUserId != lastProject.getTask(idOfTaskClicked).getAssignedToId() ||
-                    data.text != $$("kanban").getItem(data.id).text ||
-                    $$("estimatedTime").getValue() != lastProject.getTask(data.id).getEstimatedTime()) {
+
+                    if (data.$list == 0 || data.$list == 1 
+                    || dataUserId != lastProject.getTask(idOfTaskClicked).getAssignedToId() 
+                    || data.text != $$("kanban").getItem(data.id).text 
+                    || $$("estimatedTime").getValue() != lastProject.getTask(data.id).getEstimatedTime()) {
+
                     	alert("Нельзя изменять задание c этим статусом");
+
                         return false;   //Запрет на изменение
-                    } else if (data.$list == 3 && $$("spentTime").getValue() != "" 
-                        && $$("spentTime").getValue() != undefined 
-                        && $$("spentTime").getValue() != null ) {    
-                        lastProject.getTask(data.id).setStatus("Завершено");
-                        return true;
+
+                    } else if (data.$list == 3) {
+
+                        if ( $$("spentTime").getValue() != "" 
+                             && $$("spentTime").getValue() != undefined 
+                             && $$("spentTime").getValue() != null 
+                             && $$("spentTime").getValue() != 0) {    
+
+                            lastProject.getTask(data.id).setStatus("Завершено");
+
+                        } else {
+                            alert("Укажите время, потраченное на выполнение задачи");
+                            return false;
+                        }
                     }
+                    lastProject.getTask(data.id).setColor($$("priority").getValue());
+                    lastProject.getTask(data.id).setSpentTime($$("spentTime").getValue());
+
+                    $$("kanban").getItem(idOfTaskClicked).color = $$("priority").getValue();
+
                     return true;
+                    lastProject.getTask(data.id).setColor($$("color").getValue());
                     break;
 
                 case "Завершено":
@@ -873,6 +955,7 @@ let xhr = new XMLHttpRequest();
         lastProject.getTask(idOfTaskClicked).setStatus("Назначено");
     })
 
+
     function start() {  
         projectsTab.show();
     }
@@ -891,6 +974,8 @@ let arrayOfScripts = [
     "./public/js/src/views/EmployeesView.js",
     "./public/js/src/views/ProjectView.js",
     "./public/js/src/views/TasksTab.js",
+    "./public/js/src/views/LoginView.js",
+    "./public/js/src/controllers/LoginTab.js",
 ];
 
 let loadScript = function(src) {

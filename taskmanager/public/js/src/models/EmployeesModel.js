@@ -47,4 +47,26 @@ class EmployeesModel {
     deleteEmployee(id) {
         this.#mapOfEmployees.delete(String(id));
     }
+
+    login(login, password) {
+
+        let result = false;
+
+        if (login != "" && password != "" && login != undefined && password != undefined ) {
+
+            this.#mapOfEmployees.forEach(function(employee, index, array) {
+
+                if ((employee.getLogin() == login || employee.getEmail() == password)
+                    && employee.getPassword() == password) {
+
+                    alert((employee.getLogin() == login || employee.getEmail() == password)
+                    && employee.getPassword() == password);
+
+                    result = employee.getId();
+                    return;
+                }   
+            });
+        }
+        return result;
+    }
 }

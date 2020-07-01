@@ -22,7 +22,7 @@ class TasksTab {
         $$("exitButton").show();
         $$("tasksPage").show();
         $$("projectPage").hide();
-        $$("taskButtonsOff").hide();
+        $$("taskButtonsOff").show();
         $$("loginButton").hide();
         $$("registrationButton").hide();
         $$("startLabel").hide();
@@ -54,7 +54,8 @@ class TasksTab {
         $$("kanban").add({ id:`${task.getId()}`,
                            status:`${task.getStatus()}`,
                            text:`${task.getText()}`,
-                           user_id:`${task.getAssignedToId()}`
+                           user_id:`${task.getAssignedToId()}`,
+                           color:`${task.getColor()}`
                         },0);
     }
 
