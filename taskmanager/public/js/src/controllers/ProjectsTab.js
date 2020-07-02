@@ -5,7 +5,7 @@ class ProjectsTab {
     #projectView;
     #projectsModel;
 
-    constructor() {
+    constructor(tasksTab) {
         this.#projectView = new ProjectView();
         this.#projectsModel = new ProjectsModel();
     }
@@ -34,6 +34,11 @@ class ProjectsTab {
 
     addTaskToProject(projectId, task) {
         this.#projectsModel.addTaskToProject(projectId, task);
+    }
+
+    addEmployeeToProject(projectId, employeeId){
+        this.projectsModel.addEmployeeToProject(projectId, employeeId);
+
     }
 
     show() {

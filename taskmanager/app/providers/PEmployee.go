@@ -9,12 +9,8 @@ type PEmployee struct {
 	m mappers.MEmployee
 }
 
-func (p PEmployee) Before() {
-	p.m = mappers.MEmployee{}
-}
-
 //Возвращает всех сотрудников в виде массива объектов и ошибку
-func (p PEmployee) GetAllEmployees() (*[]entities.Employee, error) {
+func (p PEmployee) GetAllEmployees() ([]*entities.Employee, error) {
 
 	employees, err := p.m.GetAllEmployees()
 

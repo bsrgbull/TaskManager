@@ -18,8 +18,10 @@ GET     /project/:id                            CProject.getProject
 POST    /project                                CProject.addOrUpdateProject
 DELETE  /project/:id                            CProject.deleteProject
 
-GET     /project/:id/:taskid                    CTask.getTaskFromProject
-POST    /project/:id                            CTask.addOrUpdateTask
+GET     /tasks/:projectId                       CTask.getAllTasksFromProject
+GET     /task/:taskId                           CTask.getTask
+POST    /task/:projectId                        CTask.addOrUpdateTask
+DELETE  /task/:taskId                           CTask.deleteTask
 
 #GET     /                                       App.Index
 

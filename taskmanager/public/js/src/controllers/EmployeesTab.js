@@ -18,6 +18,10 @@ class EmployeesTab {
         return this.#employeesModel
     }
 
+    getEmployeesFromProject(project) {
+        return this.#employeesModel.getEmployeesFromProject(project);
+    }
+
     addEmployee(employee) {
         this.#employeesModel.addEmployee(employee);
         this.show();

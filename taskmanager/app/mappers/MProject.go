@@ -10,16 +10,16 @@ type MProject struct {
 }
 
 //Возвращает все проекты в виде объектов Project
-func (m MProject) GetAllProjects() (*[]entities.Project, error) {
+func (m MProject) GetAllProjects() ([]*entities.Project, error) {
 
 	rows, err := app.DB.Query("select * from projects")
 
-	defer rows.Close()
-	projects := []entities.Project{}
-
 	if err != nil {
-		return &projects, err
+		return nil, err
 	}
+
+	defer rows.Close()
+	projects := []*entities.Project{}
 
 	for rows.Next() {
 		i := entities.Project{}
@@ -29,10 +29,10 @@ func (m MProject) GetAllProjects() (*[]entities.Project, error) {
 			fmt.Println(err)
 			continue
 		}
-		projects = append(projects, i)
+		projects = append(projects, &i)
 	}
 
-	return &projects, err
+	return projects, err
 }
 
 //Возвращает проект в виде объекта Project

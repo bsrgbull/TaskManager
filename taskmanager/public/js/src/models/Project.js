@@ -2,25 +2,26 @@
 
 class Project {
 
-    #mapOfTasks;
     #id;
     #name;
-    #mapOfEmployees;
+    #arrayOfEmployeesId;
     #creatorId;
     #aimOfTheProject
-    static nextId = 0;
 
-    static getNextId() {
-        this.nextId++;
-        return this.nextId;
-    }
 
-    constructor(name, creatorId) {
-        this.#mapOfTasks = new Map();
-        this.#mapOfEmployees = new Map();
+    constructor(name, creatorId, id, arrayOfEmployeesId, aimOfTheProject) {
+
+        this.#id = id;
         this.#name = name;
         this.#creatorId = creatorId;
-        this.#id = "project" + Project.getNextId();
+        this.#aimOfTheProject = aimOfTheProject;
+
+        if (arrayOfEmployeesId == undefined) {
+            this.#arrayOfEmployeesId = [];
+        } else {
+            this.#arrayOfEmployeesId = arrayOfEmployeesId;
+        }
+
     }
 
     getProjectInfo() {
@@ -36,43 +37,8 @@ class Project {
         "<p>" + "Над проектом работают: " + this.getEmployeesInfo() + "<p>";
     }
 
-    getEmployeesInfo() {
-
-        let employeesInfo = "";
-
-        this.#mapOfEmployees.forEach((value, key, map) => {
-            employeesInfo += value.getSurnameAndName() + ", ";
-        });;
-
-        employeesInfo = employeesInfo.substring(0, employeesInfo.length - 2);
-        return employeesInfo;
-    }
-
-    getTask(id) {
-        return this.#mapOfTasks.get(String(id));
-    }
-
-    getMap() {
-        return this.#mapOfTasks;
-    }
-
-    getMapOfEmployees() {
-        return this.#mapOfEmployees;
-    }
-
-    getLengthOfMap() {
-        return this.#mapOfTasks.length;
-    }
-    
-    addTask(task) {
-
-        if (task instanceof Task) {
-            this.#mapOfTasks.set(String(task.getId()), task);
-        } else alert("Ошибка: в проект можно добавлять только объекты типа Task");
-    }
-
-    deleteTask(id) {
-        this.#mapOfTasks.delete(String(id));
+    getArrayOfEmployeesId() {
+        return this.#arrayOfEmployeesId;
     }
 
     getName() {
@@ -83,18 +49,12 @@ class Project {
         this.#name = name;
     }
 
-    getEmployee(id) {
-        return this.#mapOfEmployees.get(String(id));
-    }
-
-    addEmployee(employee) {
-        if (employee instanceof Employee) {
-            this.#mapOfEmployees.set(String(employee.getId()), employee);
-        } else alert("Ошибка: необходим объект типа Employee");
+    addEmployee(employeeId) {
+        this.#arrayOfEmployeesId.push(employeeId);
     }
 
     deleteEmployee(id) {
-        this.#mapOfEmployees.delete(String(id));
+        this.#arrayOfEmployeesId.shift(id);
     }
 
     getAimOfTheProject() {

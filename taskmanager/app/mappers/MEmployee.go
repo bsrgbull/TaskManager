@@ -10,16 +10,16 @@ type MEmployee struct {
 }
 
 //Возвращает всех сотрудников в виде объектов Employee
-func (m MEmployee) GetAllEmployees() (*[]entities.Employee, error) {
+func (m MEmployee) GetAllEmployees() ([]*entities.Employee, error) {
 
 	rows, err := app.DB.Query("select * from employees")
 
-	defer rows.Close()
-	employees := []entities.Employee{}
-
 	if err != nil {
-		return &employees, err
+		return nil, err
 	}
+
+	defer rows.Close()
+	employees := []*entities.Employee{}
 
 	for rows.Next() {
 		i := entities.Employee{}
@@ -29,10 +29,10 @@ func (m MEmployee) GetAllEmployees() (*[]entities.Employee, error) {
 			fmt.Println(err)
 			continue
 		}
-		employees = append(employees, i)
+		employees = append(employees, &i)
 	}
 
-	return &employees, err
+	return employees, err
 }
 
 //Возвращает сотрудника в виде объекта Employee
@@ -40,10 +40,11 @@ func (m MEmployee) GetEmployee(id string) (*entities.Employee, error) {
 
 	row, err := app.DB.Query("SELECT * FROM employees WHERE id = $1", id)
 
-	defer row.Close()
 	if err != nil {
 		return nil, err
 	}
+
+	defer row.Close()
 
 	row.Next()
 	i := entities.Employee{}
@@ -62,6 +63,8 @@ func (m MEmployee) AddOrUpdateEmployee(emp *entities.Employee) error {
 
 	//Проверка на существование записи в базе
 	row, err := app.DB.Query("SELECT * FROM employees WHERE id = $1", emp.Id)
+
+	//добавить обработку ошибки
 	defer row.Close()
 	row.Next()
 	i := entities.Employee{}
@@ -87,7 +90,7 @@ func (m MEmployee) DeleteEmployee(id string) error {
 
 	_, err := app.DB.Exec("DELETE FROM employees WHERE id = $1", id)
 	if err != nil {
-		panic(err)
+		panic(err) //!!!
 	}
 
 	return err

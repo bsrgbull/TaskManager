@@ -2,24 +2,21 @@
 
 class Employee {
 
+    #id;
     #name;
     #surname;
     #login;
     #email;
     #password;
-    #id;
-    static nextId = 0;
 
-    static getNextId() {
-        this.nextId++;
-        return this.nextId;
-    }
 
-    constructor(name, surname, password) {
+    constructor(name, surname, password, login, email, id) {
+        this.#id = id;
         this.#name = name;
         this.#surname = surname;
+        this.#login = login;
+        this.#email = email;
         this.#password = password;
-        this.#id = "employee" + Employee.getNextId();
     }
 
     getSurnameAndName() {

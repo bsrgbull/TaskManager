@@ -10,20 +10,17 @@ class Task {
     #color
     #creatorId;
     #assignedToId;
-    static nextId = 0;
+    #projectId;
 
-    static getNextId() {
-        this.nextId++;
-        return this.nextId;
-    }
 
-    constructor(text, creatorId) {
+    constructor(text, creatorId, projectId, id) {
         this.#text = text;
         this.#creatorId = creatorId;
-        this.#id = "task" + Task.getNextId();
         this.#status = "Создано";
         this.#estimatedTime = 0;
         this.#spentTime = 0;
+        this.#projectId = projectId;
+        this.#id = id;
     }
 
     getText() {
@@ -84,5 +81,13 @@ class Task {
 
     getColor() {
         return this.#color
+    }
+
+    setProjectId(projectId) {
+        this.#projectId = projectId;
+    }
+
+    getProjectId() {
+        return this.#projectId;
     }
 }

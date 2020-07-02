@@ -1,8 +1,9 @@
 'use strict'
 
-class TasksTab {
+class TasksView {
 
-    showTaskPage(project) {
+
+    showTaskPage(mapOfTasks) {
 
         $$("kanban").clearAll();
         $$("listOfEmployees").clearAll();
@@ -27,12 +28,10 @@ class TasksTab {
         $$("registrationButton").hide();
         $$("startLabel").hide();
 
-        let map = project.getMap();
-
         let addtask = this.addTask;
         
-        map.forEach(function(item, index, array) {
-            addtask(item);
+        mapOfTasks.forEach(function(task, index, array) {
+            addtask(task);
         });
 
         let mapOfEmployees = project.getMapOfEmployees();

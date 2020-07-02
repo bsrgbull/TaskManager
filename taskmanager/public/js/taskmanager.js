@@ -2,44 +2,40 @@
 
 let projectsTab;
 let employeesTab;
-let projectsModel;
 let tasksTab;
+let loginTab;
+let projectsModel;
+let tasksView;
 let projectView;
 let employeesView;
 let loginView;
-let loginTab;
+
 
 let webixReady = webix.ready(function () {
-
-    projectsTab = new ProjectsTab();
+    
     employeesTab = new EmployeesTab();
     tasksTab = new TasksTab();
+    projectsTab = new ProjectsTab(tasksTab);
     loginTab = new LoginTab();
     loginTab.setEmployeesModel(employeesTab.getEmployeesModel());
     projectsModel = projectsTab.getProjectsModel();
     projectView = projectsTab.getProjectView();
+    tasksView = tasksTab.getTasksView();
     employeesView = employeesTab.getEmployeesView();
 
-    projectsModel.getProject("project1").addEmployee(employeesTab.getEmployee("employee1"));
-    projectsModel.getProject("project1").addEmployee(employeesTab.getEmployee("employee2"));
-    projectsModel.getProject("project1").addEmployee(employeesTab.getEmployee("employee3"));
-    projectsModel.getProject("project1").addEmployee(employeesTab.getEmployee("employee4"));
 
-    projectsModel.getProject("project2").addEmployee(employeesTab.getEmployee("employee1"));
-    projectsModel.getProject("project2").addEmployee(employeesTab.getEmployee("employee5"));
-    projectsModel.getProject("project2").addEmployee(employeesTab.getEmployee("employee6"));
-    projectsModel.getProject("project2").addEmployee(employeesTab.getEmployee("employee7"));
-    projectsModel.getProject("project2").addEmployee(employeesTab.getEmployee("employee8"));
-
-    projectsModel.getProject("project3").addEmployee(employeesTab.getEmployee("employee1"));
-    projectsModel.getProject("project3").addEmployee(employeesTab.getEmployee("employee9"));
-    projectsModel.getProject("project3").addEmployee(employeesTab.getEmployee("employee10"));
-
-    projectsModel.getProject("project4").addEmployee(employeesTab.getEmployee("employee1"));
-
+    /*tasksTab.getTasksModel().getMapOfTasks().forEach(function(task, index, array) {
+        projectsModel.getProject(task.getProjectId()).addTask(task);
+    });*/
 
     //В этой переменной запоминаем id задачи, по иконке которой нажали
     let idOfTaskClicked;
+
+    //В этой переменной последний открытый проект
+    let currentProject;
+
+    //В этой переменной запоминаем задачу, на которую нажали
+    let taskClicked
 
     //Русификация
     webix.i18n.locales["ru-RU"].kanban = {
@@ -79,7 +75,7 @@ let webixReady = webix.ready(function () {
         } else {
             $$("kanban").getItem(context.start).user_id = null;
             $$("kanban").updateItem(context.start);
-            lastProject.getTask(context.start).setStatus("Создано");
+            taskClicked.setStatus("Создано");
             return true;
         }
     }
@@ -95,7 +91,7 @@ let webixReady = webix.ready(function () {
             return false;
 
         } else {
-            lastProject.getTask(context.start).setStatus("Назначено");
+            taskClicked.setStatus("Назначено");
             return true;
         }
     }
@@ -104,7 +100,7 @@ let webixReady = webix.ready(function () {
     let dropHandler3 = function(context, e) {
         let status = $$("kanban").getItem(context.start).status;
         
-        let estimatedTime = lastProject.getTask(idOfTaskClicked).getEstimatedTime();
+        let estimatedTime = taskClicked.getEstimatedTime();
 
         if ( status == "Создано" || estimatedTime == "" 
             || estimatedTime == undefined || estimatedTime == null 
@@ -113,7 +109,7 @@ let webixReady = webix.ready(function () {
             return false;
 
         } else {
-            lastProject.getTask(context.start).setStatus("В работе");
+            taskClicked.setStatus("В работе");
             return true;
         }
     }
@@ -122,7 +118,7 @@ let webixReady = webix.ready(function () {
     let dropHandler4 = function(context, e) {
         let status = $$("kanban").getItem(context.start).status;
 
-        let spentTime = lastProject.getTask(idOfTaskClicked).getSpentTime();
+        let spentTime = taskClicked.getSpentTime();
 
         if (status == "Создано"  || status == "Назначено" 
             || spentTime == ""   || spentTime == undefined 
@@ -131,7 +127,7 @@ let webixReady = webix.ready(function () {
             return false;
 
         } else {
-            lastProject.getTask(context.start).setStatus("Завершено");
+            taskClicked.setStatus("Завершено");
             return true;
         }
     }  
@@ -164,7 +160,7 @@ let webixReady = webix.ready(function () {
             Login: "nickname",
             Email: "gribanov@gmail.com",
             Password: "1234",
-            Id: "employee15"
+            Id: "15"
         });
 
         xhr.open("POST", 'http://localhost:9000/employee')
@@ -213,9 +209,11 @@ let webixReady = webix.ready(function () {
                             }
 
                             if (emplId != "" && emplId != undefined ) {
-                                lastProject.addEmployee(employeesTab.getEmployee(emplId));
-                                projectsModel.addEmployeeToProject(lastProject, emplId);
-                                tasksTab.showTaskPage(lastProject);
+                                currentProject.addEmployee(emplId);
+                                projectsTab.addEmployeeToProject(currentProject.getId(), emplId);
+                                let mapOfTasks = tasksTab.getTasksFromProject(currentProject.getId());
+                                
+                                tasksTab.showTaskPage(mapOfTasks);
                                 $$("modalWindowForAddingEmployeesToProject").close();
                             }
                         } },
@@ -227,7 +225,7 @@ let webixReady = webix.ready(function () {
             },
         }).show()
 
-        tasksTab.addEmployeesInModalWindow(employeesTab.getEmployeesModel(), lastProject);
+        tasksTab.getTasksView().addEmployeesInModalWindow(employeesTab.getEmployeesModel(), currentProject);
     }
 
     //Обработчик кнопки Добавить сотрудника
@@ -308,7 +306,7 @@ let xhr = new XMLHttpRequest();
             }).then(function(result) {
             let type = "";
             if(result == 0) {
-                lastProject.deleteEmployee(selectedId);
+                currentProject.deleteEmployee(selectedId);
                 $$("listOfEmployees").remove(selectedId);
                 type = "success";
             } else if(result == 1) type = "error";
@@ -372,9 +370,9 @@ let xhr = new XMLHttpRequest();
                             if (name == "") {
                                 return;
                             }
-                            let newPr = new Project(name, "employee1");
+                            let newPr = new Project(name, "1");
                             newPr.setAimOfTheProject(aim);
-                            newPr.addEmployee(employeesTab.getEmployee("employee1"));
+                            newPr.addEmployee(employeesTab.getEmployee("1"));
                             projectsTab.addProject(newPr);
 
                             $$("modalWindowForProjects").close();
@@ -479,9 +477,9 @@ let xhr = new XMLHttpRequest();
                             if (text == "") {
                                 return;
                             }
-                            let newTask = new Task(text, "employee1");
-                            projectsTab.addTaskToProject(lastProject.getId(), newTask);
-                            tasksTab.showTaskPage(lastProject);
+                            let newTask = new Task(text, "1");
+                            projectsTab.addTaskToProject(currentProject.getId(), newTask);
+                            tasksTab.showTabPage(currentProject);
 
                             $$("modalWindowForAddingTasks").close();
                         } },
@@ -497,15 +495,12 @@ let xhr = new XMLHttpRequest();
           }).show()
     }
 
-    //В этой переменной последний открытый проект
-    let lastProject;
-
     //Изменяем заголовок при заходе в проект
     let openProjectHandler = function(id, event) {
         if ($$("projectsList").getSelectedId() != "" ){
             let pr = projectsTab.getProject($$("projectsList").getSelectedId() );
-            lastProject = pr;
-            tasksTab.showTaskPage(pr);
+            currentProject = pr;
+            tasksTab.showTaskPage(tasksTab.getTasksFromProject($$("projectsList").getSelectedId() ) );
             $$("projectName").define("template", pr.getName());
             $$("projectName").refresh();
         }
@@ -521,15 +516,16 @@ let xhr = new XMLHttpRequest();
     function changeUserList(id) {
         $$("kanban").getUsers().clearAll();
         if ($$("kanban").getItem(id).status != "Создано") { 
-            tasksTab.addEmployeeInList(employeesTab.getEmployee(lastProject.getTask(idOfTaskClicked).getAssignedToId()));
+            tasksTab.getTasksView().addEmployeeInList(employeesTab.getEmployee(taskClicked.getAssignedToId()));
         } else {
-            let mapOfEmployees = lastProject.getMapOfEmployees();
 
-            let addemployeeinlist = tasksTab.addEmployeeInList;
+            let arrayOfEmployeesId = currentProject.getArrayOfEmployeesId();
 
-            mapOfEmployees.forEach(function(item, index, array) {
-                addemployeeinlist(item);
-            });
+            let addemployeeinlist = tasksTab.getTasksView().addEmployeeInList;
+
+            for (let id of arrayOfEmployeesId) {
+                addemployeeinlist(employeesTab.getEmployee(id));
+            }
         }
     }
 
@@ -580,10 +576,12 @@ let xhr = new XMLHttpRequest();
                     on:{
                         onListIconClick: function(id, itemId){
                             idOfTaskClicked = itemId;
+                            taskClicked = currentProject.getTask(idOfTaskClicked);
                             changeUserList(itemId);
                         },
                         onListItemClick: function(id,ev,node,list){
                             idOfTaskClicked = id;
+                            taskClicked = currentProject.getTask(idOfTaskClicked);
                             changeUserList(id);
                         },
                         /*onAvatarClick: function(id){
@@ -601,29 +599,30 @@ let xhr = new XMLHttpRequest();
                         	let statusList = $$("status").getList();
                         	statusList.parse($$("kanban").getStatuses());
 
-                        	let mapOfEmployees = lastProject.getMapOfEmployees();
+                        	let arrayOfEmployeesId = currentProject.getArrayOfEmployeesId();
 
                         	if (obj.status != "Создано") {
-                        		let emp = employeesTab.getEmployee(lastProject.getTask(idOfTaskClicked).getAssignedToId())
+                        		let emp = employeesTab.getEmployee(taskClicked.getAssignedToId())
                         		$$("userListInEditor").getList().add({
             							id: emp.getId(),
             							value: emp.getSurnameAndName(),
         							});
                         	} else {
-                        		mapOfEmployees.forEach(function(employee, index, array) {
-                					$$("userListInEditor").getList().add({
+
+                                for (let employee of arrayOfEmployeesId) {
+                                    $$("userListInEditor").getList().add({
             							id: employee.getId(),
-            							value: employee.getSurnameAndName(),
-        							});
-            					});
+                                        value: employee.getSurnameAndName(),
+                                    });
+                                }
                         	}
 
-            				$$("userListInEditor").define({ value:lastProject.getTask(idOfTaskClicked).getAssignedToId()});
+            				$$("userListInEditor").define({ value:taskClicked.getAssignedToId()});
             				$$("userListInEditor").refresh();
 
-            				$$("estimatedTime").setValue(Number(lastProject.getTask(idOfTaskClicked).getEstimatedTime()));
-                            $$("spentTime").setValue(Number(lastProject.getTask(idOfTaskClicked).getSpentTime()));
-                            $$("priority").setValue(lastProject.getTask(idOfTaskClicked).getColor());
+            				$$("estimatedTime").setValue(Number(taskClicked.getEstimatedTime()));
+                            $$("spentTime").setValue(Number(taskClicked.getSpentTime()));
+                            $$("priority").setValue(taskClicked.getColor());
                         },
                       },
                     cols:[
@@ -720,7 +719,8 @@ let xhr = new XMLHttpRequest();
                               select:true,
                               on:{
                                     onItemClick: function(id, e, node){
-                                        $$("projectInfo").define("template", projectsTab.getProject(id).getProjectInfo());
+                                        console.log(id + "dfggggggggggggggg");
+                                      //  $$("projectInfo").define("template", projectsTab.getProject(id).getProjectInfo());
                                         $$("projectInfo").refresh();
                                     },
                                  },
@@ -801,21 +801,21 @@ let xhr = new XMLHttpRequest();
                             || dataUserId == null || dataUserId == "" ) ) {
                             return false;
                         }
-                        if ($$("spentTime").getValue() != lastProject.getTask(data.id).getSpentTime()) {
+                        if ($$("spentTime").getValue() != taskClicked.getSpentTime()) {
                             alert("Итоговое время можно менять только у задач в работе");
                             return false;
                         }
 
                         //Если назначается Сотрудник, то перемещаем его сразу в колонку 2
-                        if (dataUserId != lastProject.getTask(idOfTaskClicked).getAssignedToId()
+                        if (dataUserId != taskClicked.getAssignedToId()
                         && dataUserId != undefined && dataUserId != null && dataUserId != "") {
                             data.$list = 1;            
-                            lastProject.getTask(data.id).setAssignedToId(dataUserId);
-                            lastProject.getTask(data.id).setStatus("Назначено");                          
+                            taskClicked.setAssignedToId(dataUserId);
+                            taskClicked.setStatus("Назначено");                          
                         }
-                        lastProject.getTask(data.id).setText(data.text);  
-                        lastProject.getTask(data.id).setEstimatedTime($$("estimatedTime").getValue());
-                        lastProject.getTask(data.id).setColor($$("priority").getValue());
+                        taskClicked.setText(data.text);  
+                        taskClicked.setEstimatedTime($$("estimatedTime").getValue());
+                        taskClicked.setColor($$("priority").getValue());
 
                         $$("kanban").getItem(idOfTaskClicked).color = $$("priority").getValue();
 
@@ -831,7 +831,7 @@ let xhr = new XMLHttpRequest();
 
                     } else {    
 
-                        if ($$("spentTime").getValue() != lastProject.getTask(data.id).getSpentTime()) {
+                        if ($$("spentTime").getValue() != taskClicked.getSpentTime()) {
                             alert("Итоговое время можно менять только у задач в работе");
                             return false;
                         }
@@ -839,17 +839,17 @@ let xhr = new XMLHttpRequest();
                         if (data.$list == 0 ) {
 
                             dataUserId = null;  //Если перемещаем в Создано, то удаляем Сотрудника
-                            lastProject.getTask(data.id).deleteAssignedToId();
-                            lastProject.getTask(data.id).setStatus("Создано");
-                            lastProject.getTask(data.id).setText(data.text);
-                            lastProject.getTask(data.id).setEstimatedTime($$("estimatedTime").getValue());
-                            lastProject.getTask(data.id).setColor($$("priority").getValue());
+                            taskClicked.deleteAssignedToId();
+                            taskClicked.setStatus("Создано");
+                            taskClicked.setText(data.text);
+                            taskClicked.setEstimatedTime($$("estimatedTime").getValue());
+                            taskClicked.setColor($$("priority").getValue());
                         
                             $$("kanban").getItem(idOfTaskClicked).color = $$("priority").getValue();
 
                             return true;
 
-                        } else if (dataUserId != lastProject.getTask(idOfTaskClicked).getAssignedToId() ||
+                        } else if (dataUserId != taskClicked.getAssignedToId() ||
                         data.text != $$("kanban").getItem(data.id).text) {
 
                             alert("Нельзя изменять назначенное задание");
@@ -864,10 +864,10 @@ let xhr = new XMLHttpRequest();
                                 return false;
                             }
 
-                        	lastProject.getTask(data.id).setStatus("В работе");
+                        	currentProject.getTask(data.id).setStatus("В работе");
                     	}
-                        lastProject.getTask(data.id).setColor($$("priority").getValue());
-                        lastProject.getTask(data.id).setEstimatedTime($$("estimatedTime").getValue());
+                        taskClicked.setColor($$("priority").getValue());
+                        taskClicked.setEstimatedTime($$("estimatedTime").getValue());
 
                         $$("kanban").getItem(idOfTaskClicked).color = $$("priority").getValue();
 
@@ -879,9 +879,9 @@ let xhr = new XMLHttpRequest();
                 case "В работе":
 
                     if (data.$list == 0 || data.$list == 1 
-                    || dataUserId != lastProject.getTask(idOfTaskClicked).getAssignedToId() 
+                    || dataUserId != taskClicked.getAssignedToId() 
                     || data.text != $$("kanban").getItem(data.id).text 
-                    || $$("estimatedTime").getValue() != lastProject.getTask(data.id).getEstimatedTime()) {
+                    || $$("estimatedTime").getValue() != taskClicked.getEstimatedTime()) {
 
                     	alert("Нельзя изменять задание c этим статусом");
 
@@ -893,21 +893,21 @@ let xhr = new XMLHttpRequest();
                              && $$("spentTime").getValue() != undefined 
                              && $$("spentTime").getValue() != null 
                              && $$("spentTime").getValue() != 0) {    
-
-                            lastProject.getTask(data.id).setStatus("Завершено");
+                                
+                            taskClicked.setStatus("Завершено");
 
                         } else {
                             alert("Укажите время, потраченное на выполнение задачи");
                             return false;
                         }
                     }
-                    lastProject.getTask(data.id).setColor($$("priority").getValue());
-                    lastProject.getTask(data.id).setSpentTime($$("spentTime").getValue());
+                    taskClicked.setColor($$("priority").getValue());
+                    taskClicked.setSpentTime($$("spentTime").getValue());
 
                     $$("kanban").getItem(idOfTaskClicked).color = $$("priority").getValue();
 
                     return true;
-                    lastProject.getTask(data.id).setColor($$("color").getValue());
+                    taskClicked.setColor($$("color").getValue());
                     break;
 
                 case "Завершено":
@@ -919,7 +919,7 @@ let xhr = new XMLHttpRequest();
     
         if (action === "remove"){
             if (data.status == "Создано") {
-            	lastProject.deleteTask(idOfTaskClicked);
+            	currentProject.deleteTask(idOfTaskClicked);
                 return true;
             } else {
                 alert("Нельзя удалить назначенное задание");
@@ -951,8 +951,8 @@ let xhr = new XMLHttpRequest();
             $$("kanban").getItem(idOfTaskClicked).status = "Назначено";
             $$("kanban").updateItem(idOfTaskClicked);
         }
-        lastProject.getTask(idOfTaskClicked).setAssignedToId(id);
-        lastProject.getTask(idOfTaskClicked).setStatus("Назначено");
+        taskClicked.setAssignedToId(id);
+        taskClicked.setStatus("Назначено");
     })
 
 
@@ -968,12 +968,14 @@ let arrayOfScripts = [
     "./public/js/src/models/EmployeesModel.js",
     "./public/js/src/models/Project.js",
     "./public/js/src/models/ProjectsModel.js",
+    "./public/js/src/models/TasksModel.js",
     "./public/js/src/models/Task.js",
     "./public/js/src/controllers/EmployeesTab.js",
     "./public/js/src/controllers/ProjectsTab.js",
+    "./public/js/src/controllers/TasksTab.js",
     "./public/js/src/views/EmployeesView.js",
     "./public/js/src/views/ProjectView.js",
-    "./public/js/src/views/TasksTab.js",
+    "./public/js/src/views/TasksView.js",
     "./public/js/src/views/LoginView.js",
     "./public/js/src/controllers/LoginTab.js",
 ];

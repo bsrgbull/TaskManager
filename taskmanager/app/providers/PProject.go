@@ -9,12 +9,12 @@ type PProject struct {
 	m mappers.MProject
 }
 
-func (p PProject) Before() {
+/*func (p PProject) Before() {
 	p.m = mappers.MProject{}
-}
+}*/
 
 //Возвращает все проекты в виде массива объектов и ошибку
-func (p PProject) GetAllProjects() (*[]entities.Project, error) {
+func (p PProject) GetAllProjects() ([]*entities.Project, error) {
 
 	projects, err := p.m.GetAllProjects()
 
