@@ -13,11 +13,11 @@ class ProjectsModel {
     constructor() {
         this.#mapOfProjects = new Map();
 
+        this.addProject("Создание TaskManager", 1);  
+        this.addProject("HTTP-сервер", 1);
         this.addProject("Редактор видео", 1);
         this.addProject("CDMA-шифрование", 1);
-        this.addProject("HTTP-сервер", 1);
-        this.addProject("Создание TaskManager", 1);
-
+        
 
         this.getProject(1).getArrayOfEmployeesId().push(1,2,3,4);
         this.getProject(2).getArrayOfEmployeesId().push(1,5,6,7,8);
@@ -32,7 +32,7 @@ class ProjectsModel {
         let id = ProjectsModel.getNextId();
         
         this.#mapOfProjects.set(id, new Project(name, creatorId, id));
-        console.log(this.#mapOfProjects.get(id));
+
         return id;
     }
 
@@ -41,7 +41,7 @@ class ProjectsModel {
     }
 
     getProject(id) {
-        return this.#mapOfProjects.get(id);
+        return this.#mapOfProjects.get(Number(id));
     }
 
     updateProject(id, name, mapOfEmployees, creatorId, aimOfTheProject) {
@@ -50,14 +50,18 @@ class ProjectsModel {
     }
 
     deleteProject(id) {
-        this.#mapOfProjects.delete(id);
+        this.#mapOfProjects.delete(Number(id));
     }
 
     addEmployeeToProject(projectId, employeeId) {
-        this.#mapOfProjects.get(projectId).addEmployee(employeeId);
+        this.#mapOfProjects.get(Number(projectId) ).addEmployee(Number(employeeId) );
     }
 
     deleteEmployeeFromProject(projectId, employeeId) {
 
+    }
+
+    getProjectInfo(projectId){
+        this.#mapOfProjects.get(Number(projectId) ).getProjectInfo();
     }
 }

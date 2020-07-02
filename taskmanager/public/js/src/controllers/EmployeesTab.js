@@ -18,8 +18,8 @@ class EmployeesTab {
         return this.#employeesModel
     }
 
-    getEmployeesFromProject(project) {
-        return this.#employeesModel.getEmployeesFromProject(project);
+    getEmployeesFromArray(arrayOfEmployeesId) {
+        return this.#employeesModel.getEmployeesFromArray(arrayOfEmployeesId)
     }
 
     addEmployee(employee) {

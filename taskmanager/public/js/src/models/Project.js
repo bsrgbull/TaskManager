@@ -26,18 +26,10 @@ class Project {
 
     getProjectInfo() {
 
-        let aim = "";
 
-        if (this.#aimOfTheProject != undefined && this.#aimOfTheProject != null) {
-            aim = "<p>Цель проекта: " + this.#aimOfTheProject + "</p>";
-        }  
-
-        return aim + "<p>" + 
-      //"Создатель проекта: " + employeesTab.getEmployee(this.#creatorId).getSurnameAndName() + "</p>" +
-        "<p>" + "Над проектом работают: " + this.getEmployeesInfo() + "<p>";
     }
 
-    getArrayOfEmployeesId() {
+    getArrayOfEmployeesIds() {
         return this.#arrayOfEmployeesId;
     }
 

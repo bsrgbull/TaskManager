@@ -48,4 +48,27 @@ class ProjectsTab {
     hide() {
         
     }
+
+    getProjectInfo(employeesTab, projectId) {
+
+        let aim = "";
+        let project = this.getProject(Number(projectId) );
+
+        if (project.getAimOfTheProject() != undefined && project.getAimOfTheProject() != null) {
+            aim = "<p>Цель проекта: " + project.getAimOfTheProject() + "</p>";
+        }  
+
+        let employeesInfo = "";
+
+        employeesTab.getEmployeesFromArray(project.getArrayOfEmployeesId()).forEach(function(employee, index, array) {
+            employeesInfo += employee.getSurnameAndName() + ", ";
+        });
+
+        employeesInfo = employeesInfo.substring(0, employeesInfo.length - 2);
+
+        return aim + "<p>" + 
+      //"Создатель проекта: " + employeesTab.getEmployee(this.#creatorId).getSurnameAndName() + "</p>" +
+        "<p>" + "Над проектом работают: " + employeesInfo + "<p>";
+        
+    }
 }

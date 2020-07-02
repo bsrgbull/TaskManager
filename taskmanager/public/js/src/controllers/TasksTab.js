@@ -25,14 +25,14 @@ class TasksTab {
     }
 
     getTask(id) {
-        this.#tasksModel.getTask(id);
+        return this.#tasksModel.getTask(Number(id));
     }
 
-    showTaskPage(mapOfTasks) {
-        this.#tasksView.showTaskPage(mapOfTasks);
+    showTaskPage(mapOfTasks, mapOfEmployees) {
+        this.#tasksView.showTaskPage(mapOfTasks, mapOfEmployees);
     }
 
-    getTasksFromProject(id) {
-        return this.#tasksModel.getTasksFromProject(id);
+    getTasksFromProject(projectId) {
+        return this.#tasksModel.getTasksFromProject(projectId);
     }
 }

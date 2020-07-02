@@ -23,11 +23,6 @@ let webixReady = webix.ready(function () {
     tasksView = tasksTab.getTasksView();
     employeesView = employeesTab.getEmployeesView();
 
-
-    /*tasksTab.getTasksModel().getMapOfTasks().forEach(function(task, index, array) {
-        projectsModel.getProject(task.getProjectId()).addTask(task);
-    });*/
-
     //В этой переменной запоминаем id задачи, по иконке которой нажали
     let idOfTaskClicked;
 
@@ -212,8 +207,10 @@ let webixReady = webix.ready(function () {
                                 currentProject.addEmployee(emplId);
                                 projectsTab.addEmployeeToProject(currentProject.getId(), emplId);
                                 let mapOfTasks = tasksTab.getTasksFromProject(currentProject.getId());
-                                
-                                tasksTab.showTaskPage(mapOfTasks);
+                                let mapOfEmployees = projectsTab.getEmployeesFromArray(
+                                    currentProject.getArrayOfEmployeesId());
+
+                                tasksTab.showTaskPage(mapOfTasks, mapOfEmployees);
                                 $$("modalWindowForAddingEmployeesToProject").close();
                             }
                         } },
@@ -391,7 +388,9 @@ let xhr = new XMLHttpRequest();
 
     //Удаление проекта
     let deleteProjectHandler = function(id, event) {
+
         let prId = $$("projectsList").getSelectedId();
+
         if (prId != "" && prId != undefined ) {
                 webix.modalbox({
                     title:"Вы собираетесь навсегда удалить этот проект. Вы уверены?",
@@ -498,10 +497,14 @@ let xhr = new XMLHttpRequest();
     //Изменяем заголовок при заходе в проект
     let openProjectHandler = function(id, event) {
         if ($$("projectsList").getSelectedId() != "" ){
-            let pr = projectsTab.getProject($$("projectsList").getSelectedId() );
-            currentProject = pr;
-            tasksTab.showTaskPage(tasksTab.getTasksFromProject($$("projectsList").getSelectedId() ) );
-            $$("projectName").define("template", pr.getName());
+
+            currentProject = projectsTab.getProject(Number($$("projectsList").getSelectedId() ) );
+
+            let mapOfTasks = tasksTab.getTasksFromProject($$("projectsList").getSelectedId());
+            let mapOfEmployees = employeesTab.getEmployeesFromArray(currentProject.getArrayOfEmployeesId());
+
+            tasksTab.showTaskPage(mapOfTasks, mapOfEmployees);
+            $$("projectName").define("template", currentProject.getName());
             $$("projectName").refresh();
         }
     }
@@ -516,6 +519,9 @@ let xhr = new XMLHttpRequest();
     function changeUserList(id) {
         $$("kanban").getUsers().clearAll();
         if ($$("kanban").getItem(id).status != "Создано") { 
+            console.log(tasksTab.getTask(idOfTaskClicked).getAssignedToId());
+            console.log(taskClicked.getAssignedToId());
+            console.log(employeesTab.getEmployee(taskClicked.getAssignedToId()));
             tasksTab.getTasksView().addEmployeeInList(employeesTab.getEmployee(taskClicked.getAssignedToId()));
         } else {
 
@@ -576,12 +582,12 @@ let xhr = new XMLHttpRequest();
                     on:{
                         onListIconClick: function(id, itemId){
                             idOfTaskClicked = itemId;
-                            taskClicked = currentProject.getTask(idOfTaskClicked);
+                            taskClicked = tasksTab.getTask(Number(1));
                             changeUserList(itemId);
                         },
                         onListItemClick: function(id,ev,node,list){
                             idOfTaskClicked = id;
-                            taskClicked = currentProject.getTask(idOfTaskClicked);
+                            taskClicked = tasksTab.getTask(id);
                             changeUserList(id);
                         },
                         /*onAvatarClick: function(id){
@@ -609,10 +615,10 @@ let xhr = new XMLHttpRequest();
         							});
                         	} else {
 
-                                for (let employee of arrayOfEmployeesId) {
+                                for (let id of arrayOfEmployeesId) {
                                     $$("userListInEditor").getList().add({
-            							id: employee.getId(),
-                                        value: employee.getSurnameAndName(),
+            							id: id,
+                                        value: employeesTab.getEmployee(id).getSurnameAndName(),
                                     });
                                 }
                         	}
@@ -719,8 +725,7 @@ let xhr = new XMLHttpRequest();
                               select:true,
                               on:{
                                     onItemClick: function(id, e, node){
-                                        console.log(id + "dfggggggggggggggg");
-                                      //  $$("projectInfo").define("template", projectsTab.getProject(id).getProjectInfo());
+                                        $$("projectInfo").define("template", projectsTab.getProjectInfo(employeesTab, id) );
                                         $$("projectInfo").refresh();
                                     },
                                  },

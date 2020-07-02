@@ -39,19 +39,17 @@ class EmployeesModel {
     }
 
     getEmployee(id) {
-        return this.#mapOfEmployees.get(id);
+        return this.#mapOfEmployees.get(Number(id));
     }
 
-    getEmployeesFromProject(project) {
+    getEmployeesFromArray(arrayOfEmployeesId) {
 
         let map = new Map();
-        this.#mapOfEmployees.forEach(function(employee, index, array) {
-            if (employee.getProjectId = projectId) {
-                map.set(employee.getId(), employee);
-            }
-        });
+            
+        for (let employeeId of arrayOfEmployeesId) {
+            map.set(employeeId, this.getEmployee(employeeId))
+        }
         return map;
-        return this.#employeesModel.getEmployeesFromProject(projectId);
     }
 
     getMapOfEmployees() {

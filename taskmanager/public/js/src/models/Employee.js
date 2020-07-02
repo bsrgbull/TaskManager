@@ -10,7 +10,7 @@ class Employee {
     #password;
 
 
-    constructor(name, surname, password, login, email, id) {
+    constructor(id, name, surname, password, login, email) {
         this.#id = id;
         this.#name = name;
         this.#surname = surname;

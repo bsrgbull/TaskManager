@@ -40,7 +40,7 @@ class TasksModel {
     }
 
     getTask(id) {
-        return this.#mapOfTasks.get(id);
+        return this.#mapOfTasks.get(Number(id));
     }
 
     updateTask(task) {
@@ -61,7 +61,7 @@ class TasksModel {
     getTasksFromProject(projectId) {
         let map = new Map();
         this.#mapOfTasks.forEach(function(task, index, array) {
-            if (task.getProjectId = projectId) {
+            if (task.getProjectId() == projectId) {
                 map.set(task.getId(), task);
             }
         });

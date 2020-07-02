@@ -3,7 +3,7 @@
 class TasksView {
 
 
-    showTaskPage(mapOfTasks) {
+    showTaskPage(mapOfTasks, mapOfEmployees) {
 
         $$("kanban").clearAll();
         $$("listOfEmployees").clearAll();
@@ -34,8 +34,6 @@ class TasksView {
             addtask(task);
         });
 
-        let mapOfEmployees = project.getMapOfEmployees();
-
 /*        let addemployeeinlist = this.addEmployeeInList;
 
         mapOfEmployees.forEach(function(item, index, array) {
@@ -44,8 +42,8 @@ class TasksView {
 
         let addemployee = this.addEmployee;
 
-        mapOfEmployees.forEach(function(item, index, array) {
-            addemployee(item);
+        mapOfEmployees.forEach(function(employee, index, array) {
+            addemployee(employee);
         });
     }
     
@@ -79,11 +77,11 @@ class TasksView {
         },0);
     }
 
-    addEmployeesInModalWindow(employeesModel, lastProject){
+    addEmployeesInModalWindow(employeesModel, currentProject){
 
         employeesModel.getMapOfEmployees().forEach(function(employee, index, array) {
             //Если сотрудника ещё нет в проекте, добавляем в список
-            if (!lastProject.getMapOfEmployees().has(index)) {
+            if (!currentProject.getArrayOfEmployeesId().includes(index)) {
 
                 $$("employeesTableInModalWindow").add({ 
                     idOfEmployeeInModalWindow:`${employee.getId()}`,
