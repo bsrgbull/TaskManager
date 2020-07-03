@@ -56,12 +56,19 @@ class TasksView {
                         },0);
     }
 
-    deleteTask(id) {
-
+    addNewTask(text, id) {
+        $$("kanban").add({  id:id,
+                            status:`Создано`,
+                            text:text,
+        },0);
     }
 
     updateTask(id) {
 
+    }
+
+    deleteTask(id) {
+        
     }
 
     addEmployee(employee) {
@@ -70,9 +77,9 @@ class TasksView {
             user_id: employee.getId(),
             value: employee.getSurnameAndName(), 
         });*/
-
+        console.log(employee);
         $$("listOfEmployees").add({
-            id: employee.getId(),
+            id: employee.getId() + "employee",
             title: employee.getSurnameAndName(),
         },0);
     }
@@ -93,6 +100,7 @@ class TasksView {
 
     }
 
+    //Добавление сотрудников UserList виджета kanban
     addEmployeeInList(employee) {
         let users = $$("kanban").getUsers();
      /*   $$("user_Id").getList().add({ 
@@ -106,7 +114,6 @@ class TasksView {
           
             alert( "Ключ: " + key + " значение: " + $$("kanban").$view[key] );
           }*/
-
         users.add({ 
             id: employee.getId(),
             value: employee.getSurnameAndName(), 

@@ -26,7 +26,7 @@ class EmployeesView {
 
     addEmployee(employee) {
         $$("employeesTable").add({ 
-            idOfEmployee:`${employee.getId()}`,
+            id:`${employee.getId()}`,
             nameOfEmployee:`${employee.getName()}`,
             surnameOfEmployee:`${employee.getSurname()}`,
             login:`${employee.getLogin()}`,
@@ -34,8 +34,23 @@ class EmployeesView {
         },0);
     }
 
-    deleteEmployee(id) {
+    addNewEmployee(id, name, surname, password, login, email) {
+        $$("employeesTable").add({ 
+            id:id,
+            nameOfEmployee:name,
+            surnameOfEmployee:surname,
+            login:login,
+            email:email,
+        },0);
+    }
+
+    updateEmployee(id, name, surname, password, login, email) {
         $$("employeesTable").remove(id);
+        this.addNewEmployee(id, name, surname, password, login, email);
+    }
+
+    deleteEmployee(id) {
+        $$("employeesTable").remove(Number(id));
     }
 
     clearAll() {

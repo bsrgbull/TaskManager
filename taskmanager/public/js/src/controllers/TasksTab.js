@@ -16,6 +16,11 @@ class TasksTab {
         this.#tasksView.addTask(task);
     }
 
+    addNewTask(text, creatorId, projectId) {
+        let id = this.#tasksModel.addTask(text, creatorId, projectId);
+        this.#tasksView.addNewTask(text, id);
+    }
+
     getTasksModel() {
         return this.#tasksModel;
     }
@@ -26,6 +31,14 @@ class TasksTab {
 
     getTask(id) {
         return this.#tasksModel.getTask(Number(id));
+    }
+
+    updateTask() {
+
+    }
+
+    deleteTask(id) {
+        this.#tasksModel.deleteTask(id);
     }
 
     showTaskPage(mapOfTasks, mapOfEmployees) {

@@ -27,11 +27,11 @@ class ProjectsModel {
         
     }
 
-    addProject(name, creatorId) {
+    addProject(name, creatorId, aimOfTheProject, arrayOfEmployeesId) {
 
         let id = ProjectsModel.getNextId();
         
-        this.#mapOfProjects.set(id, new Project(name, creatorId, id));
+        this.#mapOfProjects.set(id, new Project(id, name, creatorId, aimOfTheProject, arrayOfEmployeesId));
 
         return id;
     }
@@ -54,6 +54,7 @@ class ProjectsModel {
     }
 
     addEmployeeToProject(projectId, employeeId) {
+        console.log("addEmployee");
         this.#mapOfProjects.get(Number(projectId) ).addEmployee(Number(employeeId) );
     }
 

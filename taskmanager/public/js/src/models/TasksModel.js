@@ -50,7 +50,8 @@ class TasksModel {
     }
 
     deleteTask(id) {
-        this.#mapOfTasks.delete(id);
+        this.#mapOfTasks.delete(Number(id));
+
     }
 
     getMapOfTasks() {

@@ -32,6 +32,14 @@ class ProjectView {
         },0);
     }
 
+    addNewProject(id, name) {
+        $$("projectsList").add({
+            id:id,
+            title:name,
+        },0);
+    }
+
+
     deleteProject(id) {
         $$("projectsList").remove(id);
     }

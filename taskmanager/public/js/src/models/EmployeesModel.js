@@ -27,19 +27,19 @@ class EmployeesModel {
         this.addEmployee("Никита", "Зимин", "123");
         this.addEmployee("Максим", "Коновалов", "123");
 
-        this.updateEmployee(1, "Сергей", "Быков", "bsrgbull", "bsrg.bull@gmail.com", 123)
+        this.updateEmployee(1, "Сергей", "Быков", 123, "bsrgbull", "bsrg.bull@gmail.com")
     }
 
-    addEmployee(name, surname, password) {
+    addEmployee(name, surname, password, login, email) {
         let id = EmployeesModel.getNextId();
 
-        this.#mapOfEmployees.set(id, new Employee(id, name, surname, password));
+        this.#mapOfEmployees.set(+id, new Employee(+id, name, surname, password, login, email));
 
         return id;
     }
 
     getEmployee(id) {
-        return this.#mapOfEmployees.get(Number(id));
+        return this.#mapOfEmployees.get(+id);
     }
 
     getEmployeesFromArray(arrayOfEmployeesId) {
@@ -56,14 +56,14 @@ class EmployeesModel {
         return this.#mapOfEmployees;
     }
 
-    updateEmployee(id, name, surname, login, email, password) {
+    updateEmployee(id, name, surname, password, login, email) {
 
-        this.#mapOfEmployees.set(id, new Employee(id, name, surname, login, email, password));
+        this.#mapOfEmployees.set(+id, new Employee(id, name, surname, password, login, email));
 
     }
 
     deleteEmployee(id) {
-        this.#mapOfEmployees.delete(id);
+        this.#mapOfEmployees.delete(Number(id));
     }
 
     login(login, password) {

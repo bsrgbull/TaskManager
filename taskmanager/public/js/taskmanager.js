@@ -207,9 +207,9 @@ let webixReady = webix.ready(function () {
                                 currentProject.addEmployee(emplId);
                                 projectsTab.addEmployeeToProject(currentProject.getId(), emplId);
                                 let mapOfTasks = tasksTab.getTasksFromProject(currentProject.getId());
-                                let mapOfEmployees = projectsTab.getEmployeesFromArray(
+                                let mapOfEmployees = employeesTab.getEmployeesFromArray(
                                     currentProject.getArrayOfEmployeesId());
-
+                                    
                                 tasksTab.showTaskPage(mapOfTasks, mapOfEmployees);
                                 $$("modalWindowForAddingEmployeesToProject").close();
                             }
@@ -225,49 +225,72 @@ let webixReady = webix.ready(function () {
         tasksTab.getTasksView().addEmployeesInModalWindow(employeesTab.getEmployeesModel(), currentProject);
     }
 
-    //Обработчик кнопки Добавить сотрудника
-    let addEmployee = function(id,event){
+    //Обработчик кнопок Добавить и Изменить сотрудника
+    let addOrChangeEmployee = function(id,event){
         //Удаляет предыдущее окно, если оно создавалось
         if ($$("modalWindowForEmployees")) {
             $$("modalWindowForEmployees").close();
         }   
 
-        webix.ui({
+        let addingFunction = function() {
+
+            let name = $$("modalEmployeeName").getValue();
+            let surname = $$("modalEmployeeSurname").getValue();
+            let email = $$("modalEmployeeEmail").getValue();
+            let login = $$("modalEmployeeLogin").getValue();
+            let password = $$("modalEmployeePassword").getValue();
+
+            if (name == "" || surname == "" || password == "") {
+                return;
+            }
+
+            employeesTab.addNewEmployee(name, surname, password, login, email)
+            $$("modalWindowForEmployees").close();
+        }
+        
+        let changingFunction = function() {
+            let id = $$("employeesTable").getSelectedId();
+            let name = $$("modalEmployeeName").getValue();
+            let surname = $$("modalEmployeeSurname").getValue();
+            let password = $$("modalEmployeePassword").getValue();
+            let login = $$("modalEmployeeLogin").getValue();
+            let email = $$("modalEmployeeEmail").getValue();
+            employeesTab.updateEmployee(id, name, surname, password, login, email);
+            $$("modalWindowForEmployees").close();
+        }
+
+        let window = webix.ui({
             id:"modalWindowForEmployees",
             view:"window",
-            head:"Новый сотрудник:",
+            head:{
+                view:"toolbar", cols:[
+                    { width: 50 },
+                    { id:"addOrChangeLable", view:"label", type:"header", align:"center",
+                      label: `<span class='addCard'>Новый сотрудник</span>`,},
+                    { view:"button", label: 'X', width: 50, align: 'right',
+                      click:function(){ $$('modalWindowForEmployees').close(); }}
+                ]
+            },
             width: 500,
             height: 500,
             modal:true,
             close:true,
             position: "center",
             body: {
+                id:"addOrChangeForm",
                 view: "form",
                 elements: [
-                    { id:"modalEmployeeName", view: "text", label: 'Имя*', name: "name" },
+                    { id:"modalEmployeeName", view: "text", value:``, label: 'Имя*', name: "name" },
                     { id:"modalEmployeeSurname", view: "text", label: 'Фамилия*', name: "surname" },
                     { id:"modalEmployeeEmail", view: "text", label: 'Email', name: "email" },
                     { id:"modalEmployeeLogin", view: "text", label: 'Логин', name: "login" },
                     { id:"modalEmployeePassword", view: "text", label: 'Пароль*', name: "password" },
                     { template:"* поле обязательно для заполнения" },
                     { cols:[
-                        { view: "button", value: "Добавить", click:function(id,event){
-                            let name = $$("modalEmployeeName").getValue();
-                            let surname = $$("modalEmployeeSurname").getValue();
-                            let email = $$("modalEmployeeEmail").getValue();
-                            let login = $$("modalEmployeeLogin").getValue();
-                            let password = $$("modalEmployeePassword").getValue();
-
-                            if (name == "" || surname == "" || password == "") {
-                                return;
-                            }
-
-                            let newEmp = (new Employee(name, surname, password));
-                            newEmp.setLogin(login);
-                            newEmp.setEmail(email);
-                            employeesTab.addEmployee(newEmp);
-                            $$("modalWindowForEmployees").close();
-                        } },
+                        { id: "addButton", view: "button", value: "Добавить",
+                          click:addingFunction, hidden:false },
+                        { id: "changeButton", view: "button", value: "Изменить",
+                          click:changingFunction, hidden:true },
                         { view: "button", value: "Отмена", click:function(id,event){
                             $$("modalWindowForEmployees").close();
                         } }
@@ -277,7 +300,28 @@ let webixReady = webix.ready(function () {
                   labelPosition: "top",
                 }
               },
-          }).show()
+        });
+
+        if (id == "changeEmployeeButton") {
+            if ($$("employeesTable").getSelectedId() != undefined) {
+                $$("changeButton").show();
+                $$("addButton").hide();
+                $$("addOrChangeLable").setHTML(`<span class='addCard'>Изменить данные</span>`);
+
+                let employee = employeesTab.getEmployee($$("employeesTable").getSelectedId())
+
+                $$("addOrChangeForm").setValues({ name:employee.getName(),
+                                                  surname:employee.getSurname(),
+                                                  email:employee.getEmail(),
+                                                  login:employee.getLogin(),
+                });                               
+            } else return;
+        } else {
+            $$("changeButton").hide();
+            $$("addButton").show();
+        }
+
+        window.show()
     }
 
     //Обработчик кнопки Удалить из проекта
@@ -292,9 +336,9 @@ let xhr = new XMLHttpRequest();
         xhr.send();
 
 ////////////////////////////////////////////////////////////////////
-        let selectedId = $$("listOfEmployees").getSelectedId();
 
-        if (selectedId != "" ) {
+        if ($$("listOfEmployees").getSelectedItem() != undefined ) {
+            let selectedId = $$("listOfEmployees").getSelectedId();
             webix.modalbox({
                 title:"Вы уверены что хотите удалить сотрудника?",
                 buttons:["Да", "Отмена"],
@@ -303,7 +347,7 @@ let xhr = new XMLHttpRequest();
             }).then(function(result) {
             let type = "";
             if(result == 0) {
-                currentProject.deleteEmployee(selectedId);
+                currentProject.deleteEmployee(selectedId.replace("employee", ""));
                 $$("listOfEmployees").remove(selectedId);
                 type = "success";
             } else if(result == 1) type = "error";
@@ -316,9 +360,9 @@ let xhr = new XMLHttpRequest();
     let deleteEmployee = function(id, event) {
 
         let empId;
-        
+
         if ($$("employeesTable").getSelectedItem() != undefined) {
-            empId = $$("employeesTable").getSelectedItem().idOfEmployee;
+            empId = $$("employeesTable").getSelectedItem().id;
         }
 
         if (empId != "" && empId != undefined ) {
@@ -367,10 +411,8 @@ let xhr = new XMLHttpRequest();
                             if (name == "") {
                                 return;
                             }
-                            let newPr = new Project(name, "1");
-                            newPr.setAimOfTheProject(aim);
-                            newPr.addEmployee(employeesTab.getEmployee("1"));
-                            projectsTab.addProject(newPr);
+
+                            projectsTab.addNewProject(name, 1, aim,[1]);
 
                             $$("modalWindowForProjects").close();
                         } },
@@ -473,13 +515,12 @@ let xhr = new XMLHttpRequest();
                     { cols:[
                         { view: "button", value: "Добавить", click:function(id,event){
                             let text = $$("taskText").getValue();
+
                             if (text == "") {
                                 return;
                             }
-                            let newTask = new Task(text, "1");
-                            projectsTab.addTaskToProject(currentProject.getId(), newTask);
-                            tasksTab.showTabPage(currentProject);
 
+                            tasksTab.addNewTask(text, 1, currentProject.getId() );
                             $$("modalWindowForAddingTasks").close();
                         } },
                         { view: "button", value: "Отмена", click:function(id,event){
@@ -518,11 +559,11 @@ let xhr = new XMLHttpRequest();
     //Изменение списка сотрудников в зависимости от статуса карточки
     function changeUserList(id) {
         $$("kanban").getUsers().clearAll();
+
         if ($$("kanban").getItem(id).status != "Создано") { 
-            console.log(tasksTab.getTask(idOfTaskClicked).getAssignedToId());
-            console.log(taskClicked.getAssignedToId());
-            console.log(employeesTab.getEmployee(taskClicked.getAssignedToId()));
-            tasksTab.getTasksView().addEmployeeInList(employeesTab.getEmployee(taskClicked.getAssignedToId()));
+
+            tasksTab.getTasksView().addEmployeeInList(employeesTab.getEmployee((
+                taskClicked.getAssignedToId() ) ) );
         } else {
 
             let arrayOfEmployeesId = currentProject.getArrayOfEmployeesId();
@@ -582,7 +623,7 @@ let xhr = new XMLHttpRequest();
                     on:{
                         onListIconClick: function(id, itemId){
                             idOfTaskClicked = itemId;
-                            taskClicked = tasksTab.getTask(Number(1));
+                            taskClicked = tasksTab.getTask(itemId);
                             changeUserList(itemId);
                         },
                         onListItemClick: function(id,ev,node,list){
@@ -621,7 +662,7 @@ let xhr = new XMLHttpRequest();
                                         value: employeesTab.getEmployee(id).getSurnameAndName(),
                                     });
                                 }
-                        	}
+                            }
 
             				$$("userListInEditor").define({ value:taskClicked.getAssignedToId()});
             				$$("userListInEditor").refresh();
@@ -742,19 +783,21 @@ let xhr = new XMLHttpRequest();
             {
                 rows:[	
                     { view:"toolbar", cols:[
-                        { view:"button", value:"Добавить", width:150, align:"left",
-                         css:"webix_primary", click:addEmployee},
+                        { id:"addEmployeeButton", view:"button", value:"Добавить", width:150,
+                          align:"left", css:"webix_primary", click:addOrChangeEmployee},
+                        { id:"changeEmployeeButton", view:"button", value:"Изменить", width:100,
+                          align:"left", click:addOrChangeEmployee},
                         { view:"button", value:"Удалить", width:100, align:"left", click:deleteEmployee},
                         ]
                     },
                     {   //Таблица на странице Сотрудники
                         view:"datatable", id:"employeesTable",
                         columns:[
-                            { id:"idOfEmployee", hidden:true},
+                            { id:"id", hidden:true},
                             { id:"nameOfEmployee",    header:"Имя",              width:200},
                             { id:"surnameOfEmployee",   header:"Фамилия",    width:200},
-                            { id:"login",    header:"Логин",      width:200},
-                            { id:"email",   header:"email",         width:300}
+                            { id:"login", header:"Логин", width:200, hidden:true},
+                            { id:"email", header:"email", width:300}
                         ],
                         select:true,
                     },
@@ -924,7 +967,7 @@ let xhr = new XMLHttpRequest();
     
         if (action === "remove"){
             if (data.status == "Создано") {
-            	currentProject.deleteTask(idOfTaskClicked);
+                tasksTab.deleteTask(idOfTaskClicked);
                 return true;
             } else {
                 alert("Нельзя удалить назначенное задание");

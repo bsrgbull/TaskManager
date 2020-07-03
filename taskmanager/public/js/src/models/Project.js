@@ -4,12 +4,12 @@ class Project {
 
     #id;
     #name;
-    #arrayOfEmployeesId;
     #creatorId;
     #aimOfTheProject
+    #arrayOfEmployeesId;
 
 
-    constructor(name, creatorId, id, arrayOfEmployeesId, aimOfTheProject) {
+    constructor(id, name, creatorId, aimOfTheProject, arrayOfEmployeesId) {
 
         this.#id = id;
         this.#name = name;
@@ -29,7 +29,7 @@ class Project {
 
     }
 
-    getArrayOfEmployeesIds() {
+    getArrayOfEmployeesId() {
         return this.#arrayOfEmployeesId;
     }
 
@@ -42,11 +42,17 @@ class Project {
     }
 
     addEmployee(employeeId) {
-        this.#arrayOfEmployeesId.push(employeeId);
+        if (!this.#arrayOfEmployeesId.includes(employeeId)) {
+            this.#arrayOfEmployeesId.push(Number(employeeId));
+        }
     }
 
     deleteEmployee(id) {
-        this.#arrayOfEmployeesId.shift(id);
+        let index = this.#arrayOfEmployeesId.indexOf(Number(id));
+
+        if (index != -1) {
+            this.#arrayOfEmployeesId.splice(index, 1);
+        }
     }
 
     getAimOfTheProject() {

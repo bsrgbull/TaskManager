@@ -10,6 +10,16 @@ class EmployeesTab {
         this.#employeesModel = new EmployeesModel();
     }
 
+    addEmployee(employee) {
+        this.#employeesModel.addEmployee(employee);
+        this.show();
+    }
+
+    addNewEmployee(name, surname, password, login, email) {
+        let id = this.#employeesModel.addEmployee(name, surname, password, login, email);
+        this.#employeesView.addNewEmployee(id, name, surname, password, login, email);
+    }
+
     getEmployeesView() {
         return this.#employeesView;
     }
@@ -22,14 +32,15 @@ class EmployeesTab {
         return this.#employeesModel.getEmployeesFromArray(arrayOfEmployeesId)
     }
 
-    addEmployee(employee) {
-        this.#employeesModel.addEmployee(employee);
-        this.show();
+    updateEmployee(id, name, surname, password, login, email) {
+        this.#employeesModel.updateEmployee(id, name, surname, password, login, email);
+        this.#employeesView.updateEmployee(id, name, surname, password, login, email);
     }
 
     deleteEmployee(id) {
         this.#employeesModel.deleteEmployee(id);
-        this.show();
+        this.#employeesView.deleteEmployee(id);
+        //this.show();
     }
 
     getEmployee(id) {

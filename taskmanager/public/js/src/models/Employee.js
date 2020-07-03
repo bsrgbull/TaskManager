@@ -14,9 +14,10 @@ class Employee {
         this.#id = id;
         this.#name = name;
         this.#surname = surname;
+        this.#password = password;
         this.#login = login;
         this.#email = email;
-        this.#password = password;
+
     }
 
     getSurnameAndName() {

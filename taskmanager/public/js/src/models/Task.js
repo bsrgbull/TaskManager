@@ -68,7 +68,7 @@ class Task {
     }
 
     setAssignedToId(id) {
-        this.#assignedToId = id;
+        this.#assignedToId = Number(id);
     }
 
     deleteAssignedToId() {

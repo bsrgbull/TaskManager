@@ -23,6 +23,11 @@ class ProjectsTab {
         this.show();
     }
 
+    addNewProject(name, creatorId, aimOfTheProject, arrayOfEmployeesId) {
+        let id = this.#projectsModel.addProject(name, creatorId, aimOfTheProject, arrayOfEmployeesId);
+        this.#projectView.addNewProject(id, name);
+    }
+
     deleteProject(id) {
         this.#projectsModel.deleteProject(id);
         this.show();
@@ -37,7 +42,7 @@ class ProjectsTab {
     }
 
     addEmployeeToProject(projectId, employeeId){
-        this.projectsModel.addEmployeeToProject(projectId, employeeId);
+        this.#projectsModel.addEmployeeToProject(projectId, employeeId);
 
     }
 
