@@ -6,5 +6,5 @@ type Employee struct {
 	Login    string ` json:"login" xml:"login" `
 	Email    string ` json:"email" xml:"email" `
 	Password string ` json:"password" xml:"password" `
-	Id       string ` json:"id" xml:"id" `
+	Id       int ` json:"id" xml:"id" `
 }

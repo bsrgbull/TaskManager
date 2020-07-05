@@ -2,44 +2,68 @@
 
 class EmployeesModel {
 
-    #mapOfEmployees;
-    static nextId = 0;
-
-    static getNextId() {
-        this.nextId++;
-        return this.nextId;
-    }
-
-    constructor() {
-        this.#mapOfEmployees = new Map();
-
-        this.addEmployee("Сергей", "Быков", "123");
-        this.addEmployee("Игорь", "Коваценко", "123");
-        this.addEmployee("Леонид", "Самойлов", "123");
-        this.addEmployee("Артём", "Юдаев", "123");
-        this.addEmployee("Дмитрий", "Кудрявцев", "123");
-        this.addEmployee("Вадим", "Сафонов", "123");
-        this.addEmployee("Алёна", "Фадеева", "123");
-        this.addEmployee("Виктор", "Блинов", "123");
-        this.addEmployee("Роман", "Ефимов", "123");
-        this.addEmployee("Валерия", "Мартынова", "123");
-        this.addEmployee("Константин", "Корнилов", "123");
-        this.addEmployee("Никита", "Зимин", "123");
-        this.addEmployee("Максим", "Коновалов", "123");
-
-        this.updateEmployee(1, "Сергей", "Быков", 123, "bsrgbull", "bsrg.bull@gmail.com")
-    }
-
     addEmployee(name, surname, password, login, email) {
-        let id = EmployeesModel.getNextId();
 
-        this.#mapOfEmployees.set(+id, new Employee(+id, name, surname, password, login, email));
+        let request = new XMLHttpRequest();
 
-        return id;
+        let json = JSON.stringify({
+            name: name,
+            surname: surname,
+            login: login,
+            email: email,
+            password: password,
+        });
+
+        request.open("POST", 'http://localhost:9000/employee')
+        request.setRequestHeader('Content-type', 'application/json; charset=utf-8');
+
+        // xhr.onreadystatechange = ...;
+
+        // Отсылаем объект в формате JSON и с Content-Type application/json
+        request.send(json);
+
+        if (request.status != 200) {
+            console.log( request.status + ': ' + request.statusText );
+            return request.status;
+        } else {
+            let response = JSON.parse(request.responseText);
+
+            if (response.Err == null) {
+                return response.Data;
+            } else {
+                console.log(response.Err);
+                return response.Err;
+            }
+        }
     }
 
     getEmployee(id) {
-        return this.#mapOfEmployees.get(+id);
+
+        let request = new XMLHttpRequest();
+
+        request.open('GET', `http://localhost:9000/employee/${id}`, false);
+        request.send();
+
+        if (request.status != 200) {
+            console.log( request.status + ': ' + request.statusText );
+        } else {
+            let response = JSON.parse(request.responseText);
+
+            if (response.Err == null) {
+
+                let employee = new Employee( response.Data.id,
+                                             response.Data.name,
+                                             response.Data.surname,
+                                             response.Data.password,
+                                             response.Data.login,
+                                             response.Data.email);
+
+                return employee
+
+            } else {
+                console.log(response.Err)
+            }
+        }
     }
 
     getEmployeesFromArray(arrayOfEmployeesId) {
@@ -49,24 +73,104 @@ class EmployeesModel {
         for (let employeeId of arrayOfEmployeesId) {
             map.set(employeeId, this.getEmployee(employeeId))
         }
+
         return map;
     }
 
     getMapOfEmployees() {
-        return this.#mapOfEmployees;
+
+        let request = new XMLHttpRequest();
+
+        request.open('GET', `http://localhost:9000/employee`, false);
+        request.send();
+
+        let mapOfEmployees = new Map();
+
+        if (request.status != 200) {
+            console.log( request.status + ': ' + request.statusText );
+        } else {
+
+            let response = JSON.parse(request.responseText);
+            
+            if (response.Err == null) {
+                for (let emp of response.Data) {
+
+                    let employee = new Employee( emp.id,
+                                                 emp.name,
+                                                 emp.surname,
+                                                 emp.password,
+                                                 emp.login,
+                                                 emp.email);
+
+                    mapOfEmployees.set(emp.id, employee)
+                }
+            } else {
+                console.log(response.Err)
+            }
+        }
+
+        return mapOfEmployees;
     }
 
     updateEmployee(id, name, surname, password, login, email) {
 
-        this.#mapOfEmployees.set(+id, new Employee(id, name, surname, password, login, email));
+        let request = new XMLHttpRequest();
 
+        let json = JSON.stringify({
+            name: name,
+            surname: surname,
+            login: login,
+            email: email,
+            password: password,
+            id: +id,
+        });
+
+        request.open("POST", 'http://localhost:9000/updateemployee');
+        request.setRequestHeader('Content-type', 'application/json; charset=utf-8');
+
+        // xhr.onreadystatechange = ...;
+
+        // Отсылаем объект в формате JSON и с Content-Type application/json
+        request.send(json);
+
+        if (request.status != 200) {
+            console.log( request.status + ': ' + request.statusText );
+            return request.status;
+        } else {
+            let response = JSON.parse(request.responseText);
+
+            if (response.Err == null) {
+                return response.Data;
+            } else {
+                console.log(response.Err);
+                return response.Err;
+            }
+        }
     }
 
     deleteEmployee(id) {
-        this.#mapOfEmployees.delete(Number(id));
+
+        let request = new XMLHttpRequest();
+
+        request.open('DELETE', `http://localhost:9000/employee/${id}`, false);
+        request.send();
+        
+        if (request.status != 200) {
+            console.log( request.status + ': ' + request.statusText );
+            return request.status
+        } else {
+
+            let response = JSON.parse(request.responseText);
+
+            if (response.Err != null) {
+                console.log(response.Err)
+                return response.Err
+            }
+            return null
+        }
     }
 
-    login(login, password) {
+   /* login(login, password) {
 
         let result = false;
 
@@ -86,5 +190,6 @@ class EmployeesModel {
             });
         }
         return result;
-    }
+    }*/
 }
+

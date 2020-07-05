@@ -147,25 +147,6 @@ let webixReady = webix.ready(function () {
         }*/
 ////////////////////////////////////////////        
 /////////////////////////////////////////////// POST
-        let xhr = new XMLHttpRequest();
-
-        let json = JSON.stringify({
-            Name: "Виктор",
-            Surname: "Грибанов",
-            Login: "nickname",
-            Email: "gribanov@gmail.com",
-            Password: "1234",
-            Id: "15"
-        });
-
-        xhr.open("POST", 'http://localhost:9000/employee')
-        xhr.setRequestHeader('Content-type', 'application/json; charset=utf-8');
-
-        // xhr.onreadystatechange = ...;
-
-        // Отсылаем объект в формате JSON и с Content-Type application/json
-        // Сервер должен уметь такой Content-Type принимать и раскодировать
-        xhr.send(json);
 
 ////////////////////////////////////////////////
         //Удаляет предыдущее окно, если оно создавалось
@@ -249,7 +230,7 @@ let webixReady = webix.ready(function () {
         }
         
         let changingFunction = function() {
-            let id = $$("employeesTable").getSelectedId();
+            let id = $$("employeesTable").getSelectedId().id;
             let name = $$("modalEmployeeName").getValue();
             let surname = $$("modalEmployeeSurname").getValue();
             let password = $$("modalEmployeePassword").getValue();
@@ -282,7 +263,7 @@ let webixReady = webix.ready(function () {
                 elements: [
                     { id:"modalEmployeeName", view: "text", value:``, label: 'Имя*', name: "name" },
                     { id:"modalEmployeeSurname", view: "text", label: 'Фамилия*', name: "surname" },
-                    { id:"modalEmployeeEmail", view: "text", label: 'Email', name: "email" },
+                    { id:"modalEmployeeEmail", view: "text", label: 'Email', name: "email"},
                     { id:"modalEmployeeLogin", view: "text", label: 'Логин', name: "login" },
                     { id:"modalEmployeePassword", view: "text", label: 'Пароль*', name: "password" },
                     { template:"* поле обязательно для заполнения" },
@@ -308,7 +289,7 @@ let webixReady = webix.ready(function () {
                 $$("addButton").hide();
                 $$("addOrChangeLable").setHTML(`<span class='addCard'>Изменить данные</span>`);
 
-                let employee = employeesTab.getEmployee($$("employeesTable").getSelectedId())
+                let employee = employeesTab.getEmployee($$("employeesTable").getSelectedId());
 
                 $$("addOrChangeForm").setValues({ name:employee.getName(),
                                                   surname:employee.getSurname(),
@@ -794,10 +775,10 @@ let xhr = new XMLHttpRequest();
                         view:"datatable", id:"employeesTable",
                         columns:[
                             { id:"id", hidden:true},
-                            { id:"nameOfEmployee",    header:"Имя",              width:200},
-                            { id:"surnameOfEmployee",   header:"Фамилия",    width:200},
-                            { id:"login", header:"Логин", width:200, hidden:true},
-                            { id:"email", header:"email", width:300}
+                            { id:"nameOfEmployee", header:"Имя", sort:"string", width:200},
+                            { id:"surnameOfEmployee", header:"Фамилия", sort:"string", width:200},
+                            { id:"login", header:"Логин", width:200, sort:"string", hidden:true},
+                            { id:"email", header:"email", width:300, sort:"string"}
                         ],
                         select:true,
                     },
@@ -911,8 +892,8 @@ let xhr = new XMLHttpRequest();
                                 alert("Оцените время выполнения задачи, перед сменой статуса");;
                                 return false;
                             }
-
-                        	currentProject.getTask(data.id).setStatus("В работе");
+                            
+                            tasksTab.getTask(data.id).setStatus("В работе");
                     	}
                         taskClicked.setColor($$("priority").getValue());
                         taskClicked.setEstimatedTime($$("estimatedTime").getValue());
@@ -1012,12 +993,12 @@ let xhr = new XMLHttpRequest();
 });
 
 let arrayOfScripts = [
-    "./public/js/src/models/Employee.js",
     "./public/js/src/models/EmployeesModel.js",
-    "./public/js/src/models/Project.js",
     "./public/js/src/models/ProjectsModel.js",
     "./public/js/src/models/TasksModel.js",
-    "./public/js/src/models/Task.js",
+    "./public/js/src/entities/Task.js",
+    "./public/js/src/entities/Employee.js",
+    "./public/js/src/entities/Project.js",
     "./public/js/src/controllers/EmployeesTab.js",
     "./public/js/src/controllers/ProjectsTab.js",
     "./public/js/src/controllers/TasksTab.js",

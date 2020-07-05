@@ -9,6 +9,11 @@ type PEmployee struct {
 	m mappers.MEmployee
 }
 
+func (p PEmployee) AddEmployee(newEmployee *entities.Employee) (int, error) {
+
+	return p.m.AddEmployee(newEmployee)
+}
+
 //Возвращает всех сотрудников в виде массива объектов и ошибку
 func (p PEmployee) GetAllEmployees() ([]*entities.Employee, error) {
 
@@ -18,19 +23,19 @@ func (p PEmployee) GetAllEmployees() ([]*entities.Employee, error) {
 }
 
 //Возвращает сотрудника в виде объекта, и ошибку
-func (p PEmployee) GetEmployee(id string) (*entities.Employee, error) {
+func (p PEmployee) GetEmployee(id int) (*entities.Employee, error) {
 
 	employee, err := p.m.GetEmployee(id)
 
 	return employee, err
 }
 
-func (p PEmployee) AddOrUpdateEmployee(newEmployee *entities.Employee) error {
+func (p PEmployee) UpdateEmployee(newEmployee *entities.Employee) error {
 
-	return p.m.AddOrUpdateEmployee(newEmployee)
+	return p.m.UpdateEmployee(newEmployee)
 }
 
-func (p PEmployee) DeleteEmployee(id string) error {
+func (p PEmployee) DeleteEmployee(id int) error {
 
 	return p.m.DeleteEmployee(id)
 }

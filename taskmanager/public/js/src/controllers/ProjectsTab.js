@@ -59,7 +59,9 @@ class ProjectsTab {
         let aim = "";
         let project = this.getProject(Number(projectId) );
 
-        if (project.getAimOfTheProject() != undefined && project.getAimOfTheProject() != null) {
+        if (project.getAimOfTheProject() != undefined &&
+            project.getAimOfTheProject() != null &&
+            project.getAimOfTheProject() != "") {
             aim = "<p>Цель проекта: " + project.getAimOfTheProject() + "</p>";
         }  
 

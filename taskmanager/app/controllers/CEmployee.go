@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"fmt"
 	"taskmanager/app/entities"
 	"taskmanager/app/providers"
 
@@ -13,6 +14,20 @@ type CEmployee struct {
 	p providers.PEmployee
 }
 
+//Обработчик POST запросов с /employee
+func (c CEmployee) AddEmployee() revel.Result {
+	var jsonData map[string]interface{}
+	c.Params.BindJSON(&jsonData)
+
+	var newEmployee entities.Employee
+	mapstructure.Decode(jsonData, &newEmployee)
+
+	id, err := c.p.AddEmployee(&newEmployee)
+	response := entities.Resp{Data: id, Err: err}
+
+	return c.RenderJSON(response)
+}
+
 //Обработчик GET запросов с /employee
 func (c CEmployee) GetAllEmployees() revel.Result {
 
@@ -23,7 +38,7 @@ func (c CEmployee) GetAllEmployees() revel.Result {
 }
 
 //Обработчик GET запросов с /employee/:id
-func (c CEmployee) GetEmployee(id string) revel.Result {
+func (c CEmployee) GetEmployee(id int) revel.Result {
 
 	employee, err := c.p.GetEmployee(id)
 	response := entities.Resp{Data: employee, Err: err}
@@ -31,22 +46,25 @@ func (c CEmployee) GetEmployee(id string) revel.Result {
 	return c.RenderJSON(response)
 }
 
-//Обработчик POST запросов с /employee
-func (c CEmployee) AddOrUpdateEmployee() revel.Result {
+//Обработчик POST запросов с /updateemployee
+func (c CEmployee) UpdateEmployee() revel.Result {
 	var jsonData map[string]interface{}
 	c.Params.BindJSON(&jsonData)
 
+	fmt.Println(jsonData)
+
 	var newEmployee entities.Employee
 	mapstructure.Decode(jsonData, &newEmployee)
+	fmt.Println(newEmployee)
 
-	err := c.p.AddOrUpdateEmployee(&newEmployee)
+	err := c.p.UpdateEmployee(&newEmployee)
 	response := entities.Resp{Data: nil, Err: err}
 
 	return c.RenderJSON(response)
 }
 
 //Обработчик DELETE запросов с /employee/:id
-func (c CEmployee) DeleteEmployee(id string) revel.Result {
+func (c CEmployee) DeleteEmployee(id int) revel.Result {
 
 	err := c.p.DeleteEmployee(id)
 	response := entities.Resp{Data: nil, Err: err}

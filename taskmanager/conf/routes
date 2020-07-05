@@ -8,19 +8,22 @@ module:testrunner
 
 GET     /                                       CIndex.TaskManager
 
+POST    /employee                               CEmployee.addEmployee
 GET     /employee                               CEmployee.getAllEmployees
 GET     /employee/:id                           CEmployee.getEmployee
-POST    /employee                               CEmployee.addOrUpdateEmployee
+POST    /updateemployee                         CEmployee.updateEmployee
 DELETE  /employee/:id                           CEmployee.deleteEmployee
 
+POST    /project                                CProject.addProject
 GET     /project                                CProject.getAllProjects
 GET     /project/:id                            CProject.getProject
-POST    /project                                CProject.addOrUpdateProject
+POST    /updateproject                          CProject.updateProject
 DELETE  /project/:id                            CProject.deleteProject
 
+POST    /task                                   CTask.addTask
 GET     /tasks/:projectId                       CTask.getAllTasksFromProject
 GET     /task/:taskId                           CTask.getTask
-POST    /task/:projectId                        CTask.addOrUpdateTask
+POST    /updatetask                             CTask.updateTask
 DELETE  /task/:taskId                           CTask.deleteTask
 
 #GET     /                                       App.Index
