@@ -34,31 +34,30 @@ func InitDB() {
 	}
 	fmt.Println("DB Connected")
 	//	revel.INFO.Println("DB Connected")
-/////////////////////////////////////////////////////////////
+	/////////////////////////////////////////////////////////////
 
 	//Карта сотрудников
 	MapOfEmployees = make(map[int]*entities.Employee)
 	MapOfEmployees[1] = &entities.Employee{Name: "Сергей", Surname: "Быков", Login: "bsrgbull", Email: "bsrg.bull@gmail.com", Password: "123", Id: 1}
-	MapOfEmployees[2] = &entities.Employee{Name: "Игорь", Surname: "Коваценко", Login: "nickname", Email: "someemail@gmail.com", Password: "123", Id: 2}
-	MapOfEmployees[3] = &entities.Employee{Name: "Леонид", Surname: "Самойлов", Login: "nickname", Email: "someemail@gmail.com", Password: "123", Id: 3}
-	MapOfEmployees[4] = &entities.Employee{Name: "Артём", Surname: "Юдаев", Login: "nickname", Email: "someemail@gmail.com", Password: "123", Id: 4}
-	MapOfEmployees[5] = &entities.Employee{Name: "Дмитрий", Surname: "Кудрявцев", Login: "nickname", Email: "someemail@gmail.com", Password: "123", Id: 5}
-	MapOfEmployees[6] = &entities.Employee{Name: "Вадим", Surname: "Сафонов", Login: "nickname", Email: "someemail@gmail.com", Password: "123", Id: 6}
-	MapOfEmployees[7] = &entities.Employee{Name: "Алёна", Surname: "Фадеева", Login: "nickname", Email: "someemail@gmail.com", Password: "123", Id: 7}
-	MapOfEmployees[8] = &entities.Employee{Name: "Виктор", Surname: "Блинов", Login: "nickname", Email: "someemail@gmail.com", Password: "123", Id: 8}
-	MapOfEmployees[9] = &entities.Employee{Name: "Роман", Surname: "Ефимов", Login: "nickname", Email: "someemail@gmail.com", Password: "123", Id: 9}
-	MapOfEmployees[10] = &entities.Employee{Name: "Валерия", Surname: "Мартынова", Login: "nickname", Email: "someemail@gmail.com", Password: "123", Id: 10}
-	MapOfEmployees[11] = &entities.Employee{Name: "Константин", Surname: "Корнилов", Login: "nickname", Email: "someemail@gmail.com", Password: "123", Id: 11}
-	MapOfEmployees[12] = &entities.Employee{Name: "Никита", Surname: "Зимин", Login: "nickname", Email: "someemail@gmail.com", Password: "123", Id: 12}
-	MapOfEmployees[13] = &entities.Employee{Name: "Максим", Surname: "Коновалов", Login: "nickname", Email: "someemail@gmail.com", Password: "123", Id: 13}
-
+	MapOfEmployees[2] = &entities.Employee{Name: "Игорь", Surname: "Коваценко", Login: "nickname", Email: "kovacenko@gmail.com", Password: "123", Id: 2}
+	MapOfEmployees[3] = &entities.Employee{Name: "Леонид", Surname: "Самойлов", Login: "nickname", Email: "samoilov@gmail.com", Password: "123", Id: 3}
+	MapOfEmployees[4] = &entities.Employee{Name: "Артём", Surname: "Юдаев", Login: "nickname", Email: "yudaev@gmail.com", Password: "123", Id: 4}
+	MapOfEmployees[5] = &entities.Employee{Name: "Дмитрий", Surname: "Кудрявцев", Login: "nickname", Email: "kudryavcev@gmail.com", Password: "123", Id: 5}
+	MapOfEmployees[6] = &entities.Employee{Name: "Вадим", Surname: "Сафонов", Login: "nickname", Email: "safonov@gmail.com", Password: "123", Id: 6}
+	MapOfEmployees[7] = &entities.Employee{Name: "Алёна", Surname: "Фадеева", Login: "nickname", Email: "fadeeva@gmail.com", Password: "123", Id: 7}
+	MapOfEmployees[8] = &entities.Employee{Name: "Виктор", Surname: "Блинов", Login: "nickname", Email: "blinov@gmail.com", Password: "123", Id: 8}
+	MapOfEmployees[9] = &entities.Employee{Name: "Роман", Surname: "Ефимов", Login: "nickname", Email: "efimov@gmail.com", Password: "123", Id: 9}
+	MapOfEmployees[10] = &entities.Employee{Name: "Валерия", Surname: "Мартынова", Login: "nickname", Email: "martinova@gmail.com", Password: "123", Id: 10}
+	MapOfEmployees[11] = &entities.Employee{Name: "Константин", Surname: "Корнилов", Login: "nickname", Email: "kornilov@gmail.com", Password: "123", Id: 11}
+	MapOfEmployees[12] = &entities.Employee{Name: "Никита", Surname: "Зимин", Login: "nickname", Email: "zimin@gmail.com", Password: "123", Id: 12}
+	MapOfEmployees[13] = &entities.Employee{Name: "Максим", Surname: "Коновалов", Login: "nickname", Email: "konovalov@gmail.com", Password: "123", Id: 13}
 
 	//Карта проектов
 	MapOfProjects = make(map[int]*entities.Project)
-	MapOfProjects[1] = &entities.Project{Id: 1, Name: "Создание TaskManager", CreatorId: 1, AimOfTheProject: "Разработать Task Manager - программу для управления проектами небольших групп людей. Это инструмент, который позволяет разработчикам вести учет задач проекта, планировать и отслеживать процесс выполнения. Требования: учёт проектов; учёт задач; учёт сотрудников; логика состояний для задач. Под учётом подразумеваются CRUD операции. Технологии, которые необходимо использовать: для фронтэнда - Webix, для бэкэнда: Revel", ArrayOfEmployeesId: []int{1,2,3,4} }
-	MapOfProjects[2] = &entities.Project{Id: 2, Name: "HTTP-сервер", CreatorId: 1, AimOfTheProject: "", ArrayOfEmployeesId: []int{1,5,6,7,8} }
-	MapOfProjects[3] = &entities.Project{Id: 3, Name: "Редактор видео", CreatorId: 1, AimOfTheProject: "", ArrayOfEmployeesId: []int{1,9,10} }
-	MapOfProjects[4] = &entities.Project{Id: 4, Name: "CDMA-шифрование", CreatorId: 1, AimOfTheProject: "", ArrayOfEmployeesId: []int{1} }
+	MapOfProjects[1] = &entities.Project{Id: 1, Name: "Создание TaskManager", CreatorId: 1, AimOfTheProject: "Разработать Task Manager - программу для управления проектами небольших групп людей. Это инструмент, который позволяет разработчикам вести учет задач проекта, планировать и отслеживать процесс выполнения. Требования: учёт проектов; учёт задач; учёт сотрудников; логика состояний для задач. Под учётом подразумеваются CRUD операции. Технологии, которые необходимо использовать: для фронтэнда - Webix, для бэкэнда: Revel", ArrayOfEmployeesId: []int{1, 2, 3, 4}}
+	MapOfProjects[2] = &entities.Project{Id: 2, Name: "HTTP-сервер", CreatorId: 1, AimOfTheProject: "", ArrayOfEmployeesId: []int{1, 5, 6, 7, 8}}
+	MapOfProjects[3] = &entities.Project{Id: 3, Name: "Редактор видео", CreatorId: 1, AimOfTheProject: "", ArrayOfEmployeesId: []int{1, 9, 10}}
+	MapOfProjects[4] = &entities.Project{Id: 4, Name: "CDMA-шифрование", CreatorId: 1, AimOfTheProject: "", ArrayOfEmployeesId: []int{1}}
 
 	//Карта задач
 	MapOfTasks = make(map[int]*entities.Task)
@@ -76,14 +75,15 @@ func InitDB() {
 	MapOfTasks[12] = &entities.Task{Text: "Логика открывания проекта", EstimatedTime: 0, SpentTime: 0, Id: 12, Status: "Создано", Color: "", CreatorId: 1, AssignedToId: 0, ProjectId: 1}
 	MapOfTasks[13] = &entities.Task{Text: "Логика информации о проекте", EstimatedTime: 0, SpentTime: 0, Id: 13, Status: "Создано", Color: "green", CreatorId: 1, AssignedToId: 0, ProjectId: 1}
 
-///////////////////////////////////////////////////////////////
+	///////////////////////////////////////////////////////////////
 }
+
 //////////
 var MapOfEmployees map[int]*entities.Employee
 var MapOfProjects map[int]*entities.Project
 var MapOfTasks map[int]*entities.Task
-////////////
 
+////////////
 
 func init() {
 	// Filters is the default set of global filters.

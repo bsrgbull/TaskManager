@@ -13,14 +13,16 @@ class Task {
     #projectId;
 
 
-    constructor(text, creatorId, projectId, id) {
+    constructor(text, creatorId, projectId, id, estimatedTime, spentTime, status, color, assignedToId) {
         this.#text = text;
         this.#creatorId = creatorId;
-        this.#status = "Создано";
-        this.#estimatedTime = 0;
-        this.#spentTime = 0;
         this.#projectId = projectId;
         this.#id = id;
+        this.#estimatedTime = estimatedTime;
+        this.#spentTime = spentTime;
+        this.#status = status;
+        this.#color = color;
+        this.#assignedToId = assignedToId;
     }
 
     getText() {

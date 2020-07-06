@@ -520,14 +520,17 @@ let xhr = new XMLHttpRequest();
     let openProjectHandler = function(id, event) {
         if ($$("projectsList").getSelectedId() != "" ){
 
-            currentProject = projectsTab.getProject(Number($$("projectsList").getSelectedId() ) );
+            (async () => {
+                await projectsTab.getProject(Number($$("projectsList").getSelectedId() ) )
+                    .then( result => {currentProject = result} );
 
-            let mapOfTasks = tasksTab.getTasksFromProject($$("projectsList").getSelectedId());
-            let mapOfEmployees = employeesTab.getEmployeesFromArray(currentProject.getArrayOfEmployeesId());
+                let mapOfTasks = await tasksTab.getTasksFromProject($$("projectsList").getSelectedId());
+                let mapOfEmployees = employeesTab.getEmployeesFromArray(currentProject.getArrayOfEmployeesId());
 
-            tasksTab.showTaskPage(mapOfTasks, mapOfEmployees);
-            $$("projectName").define("template", currentProject.getName());
-            $$("projectName").refresh();
+                tasksTab.showTaskPage(mapOfTasks, mapOfEmployees);
+                $$("projectName").define("template", currentProject.getName());
+                $$("projectName").refresh();
+            })();
         }
     }
     
@@ -542,9 +545,7 @@ let xhr = new XMLHttpRequest();
         $$("kanban").getUsers().clearAll();
 
         if ($$("kanban").getItem(id).status != "Создано") { 
-
-            tasksTab.getTasksView().addEmployeeInList(employeesTab.getEmployee((
-                taskClicked.getAssignedToId() ) ) );
+                tasksTab.addEmployeeInList(id);
         } else {
 
             let arrayOfEmployeesId = currentProject.getArrayOfEmployeesId();
@@ -602,14 +603,14 @@ let xhr = new XMLHttpRequest();
                     id:"kanban",
                     view:"kanban",
                     on:{
-                        onListIconClick: function(id, itemId){
+                        onListIconClick: async function(id, itemId){
                             idOfTaskClicked = itemId;
-                            taskClicked = tasksTab.getTask(itemId);
+                            tasksTab.getTask(itemId).then( task => { taskClicked = task});
                             changeUserList(itemId);
                         },
                         onListItemClick: function(id,ev,node,list){
                             idOfTaskClicked = id;
-                            taskClicked = tasksTab.getTask(id);
+                            tasksTab.getTask(id).then( task => { taskClicked = task});
                             changeUserList(id);
                         },
                         /*onAvatarClick: function(id){
@@ -747,12 +748,16 @@ let xhr = new XMLHttpRequest();
                               select:true,
                               on:{
                                     onItemClick: function(id, e, node){
-                                        $$("projectInfo").define("template", projectsTab.getProjectInfo(employeesTab, id) );
-                                        $$("projectInfo").refresh();
+                                        (async () => {
+                                            let info;
+                                            await projectsTab.getProjectInfo(employeesTab, id).then( result => { info = result })
+                                            $$("projectInfo").define("template", info );
+                                            $$("projectInfo").refresh();
+                                        })();
                                     },
                                  },
                             },
-                        ], height:1000},
+                        ], height:560},
                         {
                             template: ' ',
                             autoheight:true,
@@ -840,7 +845,7 @@ let xhr = new XMLHttpRequest();
                         && dataUserId != undefined && dataUserId != null && dataUserId != "") {
                             data.$list = 1;            
                             taskClicked.setAssignedToId(dataUserId);
-                            taskClicked.setStatus("Назначено");                          
+                            taskClicked.setStatus("Назначено");                       
                         }
                         taskClicked.setText(data.text);  
                         taskClicked.setEstimatedTime($$("estimatedTime").getValue());
@@ -972,7 +977,7 @@ let xhr = new XMLHttpRequest();
 
     //Если меняем сотрудника в колонке Создано,
     //то сразу перемещаем его в колонку Назначено
-    $$("kanban").getUserList().attachEvent("onAfterSelect", function (id) {
+    $$("kanban").getUserList().attachEvent("onAfterSelect", function (assignedId) {
 
         let status = $$("kanban").getItem(idOfTaskClicked).status;
        
@@ -980,8 +985,8 @@ let xhr = new XMLHttpRequest();
             $$("kanban").getItem(idOfTaskClicked).status = "Назначено";
             $$("kanban").updateItem(idOfTaskClicked);
         }
-        taskClicked.setAssignedToId(id);
-        taskClicked.setStatus("Назначено");
+        tasksTab.updateTask(taskClicked, null, null, null, taskClicked.getId(),
+            null, null, "Назначено", null, assignedId);
     })
 
 

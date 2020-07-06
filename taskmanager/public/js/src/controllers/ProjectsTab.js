@@ -23,8 +23,19 @@ class ProjectsTab {
         this.show();
     }
 
-    addNewProject(name, creatorId, aimOfTheProject, arrayOfEmployeesId) {
-        let id = this.#projectsModel.addProject(name, creatorId, aimOfTheProject, arrayOfEmployeesId);
+    async addNewProject(name, creatorId, aimOfTheProject, arrayOfEmployeesId) {
+
+        let result = await this.#projectsModel.addProject(name, creatorId, aimOfTheProject, arrayOfEmployeesId);
+          
+        let id;
+
+        if (result.Err == null) {
+            id = result.Data;
+        } else {
+            console.log(result.Err);
+            return result.Err;
+        }
+
         this.#projectView.addNewProject(id, name);
     }
 
@@ -33,8 +44,8 @@ class ProjectsTab {
         this.show();
     }
 
-    getProject(id) {
-        return this.#projectsModel.getProject(id);
+    async getProject(id) {
+        return await this.#projectsModel.getProject(id);
     }
 
     addTaskToProject(projectId, task) {
@@ -54,23 +65,24 @@ class ProjectsTab {
         
     }
 
-    getProjectInfo(employeesTab, projectId) {
+    async getProjectInfo(employeesTab, projectId) {
 
         let aim = "";
-        let project = this.getProject(Number(projectId) );
+
+        let project = await this.getProject(Number(projectId) );
 
         if (project.getAimOfTheProject() != undefined &&
             project.getAimOfTheProject() != null &&
             project.getAimOfTheProject() != "") {
             aim = "<p>Цель проекта: " + project.getAimOfTheProject() + "</p>";
         }  
-
+       
         let employeesInfo = "";
 
         employeesTab.getEmployeesFromArray(project.getArrayOfEmployeesId()).forEach(function(employee, index, array) {
             employeesInfo += employee.getSurnameAndName() + ", ";
         });
-
+        
         employeesInfo = employeesInfo.substring(0, employeesInfo.length - 2);
 
         return aim + "<p>" + 

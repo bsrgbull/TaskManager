@@ -4,65 +4,40 @@ class ProjectsModel {
 
     #mapOfProjects;
 
-    addProject(name, creatorId, aimOfTheProject, arrayOfEmployeesId) {
+    async addProject(name, creatorId, aimOfTheProject, arrayOfEmployeesId) {
 
-        let request = new XMLHttpRequest();
-
-        let json = JSON.stringify({
-            name: name,
-            creatorId: +creatorId,
-            aimOfTheProject: aimOfTheProject,
-            arrayOfEmployeesId: arrayOfEmployeesId,
+        let response = await fetch('http://localhost:9000/project', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json;charset=utf-8'
+            },
+            body: JSON.stringify({
+                name: name,
+                creatorId: +creatorId,
+                aimOfTheProject: aimOfTheProject,
+                arrayOfEmployeesId: arrayOfEmployeesId,
+            })
         });
 
-        request.open("POST", 'http://localhost:9000/project')
-        request.setRequestHeader('Content-type', 'application/json; charset=utf-8');
-
-        // xhr.onreadystatechange = ...;
-
-        // Отсылаем объект в формате JSON и с Content-Type application/json
-        request.send(json);
-
-        if (request.status != 200) {
-            console.log( request.status + ': ' + request.statusText );
-            return request.status;
-        } else {
-            let response = JSON.parse(request.responseText);
-
-            if (response.Err == null) {
-                return response.Data;
-            } else {
-                console.log(response.Err);
-                return response.Err;
-            }
-        }
+        return await response.json();
     }
 
-    getProject(id) {
+    async getProject(id) {
 
-        let request = new XMLHttpRequest();
+        let response = await fetch(`http://localhost:9000/project/${id}`);
 
-        request.open('GET', `http://localhost:9000/project/${id}`, false);
-        request.send();
+        let result = await response.json();
 
-        if (request.status != 200) {
-            console.log( request.status + ': ' + request.statusText );
+        if (result.Err == null) {
+
+            let project = new Project( result.Data.id,
+                                       result.Data.name,
+                                       result.Data.creatorId,
+                                       result.Data.aimOfTheProject,
+                                       result.Data.ArrayOfEmployeesId);
+            return project;
         } else {
-            let response = JSON.parse(request.responseText);
-
-            if (response.Err == null) {
-
-                let project = new Project( response.Data.id,
-                                           response.Data.name,
-                                           response.Data.creatorId,
-                                           response.Data.aimOfTheProject,
-                                           response.Data.arrayOfEmployeesId);
-
-                return project
-
-            } else {
-                console.log(response.Err)
-            }
+            console.log(response.Err)
         }
     }
 

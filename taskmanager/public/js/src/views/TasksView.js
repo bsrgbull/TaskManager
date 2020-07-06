@@ -29,7 +29,7 @@ class TasksView {
         $$("startLabel").hide();
 
         let addtask = this.addTask;
-        
+
         mapOfTasks.forEach(function(task, index, array) {
             addtask(task);
         });
@@ -72,12 +72,6 @@ class TasksView {
     }
 
     addEmployee(employee) {
-
-      /*  $$("user_Id").getList().add({ 
-            user_id: employee.getId(),
-            value: employee.getSurnameAndName(), 
-        });*/
-        console.log(employee);
         $$("listOfEmployees").add({
             id: employee.getId() + "employee",
             title: employee.getSurnameAndName(),

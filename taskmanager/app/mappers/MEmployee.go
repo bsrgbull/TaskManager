@@ -6,9 +6,6 @@ import (
 )
 
 type MEmployee struct {
-
-
-
 }
 
 //Создаёт нового сотрудника
@@ -17,11 +14,11 @@ func (m MEmployee) AddEmployee(newEmployee *entities.Employee) (int, error) {
 	var maxId int = 0
 
 	for _, employee := range app.MapOfEmployees {
-        if employee.Id > maxId {
+		if employee.Id > maxId {
 			maxId = employee.Id
 		}
 	}
-	
+
 	newEmployee.Id = maxId + 1
 
 	app.MapOfEmployees[maxId+1] = newEmployee
@@ -38,8 +35,8 @@ func (m MEmployee) GetAllEmployees() ([]*entities.Employee, error) {
 	var err error = nil
 
 	for _, emp := range app.MapOfEmployees {
-        employees = append(employees, emp)
-    }
+		employees = append(employees, emp)
+	}
 
 	return employees, err
 }
@@ -62,9 +59,7 @@ func (m MEmployee) UpdateEmployee(emp *entities.Employee) error {
 	app.MapOfEmployees[emp.Id] = emp
 
 	return nil
-}	
-
-
+}
 
 //Удаляет сотрудника
 func (m MEmployee) DeleteEmployee(id int) error {

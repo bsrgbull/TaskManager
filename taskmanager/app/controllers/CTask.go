@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"fmt"
 	"taskmanager/app/entities"
 	"taskmanager/app/providers"
 
@@ -49,10 +50,10 @@ func (c CTask) GetTask(taskId int) revel.Result {
 func (c CTask) UpdateTask() revel.Result {
 	var jsonData map[string]interface{}
 	c.Params.BindJSON(&jsonData)
-
+	fmt.Println(jsonData)
 	var task entities.Task
-	mapstructure.Decode(jsonData, task)
-
+	fmt.Println(mapstructure.Decode(jsonData, &task))
+	fmt.Println(task)
 	err := c.p.UpdateTask(&task)
 	response := entities.Resp{Data: nil, Err: err}
 

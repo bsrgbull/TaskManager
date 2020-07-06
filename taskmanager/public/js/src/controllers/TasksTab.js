@@ -30,11 +30,41 @@ class TasksTab {
     }
 
     getTask(id) {
+
         return this.#tasksModel.getTask(Number(id));
+
     }
 
-    updateTask() {
+    updateTask(taskClicked, text, creatorId, projectId, id,
+         estimatedTime, spentTime, status, color, assignedToId) {
 
+        if (text == null) {
+            text = taskClicked.getText();
+        }
+        if (creatorId == null) {
+            creatorId = taskClicked.getCreatorId();
+        }
+        if (projectId == null) {
+            projectId = taskClicked.getProjectId();
+        }
+        if (estimatedTime == null) {
+            estimatedTime = taskClicked.getEstimatedTime();
+        }
+        if (spentTime == null) {
+            spentTime = taskClicked.getSpentTime();
+        }
+        if (status == null) {
+            status = taskClicked.getStatus();
+        }
+        if (color == null) {
+            color = taskClicked.getColor();
+        }
+        if (assignedToId == null) {
+            assignedToId = taskClicked.getAssignedToId();
+        }
+
+        this.#tasksModel.updateTask(text, creatorId, projectId, id, estimatedTime,
+                                                spentTime, status, color, assignedToId);
     }
 
     deleteTask(id) {
@@ -45,7 +75,15 @@ class TasksTab {
         this.#tasksView.showTaskPage(mapOfTasks, mapOfEmployees);
     }
 
-    getTasksFromProject(projectId) {
-        return this.#tasksModel.getTasksFromProject(projectId);
+    async getTasksFromProject(projectId) {
+
+        return await this.#tasksModel.getTasksFromProject(projectId);
+
+    }
+
+    addEmployeeInList(id) {
+        this.#tasksModel.getTask(id).then((task) => {
+            this.#tasksView.addEmployeeInList(employeesTab.getEmployee(task.getAssignedToId() ) );
+        });
     }
 }

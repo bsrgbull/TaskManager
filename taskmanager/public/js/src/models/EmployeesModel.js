@@ -21,7 +21,7 @@ class EmployeesModel {
 
         // Отсылаем объект в формате JSON и с Content-Type application/json
         request.send(json);
-
+        console.log(request);
         if (request.status != 200) {
             console.log( request.status + ': ' + request.statusText );
             return request.status;
