@@ -43,8 +43,8 @@ class EmployeesTab {
         //this.show();
     }
 
-    getEmployee(id) {
-        return this.#employeesModel.getEmployee(id);
+    async getEmployee(id) {
+        return await this.#employeesModel.getEmployee(id);
     }
 
     show() {

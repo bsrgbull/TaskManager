@@ -75,39 +75,24 @@ class ProjectsModel {
         return mapOfProjects;
     }
 
-    updateProject(id, name, mapOfEmployees, creatorId, aimOfTheProject) {
+    async updateProject(id, name, arrayOfEmployeesId, creatorId, aimOfTheProject) {
 
-        let request = new XMLHttpRequest();
 
-        let json = JSON.stringify({
-            name: name,
-            creatorId: +creatorId,
-            aimOfTheProject: aimOfTheProject,
-            arrayOfEmployeesId: arrayOfEmployeesId,
-            id: +id,
+        let response = await fetch('http://localhost:9000/updateproject', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json;charset=utf-8'
+            },
+            body: JSON.stringify({
+                Name: name,
+                CreatorId: +creatorId,
+                AimOfTheProject: aimOfTheProject,
+                ArrayOfEmployeesId: arrayOfEmployeesId,
+                Id: +id,
+            })
         });
 
-        request.open("POST", 'http://localhost:9000/updateproject');
-        request.setRequestHeader('Content-type', 'application/json; charset=utf-8');
-
-        // xhr.onreadystatechange = ...;
-
-        // Отсылаем объект в формате JSON и с Content-Type application/json
-        request.send(json);
-
-        if (request.status != 200) {
-            console.log( request.status + ': ' + request.statusText );
-            return request.status;
-        } else {
-            let response = JSON.parse(request.responseText);
-
-            if (response.Err == null) {
-                return response.Data;
-            } else {
-                console.log(response.Err);
-                return response.Err;
-            }
-        }
+        return await response.json();
     }
 
     deleteProject(id) {
@@ -133,12 +118,38 @@ class ProjectsModel {
     }
 
     addEmployeeToProject(projectId, employeeId) {
-        console.log("addEmployee");
-        this.#mapOfProjects.get(Number(projectId) ).addEmployee(Number(employeeId) );
+
+        this.getProject(projectId).then(project => {
+            let arrayOfEmployeesId = project.getArrayOfEmployeesId();
+            arrayOfEmployeesId.push(+employeeId);
+
+            this.updateProject( +projectId, 
+                                project.getName(),
+                                arrayOfEmployeesId,
+                                +project.getCreatorId(),
+                                project.getAimOfTheProject() );
+        });
+
     }
 
     deleteEmployeeFromProject(projectId, employeeId) {
 
+        this.getProject(projectId).then(project => {
+
+            let arrayOfEmployeesId = project.getArrayOfEmployeesId();
+
+            let index = arrayOfEmployeesId.indexOf(+employeeId);
+
+            if (index != -1) {
+                arrayOfEmployeesId.splice(index, 1);
+            }
+
+            this.updateProject( +projectId, 
+                                project.getName(),
+                                arrayOfEmployeesId,
+                                +project.getCreatorId(),
+                                project.getAimOfTheProject() );
+        });
     }
 
     getProjectInfo(projectId){

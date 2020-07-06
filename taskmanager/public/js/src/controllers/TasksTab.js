@@ -63,8 +63,8 @@ class TasksTab {
             assignedToId = taskClicked.getAssignedToId();
         }
 
-        this.#tasksModel.updateTask(text, creatorId, projectId, id, estimatedTime,
-                                                spentTime, status, color, assignedToId);
+        this.#tasksModel.updateTask(text, +creatorId, +projectId, +id,
+                 estimatedTime, spentTime, status, color, +assignedToId);
     }
 
     deleteTask(id) {
@@ -72,6 +72,8 @@ class TasksTab {
     }
 
     showTaskPage(mapOfTasks, mapOfEmployees) {
+
+        console.log(mapOfEmployees);
         this.#tasksView.showTaskPage(mapOfTasks, mapOfEmployees);
     }
 
@@ -82,7 +84,9 @@ class TasksTab {
     }
 
     addEmployeeInList(id) {
+        console.log(id + "eeeeeeeeee");
         this.#tasksModel.getTask(id).then((task) => {
+            console.log(task)
             this.#tasksView.addEmployeeInList(employeesTab.getEmployee(task.getAssignedToId() ) );
         });
     }

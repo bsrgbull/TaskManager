@@ -54,7 +54,10 @@ class ProjectsTab {
 
     addEmployeeToProject(projectId, employeeId){
         this.#projectsModel.addEmployeeToProject(projectId, employeeId);
+    }
 
+    deleteEmployeeFromProject(projectId, employeeId) {
+        this.#projectsModel.deleteEmployeeFromProject(projectId, employeeId);
     }
 
     show() {

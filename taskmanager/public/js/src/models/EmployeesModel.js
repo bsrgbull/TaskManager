@@ -37,43 +37,39 @@ class EmployeesModel {
         }
     }
 
-    getEmployee(id) {
+    async getEmployee(id) {
 
-        let request = new XMLHttpRequest();
+        let response = await fetch(`http://localhost:9000/employee/${id}`);
 
-        request.open('GET', `http://localhost:9000/employee/${id}`, false);
-        request.send();
+        let result = await response.json();
+        
+        if (result.Err == null) {
 
-        if (request.status != 200) {
-            console.log( request.status + ': ' + request.statusText );
+            let employee = new Employee( result.Data.id,
+                                         result.Data.name,
+                                         result.Data.surname,
+                                         result.Data.password,
+                                         result.Data.login,
+                                         result.Data.email);
+            return employee
+
         } else {
-            let response = JSON.parse(request.responseText);
-
-            if (response.Err == null) {
-
-                let employee = new Employee( response.Data.id,
-                                             response.Data.name,
-                                             response.Data.surname,
-                                             response.Data.password,
-                                             response.Data.login,
-                                             response.Data.email);
-
-                return employee
-
-            } else {
-                console.log(response.Err)
-            }
+            console.log(response.Err)
         }
     }
 
     getEmployeesFromArray(arrayOfEmployeesId) {
 
         let map = new Map();
-            
-        for (let employeeId of arrayOfEmployeesId) {
-            map.set(employeeId, this.getEmployee(employeeId))
-        }
 
+        for (let employeeId of arrayOfEmployeesId) {
+            this.getEmployee(employeeId)
+                .then( employee => {
+                    map.set(employeeId, employee);
+                });
+        }
+        
+        console.log(map);
         return map;
     }
 

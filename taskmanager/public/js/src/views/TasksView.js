@@ -109,7 +109,7 @@ class TasksView {
             alert( "Ключ: " + key + " значение: " + $$("kanban").$view[key] );
           }*/
         users.add({ 
-            id: employee.getId(),
+            id: employee.getId() + "userListEmployee",
             value: employee.getSurnameAndName(), 
         });
     }
