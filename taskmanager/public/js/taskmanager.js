@@ -102,24 +102,34 @@ let webixReady = webix.ready(function () {
 
     //Обработка drop в kabanlist3
     let dropHandler3 = function(context, e) {
+  
+
+        //  tasksTab.getTask(context.start).then( task => { 
+        
+        //  let status = $$("kanban").getItem(context.start).status; 
+            
+        //  let estimatedTime = task.getEstimatedTime();
+            
+///
         let status = $$("kanban").getItem(context.start).status;
         
-        tasksTab.getTask(context.start).then( task => { 
+        console.log(context)
 
-            let estimatedTime = task.getEstimatedTime();
+        console.log(e)
 
-            if ( status == "Создано" || estimatedTime == "" 
-                || estimatedTime == undefined || estimatedTime == null 
-                || estimatedTime == 0){
+        let estimatedTime = taskClicked.getEstimatedTime();
 
-                return false;
+        if ( status == "Создано" || estimatedTime == "" 
+            || estimatedTime == undefined || estimatedTime == null 
+            || estimatedTime == 0){
 
-            } else {
-                tasksTab.updateTask(task, null, null, null, context.start,
-                    null, null, "В работе", null, 0);
-                return true;
-            }
-        });
+            return false;
+
+        } else {
+            tasksTab.updateTask(task, null, null, null, context.start,
+                null, null, "В работе", null, 0);
+            return true;
+        }
     }
 
     //Обработка drop в kabanlist4
@@ -746,7 +756,7 @@ let webixReady = webix.ready(function () {
                         { header:"Назначено", body:{ id:"kanbanlist2", view:"kanbanlist",
                           status:"Назначено", on:{ onBeforeDrop:dropHandler2},} },
                         { header:"В работе", body:{ id:"kanbanlist3", view:"kanbanlist",
-                          status:"В работе", on:{ onBeforeDrop:dropHandler3},} },
+                          status:"В работе", on:{ onBeforeDrop: dropHandler3},} },
                         { header:"Завершено", body:{ id:"kanbanlist4", view:"mykanbanlistsolved",
                           status:"Завершено", on:{ onBeforeDrop:dropHandler4}, } 
                         }
@@ -1061,6 +1071,16 @@ let webixReady = webix.ready(function () {
             }
         }
         $$("kanban").refresh(data.id);
+    });
+
+
+    $$("kanban").attachEvent("onListBeforeDrag", function(context,ev,list){
+
+        tasksTab.getTask(+context.start).then( task => {
+            taskClicked = task
+            console.log(taskClicked)
+        });
+console.log(context.start)
     });
 
 
