@@ -34,17 +34,20 @@ class TasksView {
             addtask(task);
         });
 
-/*        let addemployeeinlist = this.addEmployeeInList;
-
-        mapOfEmployees.forEach(function(item, index, array) {
-            addemployeeinlist(item);
-        });*/
-
         let addemployee = this.addEmployee;
 
         mapOfEmployees.forEach(function(employee, index, array) {
             addemployee(employee);
         });
+      //  console.log($$("kanban").data)
+       /* $$("kanban").data({    //Сортировка виджета Канбан
+            view:"kanbanlist", 
+       //     status:"Создано"
+          }).sort({
+          //  dir:"desc",
+            by:"id",
+            as:"int"      
+          });  */
     }
     
     addTask(task) {
@@ -57,10 +60,13 @@ class TasksView {
     }
 
     addNewTask(text, id) {
-        $$("kanban").add({  id:id,
-                            status:`Создано`,
-                            text:text,
-        },0);
+        
+            $$("kanban").add({  
+                id:id,
+                status:`Создано`,
+                text:text,
+            },0);
+
     }
 
     updateTask(id) {
@@ -95,22 +101,16 @@ class TasksView {
     }
 
     //Добавление сотрудников UserList виджета kanban
-    addEmployeeInList(employee) {
+    addEmployeeInList(employeePromise) {
         let users = $$("kanban").getUsers();
-     /*   $$("user_Id").getList().add({ 
-            user_id: employee.getId(),
-            value: employee.getSurnameAndName(), 
-        });*/
-    /*    alert($$("kanban").$view.innerHTML);
-          for (var key in $$("kanban").$view.innerH) {
-            // этот код будет вызван для каждого свойства объекта
-            // ..и выведет имя свойства и его значение
-          
-            alert( "Ключ: " + key + " значение: " + $$("kanban").$view[key] );
-          }*/
-        users.add({ 
-            id: employee.getId() + "userListEmployee",
-            value: employee.getSurnameAndName(), 
+
+        employeePromise.then( employee => {
+
+            users.add({ 
+                id: employee.getId() + "userListEmployee",
+                value: employee.getSurnameAndName(), 
+            });
+
         });
     }
 }

@@ -10,63 +10,120 @@ type MProject struct {
 }
 
 //Создаёт новый проект
-func (m MProject) AddProject(newProject *entities.Project) (int, error) {
-	fmt.Println(newProject)
+func (m *MProject) AddProject(newProject *entities.Project) (int, error) {
+	/*fmt.Println(newProject)
 	var maxId int = 0
 
 	for _, project := range app.MapOfProjects {
-        if project.Id > maxId {
+		if project.Id > maxId {
 			maxId = project.Id
 		}
 	}
-	
+
 	newProject.Id = maxId + 1
 
 	app.MapOfProjects[maxId+1] = newProject
 
 	var err error = nil
 
-	return maxId + 1, err
+	return maxId + 1, err*/
+	return 0, nil
 }
 
 //Возвращает все проекты в виде объектов Project
-func (m MProject) GetAllProjects() ([]*entities.Project, error) {
+func (m *MProject) GetAllProjects() ([]*entities.Project, error) {
 
+	rows, err := app.DB.Query("select * from projects")
+
+	if err != nil {
+		return nil, err
+	}
+
+	defer rows.Close()
 	projects := []*entities.Project{}
-	var err error = nil
 
-	for _, pr := range app.MapOfProjects {
-        projects = append(projects, pr)
-    }
+	for rows.Next() {
+		i := entities.Project{}
+		err := rows.Scan(&i.Name, &i.CreatorId, &i.Id, &i.AimOfTheProject)
 
+		if err != nil {
+			fmt.Println(err)
+			continue
+		}
+		projects = append(projects, &i)
+	}
 
 	return projects, err
 }
 
 //Возвращает проект в виде объекта Project
-func (m MProject) GetProject(id int) (*entities.Project, error) {
+func (m *MProject) GetProject(id int) (*entities.Project, error) {
 
-	var i *entities.Project
-	var err error = nil
+	row, err := app.DB.Query("SELECT id, name, creatorid, aimOfTheProject FROM projects WHERE id = $1", id)
 
-	i = app.MapOfProjects[id]	
+	defer row.Close()
+	if err != nil { //insert into projects (id, name, creatorid, aimOfTheProject) values ('project1','Создание TaskManager','employee1','Разработать Task Manager - программу для управления проектами небольших групп людей. Это инструмент, который позволяет разработчикам вести учет задач проекта, планировать и отслеживать процесс выполнения. Требования: учёт проектов; учёт задач; учёт сотрудников; логика состояний для задач. Под учётом подразумеваются CRUD операции. Технологии, которые необходимо использовать: для фронтэнда - Webix, для бэкэнда: Revel');
+		fmt.Println(err)
+		return nil, err
+	}
 
-	return i, err
+	row.Next()
+	i := entities.Project{}
+	err = row.Scan(&i.Id, &i.Name, &i.CreatorId, &i.AimOfTheProject)
+
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	fmt.Println(i.Id)
+
+	return &i, err
 
 }
 
-func (m MProject) UpdateProject(proj *entities.Project) error {
+//Создаёт новый проект, либо, если он уже есть, обновляет
+func (m *MProject) AddOrUpdateProject(proj *entities.Project) error {
 
-	app.MapOfProjects[proj.Id] = proj
+	//Проверка на существование записи в базе
+	row, err := app.DB.Query("SELECT * FROM projects WHERE id = $1", proj.Id)
+	defer row.Close()
+	row.Next()
+	i := entities.Project{}
+	err = row.Scan(&i.Id, &i.Name, &i.CreatorId, &i.AimOfTheProject)
 
+	if i.Id == 0 {
+		//Если записи нет, создаём новую
+		_, err = app.DB.Exec("insert into projects (id, name, creatorId, aimOfTheProject) values ($1, $2, $3, $4)",
+			proj.Id, proj.Name, proj.CreatorId, proj.AimOfTheProject)
+
+		return err
+	}
+
+	//Если запись есть обновляем её
+	_, err = app.DB.Exec("update projects set name = $2, creatorId = $3, aimOfTheProject = $4 where id = $5",
+		proj.Name, proj.CreatorId, proj.AimOfTheProject, proj.Id)
+
+	if err != nil {
+		panic(err) //!!!
+	}
+
+	return err
+}
+
+func (m *MProject) UpdateProject(proj *entities.Project) error {
+	/*
+		app.MapOfProjects[proj.Id] = proj
+	*/
 	return nil
 }
 
 //Удаляет проект
-func (m MProject) DeleteProject(id int) error {
+func (m *MProject) DeleteProject(id int) error {
 
-	delete(app.MapOfProjects, id)
-	var err error = nil
+	_, err := app.DB.Exec("DELETE FROM projects WHERE id = $1", id)
+	if err != nil {
+		panic(err)
+	}
 
 	return err
 }

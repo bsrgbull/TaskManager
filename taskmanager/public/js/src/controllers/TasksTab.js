@@ -16,8 +16,19 @@ class TasksTab {
         this.#tasksView.addTask(task);
     }
 
-    addNewTask(text, creatorId, projectId) {
-        let id = this.#tasksModel.addTask(text, creatorId, projectId);
+    async addNewTask(text, creatorId, projectId) {
+
+        let result = await this.#tasksModel.addTask(text, creatorId, projectId);
+
+        let id;
+
+        if (result.Err == null) {
+            id = result.Data;
+        } else {
+            console.log(result.Err);
+            return result.Err;
+        }
+
         this.#tasksView.addNewTask(text, id);
     }
 
@@ -72,8 +83,6 @@ class TasksTab {
     }
 
     showTaskPage(mapOfTasks, mapOfEmployees) {
-
-        console.log(mapOfEmployees);
         this.#tasksView.showTaskPage(mapOfTasks, mapOfEmployees);
     }
 
@@ -84,9 +93,9 @@ class TasksTab {
     }
 
     addEmployeeInList(id) {
-        console.log(id + "eeeeeeeeee");
+
         this.#tasksModel.getTask(id).then((task) => {
-            console.log(task)
+
             this.#tasksView.addEmployeeInList(employeesTab.getEmployee(task.getAssignedToId() ) );
         });
     }

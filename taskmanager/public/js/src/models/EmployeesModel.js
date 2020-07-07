@@ -45,6 +45,7 @@ class EmployeesModel {
         
         if (result.Err == null) {
 
+
             let employee = new Employee( result.Data.id,
                                          result.Data.name,
                                          result.Data.surname,
@@ -58,18 +59,23 @@ class EmployeesModel {
         }
     }
 
-    getEmployeesFromArray(arrayOfEmployeesId) {
+    async getEmployeesFromArray(arrayOfEmployeesId) {
 
         let map = new Map();
 
-        for (let employeeId of arrayOfEmployeesId) {
-            this.getEmployee(employeeId)
-                .then( employee => {
-                    map.set(employeeId, employee);
-                });
-        }
+        let requests = arrayOfEmployeesId.map(employeeId => this.getEmployee(employeeId));
+
+        await Promise.all(requests)
+                .then(responses => {
+                    //все промисы успешно завершены
+                    let i = 0;
+
+                    for(let employeeId of arrayOfEmployeesId) {
+                        map.set(employeeId, responses[i]);
+                        i++;
+                    }
         
-        console.log(map);
+                });
         return map;
     }
 

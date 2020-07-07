@@ -82,7 +82,7 @@ class TasksModel {
 
 
     async updateTask(text, creatorId, projectId, id, estimatedTime, spentTime, status, color, assignedToId) {
-
+        console.log(assignedToId);
         let response = await fetch('http://localhost:9000/updatetask', {
             method: 'POST',
             headers: {

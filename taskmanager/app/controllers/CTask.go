@@ -15,7 +15,7 @@ type CTask struct {
 }
 
 //Обработчик POST запросов с /task
-func (c CTask) AddTask() revel.Result {
+func (c *CTask) AddTask() revel.Result {
 	var jsonData map[string]interface{}
 	c.Params.BindJSON(&jsonData)
 
@@ -29,7 +29,7 @@ func (c CTask) AddTask() revel.Result {
 }
 
 //Обработчик GET запросов с /tasks/:projectId
-func (c CTask) GetAllTasksFromProject(projectId int) revel.Result {
+func (c *CTask) GetAllTasksFromProject(projectId int) revel.Result {
 
 	tasks, err := c.p.GetAllTasksFromProject(projectId)
 	response := entities.Resp{Data: tasks, Err: err}
@@ -38,7 +38,7 @@ func (c CTask) GetAllTasksFromProject(projectId int) revel.Result {
 }
 
 //Обработчик GET запросов с /task/:taskId
-func (c CTask) GetTask(taskId int) revel.Result {
+func (c *CTask) GetTask(taskId int) revel.Result {
 
 	task, err := c.p.GetTask(taskId)
 	response := entities.Resp{Data: task, Err: err}
@@ -47,7 +47,7 @@ func (c CTask) GetTask(taskId int) revel.Result {
 }
 
 //Обработчик POST запросов с /updatetask
-func (c CTask) UpdateTask() revel.Result {
+func (c *CTask) UpdateTask() revel.Result {
 	var jsonData map[string]interface{}
 	c.Params.BindJSON(&jsonData)
 	fmt.Println(jsonData)
@@ -61,7 +61,7 @@ func (c CTask) UpdateTask() revel.Result {
 }
 
 //Обработчик Delete запросов с /task/:taskId
-func (c CTask) DeleteTask(taskId int) revel.Result {
+func (c *CTask) DeleteTask(taskId int) revel.Result {
 
 	err := c.p.DeleteTask(taskId)
 	response := entities.Resp{Data: nil, Err: err}

@@ -48,6 +48,11 @@ class ProjectsTab {
         return await this.#projectsModel.getProject(id);
     }
 
+    updateProject(id, name, arrayOfEmployeesId, creatorId, aimOfTheProject) {
+        this.#projectsModel.updateProject(id, name, arrayOfEmployeesId, creatorId, aimOfTheProject);
+        this.#projectView.updateProject(id, name, arrayOfEmployeesId, creatorId, aimOfTheProject);
+    }
+
     addTaskToProject(projectId, task) {
         this.#projectsModel.addTaskToProject(projectId, task);
     }
@@ -64,10 +69,6 @@ class ProjectsTab {
         this.#projectView.showProjectPage(this.#projectsModel);  
     }
 
-    hide() {
-        
-    }
-
     async getProjectInfo(employeesTab, projectId) {
 
         let aim = "";
@@ -82,9 +83,12 @@ class ProjectsTab {
        
         let employeesInfo = "";
 
-        employeesTab.getEmployeesFromArray(project.getArrayOfEmployeesId()).forEach(function(employee, index, array) {
-            employeesInfo += employee.getSurnameAndName() + ", ";
-        });
+        await employeesTab.getEmployeesFromArray(project.getArrayOfEmployeesId())
+                .then( mapOfEmployees => {
+                    mapOfEmployees.forEach(function(employee, index, array) {
+                        employeesInfo += employee.getSurnameAndName() + ", ";
+                    });
+                });
         
         employeesInfo = employeesInfo.substring(0, employeesInfo.length - 2);
 

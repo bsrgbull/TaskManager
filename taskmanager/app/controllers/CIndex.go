@@ -9,6 +9,6 @@ type CIndex struct {
 }
 
 //Обработчик запросов с /
-func (c CIndex) TaskManager() revel.Result {
+func (c *CIndex) TaskManager() revel.Result {
 	return c.Render()
 }

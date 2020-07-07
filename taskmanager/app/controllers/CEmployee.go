@@ -15,7 +15,7 @@ type CEmployee struct {
 }
 
 //Обработчик POST запросов с /employee
-func (c CEmployee) AddEmployee() revel.Result {
+func (c *CEmployee) AddEmployee() revel.Result {
 	var jsonData map[string]interface{}
 	c.Params.BindJSON(&jsonData)
 
@@ -29,7 +29,7 @@ func (c CEmployee) AddEmployee() revel.Result {
 }
 
 //Обработчик GET запросов с /employee
-func (c CEmployee) GetAllEmployees() revel.Result {
+func (c *CEmployee) GetAllEmployees() revel.Result {
 
 	employees, err := c.p.GetAllEmployees()
 	response := entities.Resp{Data: employees, Err: err}
@@ -38,7 +38,7 @@ func (c CEmployee) GetAllEmployees() revel.Result {
 }
 
 //Обработчик GET запросов с /employee/:id
-func (c CEmployee) GetEmployee(id int) revel.Result {
+func (c *CEmployee) GetEmployee(id int) revel.Result {
 
 	employee, err := c.p.GetEmployee(id)
 	response := entities.Resp{Data: employee, Err: err}
@@ -47,7 +47,7 @@ func (c CEmployee) GetEmployee(id int) revel.Result {
 }
 
 //Обработчик POST запросов с /updateemployee
-func (c CEmployee) UpdateEmployee() revel.Result {
+func (c *CEmployee) UpdateEmployee() revel.Result {
 	var jsonData map[string]interface{}
 	c.Params.BindJSON(&jsonData)
 
@@ -64,7 +64,7 @@ func (c CEmployee) UpdateEmployee() revel.Result {
 }
 
 //Обработчик DELETE запросов с /employee/:id
-func (c CEmployee) DeleteEmployee(id int) revel.Result {
+func (c *CEmployee) DeleteEmployee(id int) revel.Result {
 
 	err := c.p.DeleteEmployee(id)
 	response := entities.Resp{Data: nil, Err: err}

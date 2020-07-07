@@ -14,7 +14,7 @@ type CProject struct {
 }
 
 //Обработчик GET запросов с /project
-func (c CProject) AddProject() revel.Result {
+func (c *CProject) AddProject() revel.Result {
 	var jsonData map[string]interface{}
 	c.Params.BindJSON(&jsonData)
 
@@ -28,7 +28,7 @@ func (c CProject) AddProject() revel.Result {
 }
 
 //Обработчик GET запросов с /project
-func (c CProject) GetAllProjects() revel.Result {
+func (c *CProject) GetAllProjects() revel.Result {
 
 	projects, err := c.p.GetAllProjects()
 	response := entities.Resp{Data: projects, Err: err}
@@ -37,7 +37,7 @@ func (c CProject) GetAllProjects() revel.Result {
 }
 
 //Обработчик GET запросов с /project/:id
-func (c CProject) GetProject(id int) revel.Result {
+func (c *CProject) GetProject(id int) revel.Result {
 
 	project, err := c.p.GetProject(id)
 	response := entities.Resp{Data: project, Err: err}
@@ -46,7 +46,7 @@ func (c CProject) GetProject(id int) revel.Result {
 }
 
 //Обработчик POST запросов с /updateproject
-func (c CProject) UpdateProject() revel.Result {
+func (c *CProject) UpdateProject() revel.Result {
 	var jsonData map[string]interface{}
 	c.Params.BindJSON(&jsonData)
 
@@ -60,7 +60,7 @@ func (c CProject) UpdateProject() revel.Result {
 }
 
 //Обработчик DELETE запросов с /project/:id
-func (c CProject) DeleteProject(id int) revel.Result {
+func (c *CProject) DeleteProject(id int) revel.Result {
 
 	err := c.p.DeleteProject(id)
 	response := entities.Resp{Data: nil, Err: err}
