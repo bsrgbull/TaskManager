@@ -1,7 +1,6 @@
 package controllers
 
 import (
-	"fmt"
 	"taskmanager/app/entities"
 	"taskmanager/app/providers"
 
@@ -24,9 +23,7 @@ func (c *CProject) AddProject() revel.Result {
 
 	id, err := c.p.AddProject(&newProject)
 	response := entities.Resp{Data: id, Err: err}
-	fmt.Println("CProject 23---------------------")
-	fmt.Println(err)
-	fmt.Println(newProject)
+
 	return c.RenderJSON(response)
 }
 

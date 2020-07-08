@@ -47,7 +47,7 @@ class TasksTab {
     }
 
     updateTask(taskClicked, text, creatorId, projectId, id,
-         estimatedTime, spentTime, status, color, assignedToId) {
+         estimatedTime, spentTime, status, colour, assignedToId) {
 
         if (text == null) {
             text = taskClicked.getText();
@@ -67,15 +67,15 @@ class TasksTab {
         if (status == null) {
             status = taskClicked.getStatus();
         }
-        if (color == null) {
-            color = taskClicked.getColor();
+        if (colour == null) {
+            colour = taskClicked.getColor();
         }
         if (assignedToId == null) {
             assignedToId = taskClicked.getAssignedToId();
         }
 
         this.#tasksModel.updateTask(text, +creatorId, +projectId, +id,
-                 +estimatedTime, +spentTime, status, color, +assignedToId);
+                 +estimatedTime, +spentTime, status, colour, +assignedToId);
     }
 
     deleteTask(id) {

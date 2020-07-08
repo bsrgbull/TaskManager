@@ -30,6 +30,7 @@ func (p *PTask) GetTask(taskId int) (*entities.Task, error) {
 }
 
 func (p *PTask) UpdateTask(task *entities.Task) error {
+
 	return p.m.UpdateTask(task)
 }
 

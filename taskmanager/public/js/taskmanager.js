@@ -65,7 +65,10 @@ let webixReady = webix.ready(function () {
     let dropHandler1 = function(context, e) {
         let status = $$("kanban").getItem(context.start).status;
 
-        if (status != "Назначено"){
+        if (status != "Назначено" && status != "Создано"){
+
+            webix.message("Нельзя переместить задачу в работе в колонку Создано");
+
             return false;
         } else {
             $$("kanban").getItem(context.start).user_id = null;
@@ -84,9 +87,16 @@ let webixReady = webix.ready(function () {
     let dropHandler2 = function(context, e) {
         let task = $$("kanban").getItem(context.start);
 
-        if (task.status != "Создано" || (task.user_id != undefined 
-            && task.user_id != null 
-            && task.user_id != "" )) {
+        if (task.status != "Создано" && task.status != "Назначено") {
+
+                webix.message("Нельзя переместить задачу в работе в колонку Назначено");
+
+            return false;
+        }
+
+        if (task.user_id == 0 || task.user_id == null) {
+
+                webix.message("Сначала назначьте сотрудника");
 
             return false;
 
@@ -109,10 +119,16 @@ let webixReady = webix.ready(function () {
 
         let estimatedTime = task.getEstimatedTime();
 
-        if ( status == "Создано" || estimatedTime == "" 
-            || estimatedTime == undefined || estimatedTime == null 
-            || estimatedTime == 0){
+        if ( status == "Создано"){
             
+            webix.message("Сначала назначьте сотрудника и оцените время, " +
+                                    "необходимое для выполнения этой задачи");
+
+            return false;
+        }
+
+        if ( estimatedTime == 0 ) {
+
             webix.message("Установите оценочное время выполнения задачи перед отправлением задачи в работу");
 
             return false;
@@ -133,9 +149,17 @@ let webixReady = webix.ready(function () {
 
         let spentTime = task.getSpentTime();
 
-        if (status == "Создано"  || status == "Назначено" 
-            || spentTime == ""   || spentTime == undefined 
-            || spentTime == null || spentTime == 0){
+        if ( status == "Создано"  || status == "Назначено" ){
+
+            webix.message("Сначала переместите задачу в работу");
+
+            return false;
+
+        }
+
+        if ( spentTime == 0 ){
+
+                webix.message("Установите окончательное время выполнения задачи перед перемещением");
 
             return false;
 
@@ -235,7 +259,10 @@ let webixReady = webix.ready(function () {
             let login = $$("modalEmployeeLogin").getValue();
             let password = $$("modalEmployeePassword").getValue();
 
-            if (name == "" || surname == "" || password == "") {
+            if (!$$("addOrChangeForm").validate() && email != "" 
+            || name == "" || surname == "" /*|| password == ""*/) {
+
+                webix.message({ type:"error", text:"Неверные данные" });
                 return;
             }
 
@@ -250,6 +277,14 @@ let webixReady = webix.ready(function () {
             let password = $$("modalEmployeePassword").getValue();
             let login = $$("modalEmployeeLogin").getValue();
             let email = $$("modalEmployeeEmail").getValue();
+
+            if (!$$("addOrChangeForm").validate() && email != "" 
+            || name == "" || surname == "" /*|| password == ""*/) {
+
+                webix.message({ type:"error", text:"Неверные данные" });
+                return;
+            }
+
             employeesTab.updateEmployee(id, name, surname, password, login, email);
             $$("modalWindowForEmployees").close();
         }
@@ -267,7 +302,7 @@ let webixReady = webix.ready(function () {
                 ]
             },
             width: 500,
-            height: 500,
+            height: 400,
             modal:true,
             close:true,
             position: "center",
@@ -278,8 +313,8 @@ let webixReady = webix.ready(function () {
                     { id:"modalEmployeeName", view: "text", value:``, label: 'Имя*', name: "name" },
                     { id:"modalEmployeeSurname", view: "text", label: 'Фамилия*', name: "surname" },
                     { id:"modalEmployeeEmail", view: "text", label: 'Email', name: "email"},
-                    { id:"modalEmployeeLogin", view: "text", label: 'Логин', name: "login" },
-                    { id:"modalEmployeePassword", view: "text", label: 'Пароль*', name: "password" },
+                    { id:"modalEmployeeLogin", view: "text", label: 'Логин', name: "login", hidden: true },
+                    { id:"modalEmployeePassword", view: "text", label: 'Пароль*', name: "password", hidden: true },
                     { template:"* поле обязательно для заполнения" },
                     { cols:[
                         { id: "addButton", view: "button", value: "Добавить",
@@ -291,6 +326,11 @@ let webixReady = webix.ready(function () {
                         } }
                     ]},
                 ],
+                rules:{
+                    "email":webix.rules.isEmail,
+                    "name":webix.rules.isNotEmpty,
+                    "surname":webix.rules.isNotEmpty,
+                },
                 elementsConfig: {
                   labelPosition: "top",
                 }
@@ -384,7 +424,9 @@ let webixReady = webix.ready(function () {
             let name = $$("modalProjectName").getValue();
             let aim = $$("modalProjectAim").getValue();
 
-            if (name == "") {
+            if ( !$$("addOrChangeProjectForm").validate() ) {
+
+                webix.message({ type:"error", text:"Неверные данные" });
                 return;
             }
 
@@ -398,6 +440,12 @@ let webixReady = webix.ready(function () {
             let id = $$("projectsList").getSelectedId();
             let name = $$("modalProjectName").getValue();
             let aim = $$("modalProjectAim").getValue();
+
+            if ( !$$("addOrChangeProjectForm").validate() ) {
+
+                webix.message({ type:"error", text:"Неверные данные" });
+                return;
+            }
 
             projectsTab.getProject(id).then( project => {
                 
@@ -451,6 +499,9 @@ let webixReady = webix.ready(function () {
                         },
                     ]},
                 ],
+                rules:{
+                    "name":webix.rules.isNotEmpty,
+                },
                 elementsConfig: {
                     labelPosition: "top",
                 }
@@ -618,6 +669,7 @@ let webixReady = webix.ready(function () {
 
     //Изменение списка сотрудников в зависимости от статуса карточки
     async function changeUserList(id) {
+
         $$("kanban").getUsers().clearAll();
 
         if ($$("kanban").getItem(id).status != "Создано") { 
@@ -699,6 +751,8 @@ let webixReady = webix.ready(function () {
 
                         onBeforeEditorShow:async function(editor,obj) {
 
+                            $$("kanban").getEditor().config.width = 575;
+
                         	$$("userListInEditor").getList().clearAll();
 
                         	let statusList = $$("status").getList();
@@ -716,11 +770,11 @@ let webixReady = webix.ready(function () {
                                         .then( employee => {
 
                                             $$("userListInEditor").getList().add({
-                                                id: employee.getId() + "empl",
+                                                id: employee.getId(),
                                                 value: employee.getSurnameAndName(),
                                             });
 
-                                            $$("userListInEditor").define({ value:assignedToId + "empl"});
+                                            $$("userListInEditor").define({ value:assignedToId});
                                             $$("userListInEditor").refresh();
                                         });
                                 
@@ -732,13 +786,13 @@ let webixReady = webix.ready(function () {
                                             mapOfEmployees.forEach( employee => {
 
                                                 $$("userListInEditor").getList().add({
-                                                    id: employee.getId() + "empl",
+                                                    id: employee.getId(),
                                                     value: employee.getSurnameAndName(),    
                                                 });
 
                                             });
 
-                                            $$("userListInEditor").define({ value:assignedToId + "empl"});
+                                            $$("userListInEditor").define({ value:assignedToId});
                                             $$("userListInEditor").refresh();
                                         });
                                 }
@@ -764,9 +818,11 @@ let webixReady = webix.ready(function () {
                     editor:[    
                         { cols:[
                             { rows:[
-                                { id: "estimatedTime", view:"counter", inputAlign:"right", name:"time", step:Number(1,25), label:"Оценка времени" },
-                                { id: "spentTime", view:"counter", inputAlign:"right", name:"time", step:Number(1,25), value: 68, label:"Время, ч" },
-                                { view:"counter", name:"time", hidden:true },
+                                { id: "estimatedTime", view:"counter", inputAlign:"right",
+                                  name:"time", step:Number(1,25), label:"Оценочное время, ч", validate:webix.rules.isNumber },
+                                { id: "spentTime", view:"counter", inputAlign:"right",
+                                  name:"time", step:Number(1,25), value: 68, label:"Фактическое время, ч" },
+
                                 ]},
                             { view:"textarea", name:"text", width:380, label:"Текст", height:120 }, 
                         ]},                                                                 
@@ -778,10 +834,9 @@ let webixReady = webix.ready(function () {
                                     {id:"orange", value:"Нормальный", color:"orange"},   
                                     {id:"red", value:"Срочно", color:"red"}    
                             ] },
-                            { view:"richselect", name:"color", hidden:true},
                             { id: "status", view:"richselect", name:"$list", label:"Статус", options:[] }     
                         ]},
-                    ],//true,
+                    ],
                     comments:false,
                     scheme:{
                         $sort:{
@@ -789,8 +844,7 @@ let webixReady = webix.ready(function () {
                           by:"text",
                           as:"string"
                         }
-                      }, 
-                 //   userList:true, 
+                    }, 
                     userList:{                  
                      //   yCount:9,   
                         autoheight:true,          
@@ -918,38 +972,54 @@ let webixReady = webix.ready(function () {
     //Обработка изменений в editor. $list: 0 - "Создано"; 1 - "Назначено"; 2 - "В работе"; 3 - "Завершено"
     $$("kanban").attachEvent("onBeforeEditorAction",function(action,editor,data){
 
+
+
         let dataUserId = $$("userListInEditor").data.value;
 
-        if (action === "save"){          
+        if (action === "save"){      
+            
+            if ( data.text == "" ) {
+
+                webix.message("У задачи должно быть описание");
+
+                return false;
+            }
+
+            let cardStatus = null;
 
             switch (data.status) {
 
                 case "Создано":
 
                 	if (data.$list == 3 || data.$list == 2 ) {
+
+                        webix.message("Созданную задачу можно переместить только в колонку Назначено");
+
                         return false;
                     } else {    
+        
+                        if (data.$list == 1 && dataUserId == 0 ) {
 
-                        if (data.$list == 1 && (dataUserId == undefined 
-                            || dataUserId == null || dataUserId == ""
-                            || dataUserId == "0empl" ) ) {
+                            webix.message("Сначала назначьте сотрудника");
+
                             return false;
                         }
                         if ($$("spentTime").getValue() != taskClicked.getSpentTime()) {
+
                             webix.message("Итоговое время можно менять только у задач в работе");
 
                             return false;
                         }
 
-                        let userId = null;  //Если эти переменные оснанутся null, то они не будут изменены
-                        let cardStatus = null;
+                        let userId = null;
+                        
                         //Если назначается Сотрудник, то перемещаем его сразу в колонку 2
-                        if (dataUserId != taskClicked.getAssignedToId() + "empl"
+                        if (dataUserId != taskClicked.getAssignedToId()
                         && dataUserId != undefined && dataUserId != null && dataUserId != "") {
                             data.$list = 1;            
 
-                            userId = dataUserId.replace("empl", "");
-                            cardStatus = "Назначено"
+                            userId = dataUserId;
+                            cardStatus = "Назначено";
                      
                         }
 
@@ -971,104 +1041,140 @@ let webixReady = webix.ready(function () {
 
                     if (data.$list == 3) {
 
+                        webix.message("Сначала переместите задачу в работу");
+
                         return false;
 
-                    } else {    
+                    }     
 
-                        if ($$("spentTime").getValue() != taskClicked.getSpentTime()) {
-                            webix.message("Итоговое время можно менять только у задач в работе");
-                            return false;
-                        }
+                    if ($$("spentTime").getValue() != taskClicked.getSpentTime()) {
 
-                        if (data.$list == 0 ) {
+                        webix.message("Итоговое время можно менять только у задач в работе");
 
-                            dataUserId = null;  //Если перемещаем в Создано, то удаляем Сотрудника
-                        
-                            $$("kanban").getItem(idOfTaskClicked).color = $$("priority").getValue();
+                        return false;
+                    }
 
-                            tasksTab.updateTask(taskClicked, data.text, null, null, taskClicked.getId(),
-                            +$$("estimatedTime").getValue(), null, "Создано", $$("priority").getValue(), 0);
+                    if ( data.text != $$("kanban").getItem(data.id).text ) {
 
-                            taskClicked.setEstimatedTime($$("estimatedTime").getValue());
-                            tasksTab.getMapOfTasks().set(+taskClicked.getId(), taskClicked);
+                        webix.message("Нельзя изменять назначенное задание");
 
-                            return true;
+                        return false;
 
-                        } else if (dataUserId != taskClicked.getAssignedToId() + "empl" ||
-                        data.text != $$("kanban").getItem(data.id).text) {
-                            webix.message("Нельзя изменять назначенное задание");
-                            return false;
+                    }
 
-                        }
+                    if ( $$("priority").getValue() != taskClicked.getColor() ) {
 
-                        let cardStatus = null;
+                        webix.message("Приоритет можно изменить только у задач в колонке Создано");
 
-                        if (data.$list == 2) {
+                        return false;
 
-                            if ($$("estimatedTime").getValue() == "" || $$("estimatedTime").getValue() == undefined ||
-                                $$("estimatedTime").getValue() == null ) {
-                                webix.message("Оцените время выполнения задачи, перед сменой статуса");
-                                return false;
-                            }
-                            
-                            cardStatus = "В работе";
-                    	}
+                    }
 
-                        tasksTab.updateTask(taskClicked, null, null, null, taskClicked.getId(),
-                        +$$("estimatedTime").getValue(), null, cardStatus, $$("priority").getValue(), null);
+                    if (data.$list == 0 ) {
 
-                        $$("kanban").getItem(idOfTaskClicked).color = $$("priority").getValue();
+                        dataUserId = null;  //Если перемещаем в Создано, то удаляем Сотрудника
+
+                        tasksTab.updateTask(taskClicked, data.text, null, null, taskClicked.getId(),
+                        +$$("estimatedTime").getValue(), null, "Создано", null, 0);
 
                         taskClicked.setEstimatedTime($$("estimatedTime").getValue());
                         tasksTab.getMapOfTasks().set(+taskClicked.getId(), taskClicked);
 
                         return true;
-                    }
+                    } 
+
+                    if (data.$list == 2) {
+
+                        if ($$("estimatedTime").getValue() == 0 ) {
+
+                            webix.message("Оцените время выполнения задачи, перед сменой статуса");
+
+                            return false;
+                        }
+                            
+                        cardStatus = "В работе";
+                	}
+
+                    tasksTab.updateTask(taskClicked, null, null, null, taskClicked.getId(),
+                    +$$("estimatedTime").getValue(), null, cardStatus, null, null);
+
+                    taskClicked.setEstimatedTime($$("estimatedTime").getValue());
+                    tasksTab.getMapOfTasks().set(+taskClicked.getId(), taskClicked);
+
+                    return true;
 
                     break;
 
                 case "В работе":
 
-                    let cardStatus = null;
+                    if ( data.$list == 0 || data.$list == 1 ) {
 
-                    if (data.$list == 0 || data.$list == 1 
-                    || dataUserId != taskClicked.getAssignedToId() + "empl"
-                    || data.text != $$("kanban").getItem(data.id).text 
-                    || $$("estimatedTime").getValue() != taskClicked.getEstimatedTime()) {
-                        webix.message("Нельзя изменять задание c этим статусом");
+                        webix.message("Перемещение возможно только в колонку Завершено");
 
-                        return false;   //Запрет на изменение
+                        return false;
+                    }
 
-                    } else if (data.$list == 3) {
+                    if ( data.text != $$("kanban").getItem(data.id).text ) {
 
-                        if ( $$("spentTime").getValue() != "" 
-                             && $$("spentTime").getValue() != undefined 
-                             && $$("spentTime").getValue() != null 
-                             && $$("spentTime").getValue() != 0) {    
+                        webix.message("Нельзя изменять задание в работе");
+
+                        return false;
+                    }
+                    
+                    if ( $$("estimatedTime").getValue() != taskClicked.getEstimatedTime() ) {
+
+                        webix.message("Задача уже в работе, нельзя изменить оценочное время");
+
+                        return false;
+
+                    }
+
+                    if ( $$("priority").getValue() != taskClicked.getColor() ) {
+
+                        webix.message("Приоритет можно изменить только у задач в колонке Создано");
+
+                        return false;
+
+                    }
+                    
+                    if (data.$list == 3) {
+
+                        if ( $$("spentTime").getValue() != 0) {    
                                 
                             cardStatus = "Завершено";
 
                         } else {
+
                             webix.message("Укажите время, потраченное на выполнение задачи");
+
                             return false;
                         }
                     }
 
                     tasksTab.updateTask(taskClicked, null, null, null, taskClicked.getId(),
-                    null, +$$("spentTime").getValue(), cardStatus, $$("priority").getValue(), null);
-
-                    $$("kanban").getItem(idOfTaskClicked).color = $$("priority").getValue();
+                    null, +$$("spentTime").getValue(), cardStatus, null, null);
 
                     taskClicked.setSpentTime($$("spentTime").getValue());
                     tasksTab.getMapOfTasks().set(+taskClicked.getId(), taskClicked);
 
                     return true;
-             //       taskClicked.setColor($$("color").getValue());
                     break;
 
                 case "Завершено":
 
-                    return false;
+                    if ( $$("estimatedTime").getValue() != taskClicked.getEstimatedTime() 
+                        || $$("spentTime").getValue() != taskClicked.getSpentTime()
+                        || data.text != $$("kanban").getItem(data.id).text
+                        || $$("priority").getValue() != taskClicked.getColor()
+                        || data.$list != 3 ) {
+
+                        webix.message("Выполненную задачу нельзя изменить");
+
+                        return false;
+
+                    }
+
+                    return true;
                     break;
             }
         }

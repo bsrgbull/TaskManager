@@ -17,7 +17,7 @@ class TasksModel {
                 SpentTime: 0,
                 Id: 0,
                 Status: "Создано",
-                Color: "",
+                Colour: "",
                 CreatorId: creatorId,
                 AssignedToId: 0,
                 ProjectId: projectId,
@@ -60,9 +60,9 @@ class TasksModel {
         if (result.Err == null) {
 
             let mapOfTasks = new Map();
-console.log(result)
+
             for (let tsk of result.Data) {
-console.log(tsk.AssignedToId)
+
                 let task = new Task(tsk.Text,
                                     tsk.CreatorId,
                                     tsk.ProjectId,
@@ -85,7 +85,7 @@ console.log(tsk.AssignedToId)
     }
 
 
-    async updateTask(text, creatorId, projectId, id, estimatedTime, spentTime, status, color, assignedToId) {
+    async updateTask(text, creatorId, projectId, id, estimatedTime, spentTime, status, colour, assignedToId) {
 
         let response = await fetch('http://localhost:9000/updatetask', {
             method: 'POST',
@@ -98,7 +98,7 @@ console.log(tsk.AssignedToId)
                 SpentTime: +spentTime,
                 Id: +id,
                 Status: status,
-                Color: color,
+                Colour: colour,
                 CreatorId: +creatorId,
                 AssignedToId: +assignedToId,
                 ProjectId: +projectId,
