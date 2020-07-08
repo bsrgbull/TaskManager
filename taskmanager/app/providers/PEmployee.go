@@ -22,6 +22,14 @@ func (p *PEmployee) GetAllEmployees() ([]*entities.Employee, error) {
 	return employees, err
 }
 
+func (p *PEmployee) GetAllEmployeesFromProject(projectId int) ([]*entities.Employee, error) {
+
+	employees, err := p.m.GetAllEmployeesFromProject(projectId)
+
+	return employees, err
+
+}
+
 //Возвращает сотрудника в виде объекта, и ошибку
 func (p *PEmployee) GetEmployee(id int) (*entities.Employee, error) {
 

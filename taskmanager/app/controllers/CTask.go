@@ -52,8 +52,7 @@ func (c *CTask) UpdateTask() revel.Result {
 	c.Params.BindJSON(&jsonData)
 	fmt.Println(jsonData)
 	var task entities.Task
-	fmt.Println(mapstructure.Decode(jsonData, &task))
-	fmt.Println(task)
+
 	err := c.p.UpdateTask(&task)
 	response := entities.Resp{Data: nil, Err: err}
 

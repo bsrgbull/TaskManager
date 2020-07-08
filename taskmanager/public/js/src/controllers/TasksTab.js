@@ -75,7 +75,7 @@ class TasksTab {
         }
 
         this.#tasksModel.updateTask(text, +creatorId, +projectId, +id,
-                 estimatedTime, spentTime, status, color, +assignedToId);
+                 +estimatedTime, +spentTime, status, color, +assignedToId);
     }
 
     deleteTask(id) {
@@ -93,10 +93,16 @@ class TasksTab {
     }
 
     addEmployeeInList(id) {
-
         this.#tasksModel.getTask(id).then((task) => {
-
             this.#tasksView.addEmployeeInList(employeesTab.getEmployee(task.getAssignedToId() ) );
         });
+    }
+
+    setMapOfTasks(mapOfTasks) {
+        this.#tasksModel.setMapOfTasks(mapOfTasks);
+    }
+
+    getMapOfTasks() {
+        return this.#tasksModel.getMapOfTasks();
     }
 }

@@ -2,6 +2,8 @@
 
 class TasksModel {
 
+    #mapOfTasks //Эта карта нужна для корректной, и быстрой работы Drag&Drop
+
     async addTask(text, creatorId, projectId) {
 
         let response = await fetch('http://localhost:9000/task', {
@@ -28,7 +30,7 @@ class TasksModel {
 
     async getTask(id) {
 
-        let response = await fetch(`http://localhost:9000/task/${id}`);
+        let response = await fetch(`http://localhost:9000/task/${+id}`);
 
         let result = await response.json();
 
@@ -41,7 +43,7 @@ class TasksModel {
                                  result.Data.EstimatedTime,
                                  result.Data.SpentTime,
                                  result.Data.Status,
-                                 result.Data.Color,
+                                 result.Data.Colour,
                                  result.Data.AssignedToId);
             return task;
         } else {
@@ -58,9 +60,9 @@ class TasksModel {
         if (result.Err == null) {
 
             let mapOfTasks = new Map();
-
+console.log(result)
             for (let tsk of result.Data) {
-
+console.log(tsk.AssignedToId)
                 let task = new Task(tsk.Text,
                                     tsk.CreatorId,
                                     tsk.ProjectId,
@@ -68,11 +70,13 @@ class TasksModel {
                                     tsk.EstimatedTime,
                                     tsk.SpentTime,
                                     tsk.Status,
-                                    tsk.Color,
+                                    tsk.Colour,
                                     tsk.AssignedToId);
 
                 mapOfTasks.set(tsk.Id, task);
             }
+
+            this.#mapOfTasks = mapOfTasks;
 
             return mapOfTasks;
         } else {
@@ -82,7 +86,7 @@ class TasksModel {
 
 
     async updateTask(text, creatorId, projectId, id, estimatedTime, spentTime, status, color, assignedToId) {
-        console.log(assignedToId);
+
         let response = await fetch('http://localhost:9000/updatetask', {
             method: 'POST',
             headers: {
@@ -90,14 +94,14 @@ class TasksModel {
             },
             body: JSON.stringify({
                 Text: text,	
-                EstimatedTime: estimatedTime,
-                SpentTime: spentTime,
+                EstimatedTime: +estimatedTime,
+                SpentTime: +spentTime,
                 Id: +id,
                 Status: status,
                 Color: color,
-                CreatorId: creatorId,
-                AssignedToId: assignedToId,
-                ProjectId: projectId,
+                CreatorId: +creatorId,
+                AssignedToId: +assignedToId,
+                ProjectId: +projectId,
             })
         });
 
@@ -112,25 +116,13 @@ class TasksModel {
 
         return await response.json();
 
-        ///
+    }
 
-       /* let request = new XMLHttpRequest();
+    setMapOfTasks(mapOfTasks) {
+        this.#mapOfTasks = mapOfTasks;
+    }
 
-        request.open('DELETE', `http://localhost:9000/task/${id}`, false);
-        request.send();
-        
-        if (request.status != 200) {
-            console.log( request.status + ': ' + request.statusText );
-            return request.status
-        } else {
-
-            let response = JSON.parse(request.responseText);
-
-            if (response.Err != null) {
-                console.log(response.Err)
-                return response.Err
-            }
-            return null
-        }*/
+    getMapOfTasks() {
+        return this.#mapOfTasks;
     }
 }

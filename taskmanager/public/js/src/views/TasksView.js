@@ -7,15 +7,9 @@ class TasksView {
 
         $$("kanban").clearAll();
         $$("listOfEmployees").clearAll();
-      /*  for (var key in $$("kanban").getUserList()) {
-            // этот код будет вызван для каждого свойства объекта
-            // ..и выведет имя свойства и его значение
-//            if ($$("kanban").getUserList()[key] == 9) {
-                alert( "Ключ: " + key + " значение: " + $$("kanban").getUserList()[key] );
-//            }
-          }*/
+
         $$("kanban").getUserList().$height = 650;
-//        $$("kanban").getUsers().clearAll();
+
 
         $$("toolbarButtonsON").show();
         $$("addTaskButton").show();
@@ -39,15 +33,7 @@ class TasksView {
         mapOfEmployees.forEach(function(employee, index, array) {
             addemployee(employee);
         });
-      //  console.log($$("kanban").data)
-       /* $$("kanban").data({    //Сортировка виджета Канбан
-            view:"kanbanlist", 
-       //     status:"Создано"
-          }).sort({
-          //  dir:"desc",
-            by:"id",
-            as:"int"      
-          });  */
+
     }
     
     addTask(task) {

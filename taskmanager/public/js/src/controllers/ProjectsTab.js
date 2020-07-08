@@ -97,4 +97,8 @@ class ProjectsTab {
         "<p>" + "Над проектом работают: " + employeesInfo + "<p>";
         
     }
+
+    getArrayOfEmployeesFromProject(projectId) {
+        return this.#projectsModel.getArrayOfEmployeesFromProject(projectId);
+    }
 }

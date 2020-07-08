@@ -61,19 +61,19 @@ func InitDB() {
 
 	//Карта задач
 	MapOfTasks = make(map[int]*entities.Task)
-	MapOfTasks[1] = &entities.Task{Text: "Создание макета", EstimatedTime: 2, SpentTime: 3, Id: 1, Status: "Завершено", Color: "", CreatorId: 1, AssignedToId: 1, ProjectId: 1}
-	MapOfTasks[2] = &entities.Task{Text: "Создание UML-диаграммы классов", EstimatedTime: 1, SpentTime: 1, Id: 2, Status: "Завершено", Color: "green", CreatorId: 1, AssignedToId: 2, ProjectId: 1}
-	MapOfTasks[3] = &entities.Task{Text: "Создание интерфейса при помощи Webix", EstimatedTime: 2, SpentTime: 1.5, Id: 3, Status: "Завершено", Color: "", CreatorId: 1, AssignedToId: 3, ProjectId: 1}
-	MapOfTasks[4] = &entities.Task{Text: "Осуществление загрузки данных из объектов", EstimatedTime: 1, SpentTime: 0.75, Id: 4, Status: "Завершено", Color: "", CreatorId: 1, AssignedToId: 4, ProjectId: 1}
-	MapOfTasks[5] = &entities.Task{Text: "Список сотрудников", EstimatedTime: 1, SpentTime: 0, Id: 5, Status: "В работе", Color: "red", CreatorId: 1, AssignedToId: 1, ProjectId: 1}
-	MapOfTasks[6] = &entities.Task{Text: "Список проектов", EstimatedTime: 1, SpentTime: 0, Id: 6, Status: "В работе", Color: "green", CreatorId: 1, AssignedToId: 1, ProjectId: 1}
-	MapOfTasks[7] = &entities.Task{Text: "Модальное окно для работы с сотрудниками", EstimatedTime: 1.5, SpentTime: 0, Id: 7, Status: "Назначено", Color: "", CreatorId: 1, AssignedToId: 1, ProjectId: 1}
-	MapOfTasks[8] = &entities.Task{Text: "Поменять виджет с сотрудниками на DataTable", EstimatedTime: 1, SpentTime: 0, Id: 8, Status: "Назначено", Color: "red", CreatorId: 1, AssignedToId: 1, ProjectId: 1}
-	MapOfTasks[9] = &entities.Task{Text: "Логика добавления/удаления сотрудников", EstimatedTime: 0, SpentTime: 0, Id: 9, Status: "Создано", Color: "", CreatorId: 1, AssignedToId: 0, ProjectId: 1}
-	MapOfTasks[10] = &entities.Task{Text: "Логика добавления/удаления проектов", EstimatedTime: 0, SpentTime: 0, Id: 10, Status: "Создано", Color: "orange", CreatorId: 1, AssignedToId: 0, ProjectId: 1}
-	MapOfTasks[11] = &entities.Task{Text: "Добавление сотрудников в проект", EstimatedTime: 1, SpentTime: 0, Id: 11, Status: "Создано", Color: "green", CreatorId: 1, AssignedToId: 0, ProjectId: 1}
-	MapOfTasks[12] = &entities.Task{Text: "Логика открывания проекта", EstimatedTime: 0, SpentTime: 0, Id: 12, Status: "Создано", Color: "", CreatorId: 1, AssignedToId: 0, ProjectId: 1}
-	MapOfTasks[13] = &entities.Task{Text: "Логика информации о проекте", EstimatedTime: 0, SpentTime: 0, Id: 13, Status: "Создано", Color: "green", CreatorId: 1, AssignedToId: 0, ProjectId: 1}
+	MapOfTasks[1] = &entities.Task{Text: "Создание макета", EstimatedTime: 2, SpentTime: 3, Id: 1, Status: "Завершено", Colour: "", CreatorId: 1, AssignedToId: 1, ProjectId: 1}
+	MapOfTasks[2] = &entities.Task{Text: "Создание UML-диаграммы классов", EstimatedTime: 1, SpentTime: 1, Id: 2, Status: "Завершено", Colour: "green", CreatorId: 1, AssignedToId: 2, ProjectId: 1}
+	MapOfTasks[3] = &entities.Task{Text: "Создание интерфейса при помощи Webix", EstimatedTime: 2, SpentTime: 1.5, Id: 3, Status: "Завершено", Colour: "", CreatorId: 1, AssignedToId: 3, ProjectId: 1}
+	MapOfTasks[4] = &entities.Task{Text: "Осуществление загрузки данных из объектов", EstimatedTime: 1, SpentTime: 0.75, Id: 4, Status: "Завершено", Colour: "", CreatorId: 1, AssignedToId: 4, ProjectId: 1}
+	MapOfTasks[5] = &entities.Task{Text: "Список сотрудников", EstimatedTime: 1, SpentTime: 0, Id: 5, Status: "В работе", Colour: "red", CreatorId: 1, AssignedToId: 1, ProjectId: 1}
+	MapOfTasks[6] = &entities.Task{Text: "Список проектов", EstimatedTime: 1, SpentTime: 0, Id: 6, Status: "В работе", Colour: "green", CreatorId: 1, AssignedToId: 1, ProjectId: 1}
+	MapOfTasks[7] = &entities.Task{Text: "Модальное окно для работы с сотрудниками", EstimatedTime: 1.5, SpentTime: 0, Id: 7, Status: "Назначено", Colour: "", CreatorId: 1, AssignedToId: 1, ProjectId: 1}
+	MapOfTasks[8] = &entities.Task{Text: "Поменять виджет с сотрудниками на DataTable", EstimatedTime: 1, SpentTime: 0, Id: 8, Status: "Назначено", Colour: "red", CreatorId: 1, AssignedToId: 1, ProjectId: 1}
+	MapOfTasks[9] = &entities.Task{Text: "Логика добавления/удаления сотрудников", EstimatedTime: 0, SpentTime: 0, Id: 9, Status: "Создано", Colour: "", CreatorId: 1, AssignedToId: 0, ProjectId: 1}
+	MapOfTasks[10] = &entities.Task{Text: "Логика добавления/удаления проектов", EstimatedTime: 0, SpentTime: 0, Id: 10, Status: "Создано", Colour: "orange", CreatorId: 1, AssignedToId: 0, ProjectId: 1}
+	MapOfTasks[11] = &entities.Task{Text: "Добавление сотрудников в проект", EstimatedTime: 1, SpentTime: 0, Id: 11, Status: "Создано", Colour: "green", CreatorId: 1, AssignedToId: 0, ProjectId: 1}
+	MapOfTasks[12] = &entities.Task{Text: "Логика открывания проекта", EstimatedTime: 0, SpentTime: 0, Id: 12, Status: "Создано", Colour: "", CreatorId: 1, AssignedToId: 0, ProjectId: 1}
+	MapOfTasks[13] = &entities.Task{Text: "Логика информации о проекте", EstimatedTime: 0, SpentTime: 0, Id: 13, Status: "Создано", Colour: "green", CreatorId: 1, AssignedToId: 0, ProjectId: 1}
 
 	///////////////////////////////////////////////////////////////
 }

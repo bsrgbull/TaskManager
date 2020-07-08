@@ -156,4 +156,8 @@ class ProjectsModel {
         return this.getProject(+projectId).getProjectInfo();
 
     }
+
+    getArrayOfEmployeesFromProject(projectId) {
+        return 
+    }
 }

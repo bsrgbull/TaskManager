@@ -9,65 +9,99 @@ import (
 type MTask struct {
 }
 
-//  /task
 func (m *MTask) AddTask(newTask *entities.Task) (int, error) {
-	fmt.Println(newTask, "MTask 14")
-	var maxId int = 0
+	query := "INSERT INTO tasks (text, status, colour, assignedto, project_id, " +
+		"creator, estimatedtime, spenttime) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING id"
 
-	for _, task := range app.MapOfTasks {
-		if task.Id > maxId {
-			maxId = task.Id
-		}
-	}
+	var id int
 
-	newTask.Id = maxId + 1
-
-	app.MapOfTasks[maxId+1] = newTask
-
-	var err error = nil
-
-	return maxId + 1, err
+	err := app.DB.QueryRow(query,
+		newTask.Text,
+		newTask.Status,
+		newTask.Colour,
+		newTask.AssignedToId,
+		newTask.ProjectId,
+		newTask.CreatorId,
+		newTask.EstimatedTime,
+		newTask.SpentTime).Scan(&id)
+	fmt.Println(err)
+	return id, err
 }
 
-//	/tasks/:projectId
 func (m *MTask) GetAllTasksFromProject(projectId int) ([]*entities.Task, error) {
 
-	tasks := []*entities.Task{}
-	var err error = nil
+	query := "SELECT text, status, colour, assignedto, project_id, creator, " +
+		"estimatedtime, spenttime, id FROM tasks WHERE project_id = $1"
 
-	for _, task := range app.MapOfTasks {
-		if task.ProjectId == projectId {
-			tasks = append(tasks, task)
-		}
+	rows, err := app.DB.Query(query, projectId)
+
+	if err != nil {
+		return nil, err
 	}
+
+	tasks := []*entities.Task{}
+
+	for rows.Next() {
+		i := entities.Task{}
+		err := rows.Scan(&i.Text, &i.Status, &i.Colour, &i.AssignedToId,
+			&i.ProjectId, &i.CreatorId, &i.EstimatedTime, &i.SpentTime, &i.Id)
+
+		if err != nil {
+			fmt.Println(err)
+			continue
+		}
+
+		tasks = append(tasks, &i)
+	}
+	defer rows.Close()
 
 	return tasks, err
 }
 
-//	/task/:taskId
 func (m *MTask) GetTask(taskId int) (*entities.Task, error) {
 
-	var i *entities.Task
-	var err error = nil
+	query := "SELECT text, status, colour, assignedto, project_id, creator, " +
+		"estimatedtime, spenttime, id FROM tasks WHERE id = $1"
 
-	i = app.MapOfTasks[taskId]
+	row, err := app.DB.Query(query, taskId)
 
-	return i, err
+	if err != nil {
+		return nil, err
+	}
+
+	defer row.Close()
+
+	row.Next()
+	i := entities.Task{}
+	err = row.Scan(&i.Text, &i.Status, &i.Colour, &i.AssignedToId,
+		&i.ProjectId, &i.CreatorId, &i.EstimatedTime, &i.SpentTime, &i.Id)
+
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	return &i, err
 }
 
-//	/updatetask
 func (m *MTask) UpdateTask(task *entities.Task) error {
-	fmt.Println(task)
-	app.MapOfTasks[task.Id] = task
 
-	return nil
+	query := "UPDATE tasks SET text = $1, status = $2, colour = $3, assignedto = $4, " +
+		"project_id = $5, creator = $6, estimatedtime = $7, spenttime = $8 WHERE id = $9"
+
+	_, err := app.DB.Exec(query,
+		task.Text, task.Status, task.Colour, task.AssignedToId,
+		task.ProjectId, task.CreatorId, task.EstimatedTime, task.SpentTime, task.Id)
+
+	return err
+
 }
 
-//	/task/:taskId
 func (m *MTask) DeleteTask(taskId int) error {
 
-	delete(app.MapOfTasks, taskId)
-	var err error = nil
+	_, err := app.DB.Exec("DELETE FROM tasks WHERE id = $1", taskId)
+	if err != nil {
+		panic(err)
+	}
 
 	return err
 }

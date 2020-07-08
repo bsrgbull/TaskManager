@@ -38,7 +38,7 @@ class EmployeesModel {
     }
 
     async getEmployee(id) {
-
+        
         let response = await fetch(`http://localhost:9000/employee/${id}`);
 
         let result = await response.json();
@@ -76,6 +76,7 @@ class EmployeesModel {
                     }
         
                 });
+                
         return map;
     }
 

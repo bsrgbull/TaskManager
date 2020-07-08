@@ -13,6 +13,7 @@ GET     /employee                               CEmployee.getAllEmployees
 GET     /employee/:id                           CEmployee.getEmployee
 POST    /updateemployee                         CEmployee.updateEmployee
 DELETE  /employee/:id                           CEmployee.deleteEmployee
+GET     /employeesfromproject/:projectid        CEmployee.getAllEmployeesFromProject
 
 POST    /project                                CProject.addProject
 GET     /project                                CProject.getAllProjects

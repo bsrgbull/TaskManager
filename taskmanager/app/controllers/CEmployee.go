@@ -37,6 +37,15 @@ func (c *CEmployee) GetAllEmployees() revel.Result {
 	return c.RenderJSON(response)
 }
 
+//Обработчик GET запросов с /employeesfromproject/:projectid
+func (c *CEmployee) GetAllEmployeesFromProject(projectId int) revel.Result {
+
+	employees, err := c.p.GetAllEmployeesFromProject(projectId)
+	response := entities.Resp{Data: employees, Err: err}
+
+	return c.RenderJSON(response)
+}
+
 //Обработчик GET запросов с /employee/:id
 func (c *CEmployee) GetEmployee(id int) revel.Result {
 

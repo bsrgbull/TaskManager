@@ -38,6 +38,7 @@ class Task {
     }
 
     setEstimatedTime(time) {
+
         this.#estimatedTime = String(time);
     }
 
