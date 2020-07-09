@@ -12,7 +12,7 @@ type MProject struct {
 //Создаёт новый проект
 func (m *MProject) AddProject(newProject *entities.Project) (int, error) {
 
-	query := "INSERT INTO projects (name, creator_Id, aimOfTheProject) VALUES ($1, $2, $3) RETURNING id"
+	query := "INSERT INTO projects (name, creator_id, aimOfTheProject) VALUES ($1, $2, $3) RETURNING id"
 
 	var id int
 

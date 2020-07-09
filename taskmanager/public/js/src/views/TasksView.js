@@ -71,7 +71,7 @@ class TasksView {
     }
 
     addEmployeesInModalWindow(employee){
-console.log(employee)
+
         $$("employeesTableInModalWindow").add({ 
             idOfEmployeeInModalWindow:`${employee.getId()}`,
             nameOfEmployeeInModalWindow:`${employee.getName()}`,
