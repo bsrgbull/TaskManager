@@ -2,39 +2,23 @@
 
 class EmployeesModel {
 
-    addEmployee(name, surname, password, login, email) {
+    async addEmployee(name, surname, password, login, email) {
 
-        let request = new XMLHttpRequest();
-
-        let json = JSON.stringify({
-            name: name,
-            surname: surname,
-            login: login,
-            email: email,
-            password: password,
+        let response = await fetch('http://localhost:9000/employee', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json;charset=utf-8'
+            },
+            body: JSON.stringify({
+                name: name,
+                surname: surname,
+                login: login,
+                email: email,
+                password: password,
+            })
         });
 
-        request.open("POST", 'http://localhost:9000/employee')
-        request.setRequestHeader('Content-type', 'application/json; charset=utf-8');
-
-        // xhr.onreadystatechange = ...;
-
-        // Отсылаем объект в формате JSON и с Content-Type application/json
-        request.send(json);
-        console.log(request);
-        if (request.status != 200) {
-            console.log( request.status + ': ' + request.statusText );
-            return request.status;
-        } else {
-            let response = JSON.parse(request.responseText);
-
-            if (response.Err == null) {
-                return response.Data;
-            } else {
-                console.log(response.Err);
-                return response.Err;
-            }
-        }
+        return await response.json();
     }
 
     async getEmployee(id) {
@@ -59,7 +43,7 @@ class EmployeesModel {
         }
     }
 
-    async getEmployeesFromArray(arrayOfEmployeesId) {
+    /*async getEmployeesFromArray(arrayOfEmployeesId) {
 
         let map = new Map();
 
@@ -78,14 +62,14 @@ class EmployeesModel {
                 });
                 
         return map;
-    }
+    }*/
 
-    getMapOfEmployees() {
+    async getMapOfEmployees() {
 
         let request = new XMLHttpRequest();
 
-        request.open('GET', `http://localhost:9000/employee`, false);
-        request.send();
+        await request.open('GET', `http://localhost:9000/employee`, false);
+        await request.send();
 
         let mapOfEmployees = new Map();
 
@@ -104,8 +88,9 @@ class EmployeesModel {
                                                  emp.password,
                                                  emp.login,
                                                  emp.email);
-
-                    mapOfEmployees.set(emp.id, employee)
+                    if (emp.id != 0)  {   // зарезервировал id = 0 за нулевым значением employee (в Go int не может быть nil)
+                        mapOfEmployees.set(emp.id, employee)
+                    }
                 }
             } else {
                 console.log(response.Err)
@@ -151,25 +136,41 @@ class EmployeesModel {
         }
     }
 
-    deleteEmployee(id) {
+    async deleteEmployee(id) {
 
-        let request = new XMLHttpRequest();
+        let response = await fetch(`http://localhost:9000/employee/${id}`, {
+            method: 'DELETE',
+        });
 
-        request.open('DELETE', `http://localhost:9000/employee/${id}`, false);
-        request.send();
-        
-        if (request.status != 200) {
-            console.log( request.status + ': ' + request.statusText );
-            return request.status
-        } else {
+        return await response.json();
+    }
 
-            let response = JSON.parse(request.responseText);
+    async getMapOfEmployeesFromProject(projectId) {
 
-            if (response.Err != null) {
-                console.log(response.Err)
-                return response.Err
+        let response = await fetch(`http://localhost:9000/employees/${+projectId}`);
+        let result = await response.json();
+
+        if (result.Err == null) {
+
+            let mapOfEmployees = new Map();
+
+            for (let emp of result.Data) {
+
+                let employee = new Employee(emp.id,
+                                            emp.name,
+                                            emp.surname,
+                                            emp.password,
+                                            emp.login,
+                                            emp.email);
+
+                if (emp.id != 0)  {   // зарезервировал id = 100 за нулевым значением employee (в Go int не может быть nil)
+                    mapOfEmployees.set(emp.id, employee)
+                }                                            
             }
-            return null
+
+            return mapOfEmployees;
+        } else {
+            console.log(response.Err)
         }
     }
 
@@ -194,5 +195,7 @@ class EmployeesModel {
         }
         return result;
     }*/
+
+
 }
 

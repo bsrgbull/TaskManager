@@ -10,14 +10,12 @@ class EmployeesTab {
         this.#employeesModel = new EmployeesModel();
     }
 
-    addEmployee(employee) {
-        this.#employeesModel.addEmployee(employee);
-        this.show();
-    }
-
     addNewEmployee(name, surname, password, login, email) {
-        let id = this.#employeesModel.addEmployee(name, surname, password, login, email);
-        this.#employeesView.addNewEmployee(id, name, surname, password, login, email);
+
+        this.#employeesModel.addEmployee(name, surname, password, login, email)
+            .then( id => {
+                this.#employeesView.addNewEmployee(id.Data, name, surname, password, login, email);
+            });
     }
 
     getEmployeesView() {
@@ -28,19 +26,17 @@ class EmployeesTab {
         return this.#employeesModel
     }
 
-    getEmployeesFromArray(arrayOfEmployeesId) {
-        return this.#employeesModel.getEmployeesFromArray(arrayOfEmployeesId)
-    }
-
     updateEmployee(id, name, surname, password, login, email) {
         this.#employeesModel.updateEmployee(id, name, surname, password, login, email);
         this.#employeesView.updateEmployee(id, name, surname, password, login, email);
     }
 
     deleteEmployee(id) {
-        this.#employeesModel.deleteEmployee(id);
-        this.#employeesView.deleteEmployee(id);
-        //this.show();
+        return this.#employeesModel.deleteEmployee(id)
+            .then( result => {
+                console.log(result)
+                this.#employeesView.deleteEmployee(id);
+            });
     }
 
     async getEmployee(id) {
@@ -52,8 +48,12 @@ class EmployeesTab {
         this.#employeesView.showEmployeesPage(this.#employeesModel);
     }
 
-    hide() {
-        
+    getMapOfEmployeesFromProject(projectId) {
+        return this.#employeesModel.getMapOfEmployeesFromProject(projectId);
+    }
+
+    getMapOfEmployees() {
+        return this.#employeesModel.getMapOfEmployees();
     }
 
 }

@@ -94,7 +94,11 @@ class TasksTab {
 
     addEmployeeInList(id) {
         this.#tasksModel.getTask(id).then((task) => {
-            this.#tasksView.addEmployeeInList(employeesTab.getEmployee(task.getAssignedToId() ) );
+
+            employeesTab.getEmployee(task.getAssignedToId() ).then( employee => {
+
+                    this.#tasksView.addEmployeeInList(employee);
+                });
         });
     }
 

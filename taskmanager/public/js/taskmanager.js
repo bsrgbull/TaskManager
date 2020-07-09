@@ -204,26 +204,32 @@ let webixReady = webix.ready(function () {
                         { view: "button", value: "Добавить", click:function(id,event){
 
                             let emplId;
-                            
+                            console.log($$("employeesTableInModalWindow").getSelectedItem())
                             if ($$("employeesTableInModalWindow").getSelectedItem() != undefined) {
                                 emplId = $$("employeesTableInModalWindow").getSelectedItem().idOfEmployeeInModalWindow;
                             }
 
                             if (emplId != "" && emplId != undefined ) {
-                                currentProject.addEmployee(emplId);
-                                projectsTab.addEmployeeToProject(currentProject.getId(), emplId);
-                                tasksTab.getTasksFromProject(currentProject.getId()).then( mapOfTasks => {
-                                                                      
-                                    employeesTab.getEmployeesFromArray(
-                                        currentProject.getArrayOfEmployeesId())
-                                            .then( mapOfEmployees => {
 
-                                                tasksTab.showTaskPage(mapOfTasks, mapOfEmployees);
-                                                $$("modalWindowForAddingEmployeesToProject").close();
+                                projectsTab.addEmployeeToProject(currentProject.getId(), emplId)
+                                    .then( result => {
 
-                                            });                    
+                                        let mapOfTasks;
+                                        let mapOfEmployees;
 
-                                })
+                                        Promise.all([
+                                            tasksTab.getTasksFromProject(currentProject.getId())
+                                                .then( map => { mapOfTasks = map } ),
+                                            employeesTab.getMapOfEmployeesFromProject(currentProject.getId())
+                                                .then( map => { mapOfEmployees = map } )
+                                        ]).then( () => {
+
+                                            tasksTab.showTaskPage(mapOfTasks, mapOfEmployees);
+                                            $$("modalWindowForAddingEmployeesToProject").close();
+                                               
+                                        });                                                                           
+            
+                                });
 
                             }
                         } },
@@ -235,13 +241,21 @@ let webixReady = webix.ready(function () {
             },
         }).show()
 
-        projectsTab.getProject(currentProject.getId())
-            .then( project => {
+        let mapOfAllEmployees;
+        let mapOfEmployeesInProject;
+        Promise.all([
+            employeesTab.getMapOfEmployees().then( map => { mapOfAllEmployees = map }),
+            employeesTab.getMapOfEmployeesFromProject(currentProject.getId())
+                .then( map => { mapOfEmployeesInProject = map })
+        ]).then( () => {
+            for (const employee of mapOfAllEmployees) {
+console.log(mapOfEmployeesInProject.get(employee[1].getId()))
+                if ( mapOfEmployeesInProject.get(employee[1].getId()) == undefined ) {
 
-                tasksTab.getTasksView().addEmployeesInModalWindow(
-                    employeesTab.getEmployeesModel(), project);
-
-            });
+                    tasksTab.getTasksView().addEmployeesInModalWindow(employee[1]);
+                }
+            }       
+        });
     }
 
     //Обработчик кнопок Добавить и Изменить сотрудника
@@ -376,10 +390,13 @@ let webixReady = webix.ready(function () {
             }).then(function(result) {
             let type = "";
             if(result == 0) {
-                projectsTab.deleteEmployeeFromProject(currentProject.getId(), selectedId.replace("employee", ""));
-                currentProject.deleteEmployee(selectedId.replace("employee", ""));
-                $$("listOfEmployees").remove(selectedId);
-                type = "success";
+                projectsTab.deleteEmployeeFromProject(currentProject.getId(), selectedId)
+                    .then( result => {
+
+                        $$("listOfEmployees").remove(selectedId);
+                        type = "success";
+                        
+                    });
             } else if(result == 1) type = "error";
     
             });
@@ -430,9 +447,10 @@ let webixReady = webix.ready(function () {
                 return;
             }
 
-            projectsTab.addNewProject(name, 1, aim,[1]);
-
-            $$("modalWindowForProjects").close();
+            projectsTab.addNewProject(name, 1, aim)
+                .then( result => {
+                    $$("modalWindowForProjects").close();
+                });
         }
         
         let changingProjectFunction = function() {
@@ -449,8 +467,7 @@ let webixReady = webix.ready(function () {
 
             projectsTab.getProject(id).then( project => {
                 
-                projectsTab.updateProject(+id, name, project.getArrayOfEmployeesId(),
-                                                            +project.getCreatorId(), aim);
+                projectsTab.updateProject(+id, name, 1, aim);
                 (async () => {
                     let info;
                     await projectsTab.getProjectInfo(employeesTab, id).then( result => { info = result })
@@ -640,19 +657,23 @@ let webixReady = webix.ready(function () {
           }).show()
     }
 
-    //Изменяем заголовок при заходе в проект
+
     let openProjectHandler = async function(id, event) {
         if ($$("projectsList").getSelectedId() != "" ){
 
             await projectsTab.getProject(Number($$("projectsList").getSelectedId() ) )
                 .then( result => {currentProject = result} );
 
-            let mapOfTasks = await tasksTab.getTasksFromProject($$("projectsList").getSelectedId());
-            let mapOfEmployees = employeesTab.getEmployeesFromArray(currentProject.getArrayOfEmployeesId());
+            let mapOfTasks;
+            let mapOfEmployees;
 
-            employeesTab.getEmployeesFromArray(currentProject.getArrayOfEmployeesId())
-                .then( mapOfEmployees => {
-
+            await Promise.all([
+                tasksTab.getTasksFromProject($$("projectsList").getSelectedId() )
+                    .then(result => { mapOfTasks =  result }),
+                employeesTab.getMapOfEmployeesFromProject(currentProject.getId() )
+                    .then(result => { mapOfEmployees = result })
+                ])
+                .then(() => {
                     tasksTab.showTaskPage(mapOfTasks, mapOfEmployees);
                     $$("projectName").define("template", currentProject.getName());
                     $$("projectName").refresh();
@@ -676,15 +697,16 @@ let webixReady = webix.ready(function () {
                 await tasksTab.addEmployeeInList(id);
         } else {
 
-            let arrayOfEmployeesId = currentProject.getArrayOfEmployeesId();
-
             let addemployeeinlist = tasksTab.getTasksView().addEmployeeInList;
 
-            for (let id of arrayOfEmployeesId) {
+            employeesTab.getMapOfEmployeesFromProject(currentProject.getId()).then( map => {
 
-                addemployeeinlist(employeesTab.getEmployee(id));
-                
-            }
+                for (const employee of map) {
+                    
+                    addemployeeinlist(employee[1]);
+
+                }
+            });
         }
     }
 
@@ -758,8 +780,6 @@ let webixReady = webix.ready(function () {
                         	let statusList = $$("status").getList();
                         	statusList.parse($$("kanban").getStatuses());
 
-                            let arrayOfEmployeesId = currentProject.getArrayOfEmployeesId();
-
                             await tasksTab.getTask(obj.id).then( task => { 
                                 
                                 let assignedToId = task.getAssignedToId();
@@ -780,7 +800,7 @@ let webixReady = webix.ready(function () {
                                 
                         	    } else {
 
-                                    employeesTab.getEmployeesFromArray(arrayOfEmployeesId)
+                                    employeesTab.getMapOfEmployeesFromProject(currentProject.getId())
                                         .then( mapOfEmployees => {
                                             
                                             mapOfEmployees.forEach( employee => {
@@ -834,7 +854,8 @@ let webixReady = webix.ready(function () {
                                     {id:"orange", value:"Нормальный", color:"orange"},   
                                     {id:"red", value:"Срочно", color:"red"}    
                             ] },
-                            { id: "status", view:"richselect", name:"$list", label:"Статус", options:[] }     
+                            { id: "status", view:"richselect", name:"$list", label:"Статус", options:[] } ,  
+                            { view:"richselect", name:"color", hidden:true},  
                         ]},
                     ],
                     comments:false,
@@ -1214,7 +1235,7 @@ let webixReady = webix.ready(function () {
         }
 
         tasksTab.updateTask(taskClicked, null, null, null, taskClicked.getId(),
-            null, null, "Назначено", null, assignedId.replace("userListEmployee", ""));
+            null, null, "Назначено", null, assignedId);
     })
 
 

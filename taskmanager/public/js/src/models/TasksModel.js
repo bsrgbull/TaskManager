@@ -19,7 +19,7 @@ class TasksModel {
                 Status: "Создано",
                 Colour: "",
                 CreatorId: creatorId,
-                AssignedToId: 0,
+                AssignedToId: 0,  //зарезервировано за значением null, в Go int не может быть nil
                 ProjectId: projectId,
             })
         });

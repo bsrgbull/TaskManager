@@ -43,3 +43,13 @@ func (p *PProject) DeleteProject(id int) error {
 
 	return p.m.DeleteProject(id)
 }
+
+func (p *PProject) AddEmployee(employeeId int, projectId int) error {
+
+	return p.m.AddEmployee(employeeId, projectId)
+}
+
+func (p *PProject) DeleteEmployee(employeeId int, projectId int) error {
+
+	return p.m.DeleteEmployee(employeeId, projectId)
+}

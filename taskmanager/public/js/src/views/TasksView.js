@@ -65,38 +65,26 @@ class TasksView {
 
     addEmployee(employee) {
         $$("listOfEmployees").add({
-            id: employee.getId() + "employee",
+            id: employee.getId(),
             title: employee.getSurnameAndName(),
         },0);
     }
 
-    addEmployeesInModalWindow(employeesModel, currentProject){
-
-        employeesModel.getMapOfEmployees().forEach(function(employee, index, array) {
-            //Если сотрудника ещё нет в проекте, добавляем в список
-            if (!currentProject.getArrayOfEmployeesId().includes(index)) {
-
-                $$("employeesTableInModalWindow").add({ 
-                    idOfEmployeeInModalWindow:`${employee.getId()}`,
-                    nameOfEmployeeInModalWindow:`${employee.getName()}`,
-                    surnameOfEmployeeInModalWindow:`${employee.getSurname()}`,
-                },0);
-            }
-        });
-
+    addEmployeesInModalWindow(employee){
+console.log(employee)
+        $$("employeesTableInModalWindow").add({ 
+            idOfEmployeeInModalWindow:`${employee.getId()}`,
+            nameOfEmployeeInModalWindow:`${employee.getName()}`,
+            surnameOfEmployeeInModalWindow:`${employee.getSurname()}`,
+        },0);
     }
 
     //Добавление сотрудников UserList виджета kanban
-    addEmployeeInList(employeePromise) {
+    addEmployeeInList(employee) {
         let users = $$("kanban").getUsers();
-
-        employeePromise.then( employee => {
-
             users.add({ 
-                id: employee.getId() + "userListEmployee",
+                id: employee.getId(),
                 value: employee.getSurnameAndName(), 
             });
-
-        });
     }
 }

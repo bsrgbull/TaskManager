@@ -12,76 +12,120 @@ type MEmployee struct {
 //Создаёт нового сотрудника
 func (m *MEmployee) AddEmployee(newEmployee *entities.Employee) (int, error) {
 
-	var maxId int = 0
+	query := "INSERT INTO employees (name, surname, login, email, password) VALUES ($1, $2, $3, $4, $5) RETURNING id"
 
-	for _, employee := range app.MapOfEmployees {
-		if employee.Id > maxId {
-			maxId = employee.Id
-		}
-	}
+	var id int
 
-	newEmployee.Id = maxId + 1
+	err := app.DB.QueryRow(query,
+		newEmployee.Name,
+		newEmployee.Surname,
+		newEmployee.Login,
+		newEmployee.Email,
+		newEmployee.Password).Scan(&id)
 
-	app.MapOfEmployees[maxId+1] = newEmployee
+	return id, err
 
-	var err error = nil
-
-	return maxId + 1, err
 }
 
 //Возвращает всех сотрудников в виде объектов Employee
 func (m *MEmployee) GetAllEmployees() ([]*entities.Employee, error) {
 
-	employees := []*entities.Employee{}
-	var err error = nil
+	query := "SELECT name, surname, login, email, password, id FROM employees"
 
-	for _, emp := range app.MapOfEmployees {
-		employees = append(employees, emp)
+	rows, err := app.DB.Query(query)
+
+	if err != nil {
+		return nil, err
 	}
+
+	employees := []*entities.Employee{}
+
+	for rows.Next() {
+		i := entities.Employee{}
+		err := rows.Scan(&i.Name, &i.Surname, &i.Login, &i.Email, &i.Password, &i.Id)
+
+		if err != nil {
+			fmt.Println(err)
+			continue
+		}
+		employees = append(employees, &i)
+	}
+	defer rows.Close()
 
 	return employees, err
 }
 
-//Возвращает всех сотрудников в виде объектов Employee
+//Возвращает всех сотрудников из проекта в виде объектов Employee
 func (m *MEmployee) GetAllEmployeesFromProject(projectId int) ([]*entities.Employee, error) {
 
-	employees := []*entities.Employee{}
-	var err error = nil
+	query := "SELECT name, surname, login, email, password, id " +
+		"FROM employees INNER JOIN employees_in_projects " +
+		"ON employees.id = employees_in_projects.employee_id " +
+		"WHERE project_id = $1"
 
-	for _, emp := range app.MapOfEmployees {
-		employees = append(employees, emp)
+	rows, err := app.DB.Query(query, projectId)
+
+	if err != nil {
+		return nil, err
 	}
+
+	employees := []*entities.Employee{}
+
+	for rows.Next() {
+		i := entities.Employee{}
+		err := rows.Scan(&i.Name, &i.Surname, &i.Login, &i.Email, &i.Password, &i.Id)
+
+		if err != nil {
+			fmt.Println(err)
+			continue
+		}
+		employees = append(employees, &i)
+	}
+	defer rows.Close()
 
 	return employees, err
 }
 
 //Возвращает сотрудника в виде объекта Employee
 func (m *MEmployee) GetEmployee(id int) (*entities.Employee, error) {
-	fmt.Println(id, "EmployeeTab 47")
-	var i *entities.Employee
-	var err error = nil
 
-	i = app.MapOfEmployees[id]
+	query := "SELECT name, surname, login, email, password, id FROM employees WHERE id = $1"
 
-	fmt.Println(i, "EmployeeTab 53")
+	row, err := app.DB.Query(query, id)
 
-	return i, err
+	if err != nil {
+		return nil, err
+	}
+
+	defer row.Close()
+
+	row.Next()
+	i := entities.Employee{}
+	err = row.Scan(&i.Name, &i.Surname, &i.Login, &i.Email, &i.Password, &i.Id)
+
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	return &i, err
 
 }
 
 //Обновляет сотрудника
 func (m *MEmployee) UpdateEmployee(emp *entities.Employee) error {
 
-	app.MapOfEmployees[emp.Id] = emp
+	query := "UPDATE employees SET name = $1, surname = $2, login = $3, email = $4, password = $5 WHERE id = $6"
 
-	return nil
+	_, err := app.DB.Exec(query,
+		emp.Name, emp.Surname, emp.Login, emp.Email, emp.Password, emp.Id)
+
+	return err
 }
 
 //Удаляет сотрудника
 func (m *MEmployee) DeleteEmployee(id int) error {
 
-	delete(app.MapOfEmployees, id)
-	var err error = nil
+	_, err := app.DB.Exec("DELETE FROM employees WHERE id = $1", id)
 
 	return err
 }

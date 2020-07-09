@@ -17,9 +17,13 @@ class EmployeesView {
 
         let addemployee = this.addEmployee;
 
-        employeesModel.getMapOfEmployees().forEach(function(item, index, array) {
-            addemployee(item);
-        });
+        employeesModel.getMapOfEmployees()
+            .then( map => {
+
+                map.forEach(function(employee, index, array) {
+                    addemployee(employee);
+                });
+            })
 
     }
 

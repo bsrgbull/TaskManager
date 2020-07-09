@@ -4,7 +4,7 @@ class ProjectsModel {
 
     #mapOfProjects;
 
-    async addProject(name, creatorId, aimOfTheProject, arrayOfEmployeesId) {
+    async addProject(name, creatorId, aimOfTheProject) {
 
         let response = await fetch('http://localhost:9000/project', {
             method: 'POST',
@@ -15,7 +15,6 @@ class ProjectsModel {
                 name: name,
                 creatorId: +creatorId,
                 aimOfTheProject: aimOfTheProject,
-                arrayOfEmployeesId: arrayOfEmployeesId,
             })
         });
 
@@ -33,8 +32,7 @@ class ProjectsModel {
             let project = new Project( result.Data.id,
                                        result.Data.name,
                                        result.Data.creatorId,
-                                       result.Data.aimOfTheProject,
-                                       result.Data.ArrayOfEmployeesId);
+                                       result.Data.aimOfTheProject);
             return project;
         } else {
             console.log(response.Err)
@@ -62,8 +60,7 @@ class ProjectsModel {
                     let project = new Project( proj.id,
                                                proj.name,
                                                proj.creatorId,
-                                               proj.aimOfTheProject,
-                                               proj.ArrayOfEmployeesId);
+                                               proj.aimOfTheProject);
 
                     mapOfProjects.set(proj.id, project)
                 }
@@ -75,8 +72,7 @@ class ProjectsModel {
         return mapOfProjects;
     }
 
-    async updateProject(id, name, arrayOfEmployeesId, creatorId, aimOfTheProject) {
-
+    async updateProject(id, name, creatorId, aimOfTheProject) {
 
         let response = await fetch('http://localhost:9000/updateproject', {
             method: 'POST',
@@ -87,7 +83,6 @@ class ProjectsModel {
                 Name: name,
                 CreatorId: +creatorId,
                 AimOfTheProject: aimOfTheProject,
-                ArrayOfEmployeesId: arrayOfEmployeesId,
                 Id: +id,
             })
         });
@@ -95,61 +90,34 @@ class ProjectsModel {
         return await response.json();
     }
 
-    deleteProject(id) {
+    async deleteProject(id) {
 
-        let request = new XMLHttpRequest();
+        let response = await fetch(`http://localhost:9000/project/${id}`, {
+            method: 'DELETE',
+        });
 
-        request.open('DELETE', `http://localhost:9000/project/${id}`, false);
-        request.send();
-        
-        if (request.status != 200) {
-            console.log( request.status + ': ' + request.statusText );
-            return request.status
-        } else {
-
-            let response = JSON.parse(request.responseText);
-
-            if (response.Err != null) {
-                console.log(response.Err)
-                return response.Err
-            }
-            return null
-        }
+        return await response.json();
     }
 
-    addEmployeeToProject(projectId, employeeId) {
+    async addEmployeeToProject(projectId, employeeId) {
 
-        this.getProject(projectId).then(project => {
-            let arrayOfEmployeesId = project.getArrayOfEmployeesId();
-            arrayOfEmployeesId.push(+employeeId);
-
-            this.updateProject( +projectId, 
-                                project.getName(),
-                                arrayOfEmployeesId,
-                                +project.getCreatorId(),
-                                project.getAimOfTheProject() );
+        let response = await fetch(`http://localhost:9000/projectemp/` + 
+        `?employeeId=${employeeId}&projectId=${projectId}`, {
+            method: 'POST',
         });
+
+        return await response.json();
 
     }
 
-    deleteEmployeeFromProject(projectId, employeeId) {
+    async deleteEmployeeFromProject(projectId, employeeId) {
 
-        this.getProject(projectId).then(project => {
-
-            let arrayOfEmployeesId = project.getArrayOfEmployeesId();
-
-            let index = arrayOfEmployeesId.indexOf(+employeeId);
-
-            if (index != -1) {
-                arrayOfEmployeesId.splice(index, 1);
-            }
-
-            this.updateProject( +projectId, 
-                                project.getName(),
-                                arrayOfEmployeesId,
-                                +project.getCreatorId(),
-                                project.getAimOfTheProject() );
+        let response = await fetch(`http://localhost:9000/projectemp/` + 
+        `?employeeId=${employeeId}&projectId=${projectId}`, {
+            method: 'DELETE',
         });
+
+        return await response.json();
     }
 
     getProjectInfo(projectId){
@@ -157,7 +125,4 @@ class ProjectsModel {
 
     }
 
-    getArrayOfEmployeesFromProject(projectId) {
-        return 
-    }
 }

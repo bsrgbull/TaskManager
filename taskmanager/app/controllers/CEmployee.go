@@ -37,10 +37,10 @@ func (c *CEmployee) GetAllEmployees() revel.Result {
 	return c.RenderJSON(response)
 }
 
-//Обработчик GET запросов с /employeesfromproject/:projectid
-func (c *CEmployee) GetAllEmployeesFromProject(projectId int) revel.Result {
+//Обработчик GET запросов с /employees/:projectid
+func (c *CEmployee) GetAllEmployeesFromProject(projectid int) revel.Result {
 
-	employees, err := c.p.GetAllEmployeesFromProject(projectId)
+	employees, err := c.p.GetAllEmployeesFromProject(projectid)
 	response := entities.Resp{Data: employees, Err: err}
 
 	return c.RenderJSON(response)

@@ -23,20 +23,28 @@ class ProjectsTab {
         this.show();
     }
 
-    async addNewProject(name, creatorId, aimOfTheProject, arrayOfEmployeesId) {
-
-        let result = await this.#projectsModel.addProject(name, creatorId, aimOfTheProject, arrayOfEmployeesId);
-          
+    async addNewProject(name, creatorId, aimOfTheProject) {
+                  
         let id;
 
-        if (result.Err == null) {
-            id = result.Data;
-        } else {
-            console.log(result.Err);
-            return result.Err;
-        }
+        this.#projectsModel.addProject(name, creatorId, aimOfTheProject)
+            .then( result => {
 
-        this.#projectView.addNewProject(id, name);
+                if (result.Err == null) {
+
+                    id = result.Data;
+
+                } else {
+                    console.log(result.Err);
+                    return result.Err; //!!!
+                }
+
+                projectsTab.addEmployeeToProject(id, 1)
+                    .then( result => {
+                        
+                        this.#projectView.addNewProject(id, name);
+                    });
+            });
     }
 
     deleteProject(id) {
@@ -58,11 +66,11 @@ class ProjectsTab {
     }
 
     addEmployeeToProject(projectId, employeeId){
-        this.#projectsModel.addEmployeeToProject(projectId, employeeId);
+        return this.#projectsModel.addEmployeeToProject(+projectId, +employeeId);
     }
 
     deleteEmployeeFromProject(projectId, employeeId) {
-        this.#projectsModel.deleteEmployeeFromProject(projectId, employeeId);
+        return this.#projectsModel.deleteEmployeeFromProject(+projectId, +employeeId);
     }
 
     show() {
@@ -83,7 +91,7 @@ class ProjectsTab {
        
         let employeesInfo = "";
 
-        await employeesTab.getEmployeesFromArray(project.getArrayOfEmployeesId())
+        await employeesTab.getMapOfEmployeesFromProject(projectId)
                 .then( mapOfEmployees => {
                     mapOfEmployees.forEach(function(employee, index, array) {
                         employeesInfo += employee.getSurnameAndName() + ", ";
@@ -96,9 +104,5 @@ class ProjectsTab {
       //"Создатель проекта: " + employeesTab.getEmployee(this.#creatorId).getSurnameAndName() + "</p>" +
         "<p>" + "Над проектом работают: " + employeesInfo + "<p>";
         
-    }
-
-    getArrayOfEmployeesFromProject(projectId) {
-        return this.#projectsModel.getArrayOfEmployeesFromProject(projectId);
     }
 }

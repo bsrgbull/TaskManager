@@ -13,13 +13,16 @@ GET     /employee                               CEmployee.getAllEmployees
 GET     /employee/:id                           CEmployee.getEmployee
 POST    /updateemployee                         CEmployee.updateEmployee
 DELETE  /employee/:id                           CEmployee.deleteEmployee
-GET     /employeesfromproject/:projectid        CEmployee.getAllEmployeesFromProject
+GET     /employees/:projectid                   CEmployee.getAllEmployeesFromProject
 
 POST    /project                                CProject.addProject
 GET     /project                                CProject.getAllProjects
 GET     /project/:id                            CProject.getProject
 POST    /updateproject                          CProject.updateProject
 DELETE  /project/:id                            CProject.deleteProject
+
+POST    /projectemp                             CProject.addEmployee
+DELETE  /projectemp                             CProject.deleteEmployee
 
 POST    /task                                   CTask.addTask
 GET     /tasks/:projectId                       CTask.getAllTasksFromProject
