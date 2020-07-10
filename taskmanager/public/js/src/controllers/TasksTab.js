@@ -10,11 +10,11 @@ class TasksTab {
         this.#tasksModel = new TasksModel();
     }
 
-    addTask(task) {
+    /*addTask(task) {
         this.#tasksModel.addTask(task.getId(), task.getCreatorId(),
                                     task.getProjectId() );
         this.#tasksView.addTask(task);
-    }
+    }*/
 
     async addNewTask(text, creatorId, projectId) {
 

@@ -16,10 +16,6 @@ class Project {
         this.#aimOfTheProject = aimOfTheProject;
     }
 
-    getProjectInfo() {
-
-
-    }
 
     getName() {
         return this.#name;

@@ -2,8 +2,6 @@
 
 class ProjectsModel {
 
-    #mapOfProjects;
-
     async addProject(name, creatorId, aimOfTheProject) {
 
         let response = await fetch('http://localhost:9000/project', {
@@ -120,9 +118,9 @@ class ProjectsModel {
         return await response.json();
     }
 
-    getProjectInfo(projectId){
+    /*getProjectInfo(projectId){
         return this.getProject(+projectId).getProjectInfo();
 
-    }
+    }*/
 
 }

@@ -39,9 +39,9 @@ class ProjectView {
         },0);
     }
 
-    updateProject(id, name, arrayOfEmployeesId, creatorId, aimOfTheProject) {
+    updateProject(id, name, creatorId, aimOfTheProject) {
         $$("projectsList").remove(id);
-        this.addNewProject(id, name, arrayOfEmployeesId, creatorId, aimOfTheProject);
+        this.addNewProject(id, name, creatorId, aimOfTheProject);
     }
 
 

@@ -55,14 +55,6 @@ class TasksView {
 
     }
 
-    updateTask(id) {
-
-    }
-
-    deleteTask(id) {
-        
-    }
-
     addEmployee(employee) {
         $$("listOfEmployees").add({
             id: employee.getId(),

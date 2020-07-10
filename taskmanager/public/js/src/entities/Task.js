@@ -74,10 +74,6 @@ class Task {
         this.#assignedToId = Number(id);
     }
 
-    deleteAssignedToId() {
-        this.#assignedToId = null;
-    }
-
     setColor(color) {
         this.#color = color
     }

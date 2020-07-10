@@ -66,7 +66,7 @@ class Employee {
         return this.#password;
     }
 
-    setName(password) {
+    setPassword(password) {
         this.#password = password;
     }
 

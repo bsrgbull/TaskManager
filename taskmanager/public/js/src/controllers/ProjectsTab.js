@@ -18,10 +18,10 @@ class ProjectsTab {
         return this.#projectsModel
     }
 
-    addProject(project) {
+    /*addProject(project) {
         this.#projectsModel.addProject(project);
         this.show();
-    }
+    }*/
 
     async addNewProject(name, creatorId, aimOfTheProject) {
                   
@@ -56,14 +56,14 @@ class ProjectsTab {
         return await this.#projectsModel.getProject(id);
     }
 
-    updateProject(id, name, arrayOfEmployeesId, creatorId, aimOfTheProject) {
-        this.#projectsModel.updateProject(id, name, arrayOfEmployeesId, creatorId, aimOfTheProject);
-        this.#projectView.updateProject(id, name, arrayOfEmployeesId, creatorId, aimOfTheProject);
+    updateProject(id, name, creatorId, aimOfTheProject) {
+        this.#projectsModel.updateProject(id, name, creatorId, aimOfTheProject);
+        this.#projectView.updateProject(id, name, creatorId, aimOfTheProject);
     }
 
-    addTaskToProject(projectId, task) {
+    /*addTaskToProject(projectId, task) {
         this.#projectsModel.addTaskToProject(projectId, task);
-    }
+    }*/
 
     addEmployeeToProject(projectId, employeeId){
         return this.#projectsModel.addEmployeeToProject(+projectId, +employeeId);

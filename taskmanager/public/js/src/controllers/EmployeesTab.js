@@ -33,10 +33,10 @@ class EmployeesTab {
 
     deleteEmployee(id) {
         return this.#employeesModel.deleteEmployee(id)
-            .then( result => {
-                console.log(result)
-                this.#employeesView.deleteEmployee(id);
-            });
+                    .then( result => {
+                        console.log(result)
+                        this.#employeesView.deleteEmployee(id);
+                    });
     }
 
     async getEmployee(id) {

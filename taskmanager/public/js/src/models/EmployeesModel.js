@@ -141,8 +141,12 @@ class EmployeesModel {
         let response = await fetch(`http://localhost:9000/employee/${id}`, {
             method: 'DELETE',
         });
-
-        return await response.json();
+console.log(response)
+        if (response.status == 200) {
+            return await response.json();
+        } else {
+            return 200
+        }
     }
 
     async getMapOfEmployeesFromProject(projectId) {

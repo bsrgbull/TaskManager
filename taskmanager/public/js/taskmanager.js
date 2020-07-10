@@ -249,7 +249,7 @@ let webixReady = webix.ready(function () {
                 .then( map => { mapOfEmployeesInProject = map })
         ]).then( () => {
             for (const employee of mapOfAllEmployees) {
-console.log(mapOfEmployeesInProject.get(employee[1].getId()))
+
                 if ( mapOfEmployeesInProject.get(employee[1].getId()) == undefined ) {
 
                     tasksTab.getTasksView().addEmployeesInModalWindow(employee[1]);
@@ -421,7 +421,11 @@ console.log(mapOfEmployeesInProject.get(employee[1].getId()))
             }).then(function(result) {
                 let type = "";
                 if(result == 0) {
-                    employeesTab.deleteEmployee(empId);
+                    employeesTab.deleteEmployee(empId)
+                        .then(
+                            result => {  },
+                            error => { webix.message("Операция не удалась") }
+                        );
                     type = "success";
                 } else if(result == 1) type = "error";
         
