@@ -15,8 +15,11 @@ class ProjectsModel {
                 aimOfTheProject: aimOfTheProject,
             })
         });
-
-        return await response.json();
+        if (response.status == 200) {
+            return await response.json();
+        } else {
+            return "error"
+        }
     }
 
     async getProject(id) {
@@ -37,37 +40,30 @@ class ProjectsModel {
         }
     }
 
-    getMapOfProjects() {
+    async getMapOfProjects() {
 
-        let request = new XMLHttpRequest();
+        let response = await fetch(`http://localhost:9000/project`);
+        let result = await response.json();
 
-        request.open('GET', `http://localhost:9000/project`, false);
-        request.send();
+        if (result.Err == null) {
 
-        let mapOfProjects = new Map();
+            let mapOfProjects = new Map();
 
-        if (request.status != 200) {
-            console.log( request.status + ': ' + request.statusText );
-        } else {
+            for (let proj of result.Data) {
 
-            let response = JSON.parse(request.responseText);
-            
-            if (response.Err == null) {
-                for (let proj of response.Data) {
+                let project = new Project( proj.id,
+                                           proj.name,
+                                           proj.creatorId,
+                                           proj.aimOfTheProject);
 
-                    let project = new Project( proj.id,
-                                               proj.name,
-                                               proj.creatorId,
-                                               proj.aimOfTheProject);
-
-                    mapOfProjects.set(proj.id, project)
-                }
-            } else {
-                console.log(response.Err)
+                mapOfProjects.set(proj.id, project)
             }
-        }
 
-        return mapOfProjects;
+            return mapOfProjects;
+        } else {
+            webix.message(result.Severity + " Код:" + result.Code + " " + 
+                            result.Message + " " + result.Detail);
+        }
     }
 
     async updateProject(id, name, creatorId, aimOfTheProject) {
@@ -117,10 +113,5 @@ class ProjectsModel {
 
         return await response.json();
     }
-
-    /*getProjectInfo(projectId){
-        return this.getProject(+projectId).getProjectInfo();
-
-    }*/
 
 }

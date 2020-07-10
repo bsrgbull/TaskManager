@@ -40,8 +40,24 @@ class EmployeesTab {
     }
 
     updateEmployee(id, name, surname, password, login, email) {
-        this.#employeesModel.updateEmployee(id, name, surname, password, login, email);
-        this.#employeesView.updateEmployee(id, name, surname, password, login, email);
+
+        this.#employeesModel.updateEmployee(id, name, surname, password, login, email)
+            .then( result => {
+                    if (result != "error") {
+                        if (result.Err == null) {
+                            this.#employeesView.updateEmployee(id, name, surname, password, login, email);
+                        } else {
+                            webix.message(result.Severity + " Код:" + result.Code + " " + 
+                                                        result.Message + " " + result.Detail);
+                        }
+                    } else {
+                        webix.message("Операция не удалась");
+                    }
+                },
+                error => {
+                    webix.message("Операция не удалась");
+                }
+            );
     }
 
     deleteEmployee(id) {

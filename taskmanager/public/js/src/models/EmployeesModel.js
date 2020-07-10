@@ -30,9 +30,10 @@ class EmployeesModel {
         let response = await fetch(`http://localhost:9000/employee/${id}`);
 
         let result = await response.json();
-        
-        if (result.Err == null) {
 
+        if (response.status != 200) {
+            webix.message("Не удалось загрузить Сотрудника");
+        } else if (result.Err == null) {
 
             let employee = new Employee( result.Data.id,
                                          result.Data.name,
@@ -43,100 +44,63 @@ class EmployeesModel {
             return employee
 
         } else {
-            console.log(response.Err)
+            webix.message(result.Severity + " Код:" + result.Code + " " + 
+                                result.Message + " " + result.Detail);
         }
     }
-
-    /*async getEmployeesFromArray(arrayOfEmployeesId) {
-
-        let map = new Map();
-
-        let requests = arrayOfEmployeesId.map(employeeId => this.getEmployee(employeeId));
-
-        await Promise.all(requests)
-                .then(responses => {
-                    //все промисы успешно завершены
-                    let i = 0;
-
-                    for(let employeeId of arrayOfEmployeesId) {
-                        map.set(employeeId, responses[i]);
-                        i++;
-                    }
-        
-                });
-                
-        return map;
-    }*/
 
     async getMapOfEmployees() {
 
-        let request = new XMLHttpRequest();
+        let response = await fetch(`http://localhost:9000/employee`);
+        let result = await response.json();
 
-        await request.open('GET', `http://localhost:9000/employee`, false);
-        await request.send();
+        if (response.status != 200) {
+            webix.message("Не удалось загрузить Сотрудников");
+        } else if (result.Err == null) {
 
-        let mapOfEmployees = new Map();
+            let mapOfEmployees = new Map();
 
-        if (request.status != 200) {
-            console.log( request.status + ': ' + request.statusText );
-        } else {
+            for (let emp of result.Data) {
 
-            let response = JSON.parse(request.responseText);
-            
-            if (response.Err == null) {
-                for (let emp of response.Data) {
-
-                    let employee = new Employee( emp.id,
-                                                 emp.name,
-                                                 emp.surname,
-                                                 emp.password,
-                                                 emp.login,
-                                                 emp.email);
-                    if (emp.id != 0)  {   // зарезервировал id = 0 за нулевым значением employee (в Go int не может быть nil)
-                        mapOfEmployees.set(emp.id, employee)
-                    }
+                let employee = new Employee( emp.id,
+                                             emp.name,
+                                             emp.surname,
+                                             emp.password,
+                                             emp.login,
+                                             emp.email);
+                if (emp.id != 0)  {   // зарезервировал id = 0 за нулевым значением employee (в Go int не может быть nil)
+                    mapOfEmployees.set(emp.id, employee)
                 }
-            } else {
-                console.log(response.Err)
             }
-        }
 
-        return mapOfEmployees;
+            return mapOfEmployees;
+        } else {
+            webix.message(result.Severity + " Код:" + result.Code + " " + 
+                            result.Message + " " + result.Detail);
+        }
     }
 
-    updateEmployee(id, name, surname, password, login, email) {
+    async updateEmployee(id, name, surname, password, login, email) {
 
-        let request = new XMLHttpRequest();
-
-        let json = JSON.stringify({
-            name: name,
-            surname: surname,
-            login: login,
-            email: email,
-            password: password,
-            id: +id,
+        let response = await fetch('http://localhost:9000/updateemployee', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json;charset=utf-8'
+            },
+            body: JSON.stringify({
+                name: name,
+                surname: surname,
+                login: login,
+                email: email,
+                password: password,
+                id: +id,
+            })
         });
-
-        request.open("POST", 'http://localhost:9000/updateemployee');
-        request.setRequestHeader('Content-type', 'application/json; charset=utf-8');
-
-        // xhr.onreadystatechange = ...;
-
-        // Отсылаем объект в формате JSON и с Content-Type application/json
-        request.send(json);
-
-        if (request.status != 200) {
-            console.log( request.status + ': ' + request.statusText );
-            return request.status;
+        
+        if (response.status == 200) {
+            return await response.json();
         } else {
-            let response = JSON.parse(request.responseText);
-
-            if (response.Err == null) {
-                return response.Data;
-            } else {
-                console.log(response.Err);
-                return response.Err;
-            }
+            return "error"
         }
     }
 
@@ -158,7 +122,9 @@ class EmployeesModel {
         let response = await fetch(`http://localhost:9000/employees/${+projectId}`);
         let result = await response.json();
 
-        if (result.Err == null) {
+        if (response.status != 200) {
+            webix.message("Не удалось загрузить Сотрудников");
+        } else if (result.Err == null) {
 
             let mapOfEmployees = new Map();
 
@@ -178,7 +144,8 @@ class EmployeesModel {
 
             return mapOfEmployees;
         } else {
-            console.log(response.Err)
+            webix.message(result.Severity + " Код:" + result.Code + " " + 
+                            result.Message + " " + result.Detail);
         }
     }
 

@@ -427,11 +427,11 @@ let webixReady = webix.ready(function () {
                                 if (result == "error") {
                                     webix.message("Операция не удалась");
                                 } else if ( result != undefined ) {
-                                    console.log(result)
-                                    webix.message(result.Severity + " Код:" + result.Code + " " + 
-                                                    result.Message + " " + result.Detail);
                                     if (result.Code == 23503) {
                                         webix.message("Невозможно удалить сотрудника, который участвует в проектах или работает с заданиями");
+                                    } else {
+                                        console.log(result.Severity + " Код:" + result.Code + " " + 
+                                                        result.Message + " " + result.Detail);
                                     }
                                 }
                             },

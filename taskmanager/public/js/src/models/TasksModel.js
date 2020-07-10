@@ -24,7 +24,11 @@ class TasksModel {
             })
         });
 
-        return await response.json();
+        if (response.status == 200) {
+            return await response.json();
+        } else {
+            return "error"
+        }
     }
 
 
@@ -47,7 +51,8 @@ class TasksModel {
                                  result.Data.AssignedToId);
             return task;
         } else {
-            console.log(response.Err)
+            webix.message(result.Severity + " Код:" + result.Code + " " + 
+                                         result.Message + " " + result.Detail);
         }
     }
 
@@ -80,7 +85,8 @@ class TasksModel {
 
             return mapOfTasks;
         } else {
-            console.log(response.Err)
+            webix.message(result.Severity + " Код:" + result.Code + " " + 
+                                           result.Message + " " + result.Detail);
         }
     }
 
@@ -113,9 +119,6 @@ class TasksModel {
         let response = await fetch(`http://localhost:9000/task/${id}`, {
             method: 'DELETE',
         });
-
-        return await response.json();
-
     }
 
     setMapOfTasks(mapOfTasks) {

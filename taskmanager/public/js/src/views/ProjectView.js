@@ -20,9 +20,12 @@ class ProjectView {
 
         let addproject = this.addProject;
 
-        projectsModel.getMapOfProjects().forEach(function(item, index, array) {
-            addproject(item);
-        });
+        projectsModel.getMapOfProjects()
+            .then( map => {
+                map.forEach(function(project, index, array) {
+                    addproject(project);
+                });
+            });
     }
 
     addProject(project) {

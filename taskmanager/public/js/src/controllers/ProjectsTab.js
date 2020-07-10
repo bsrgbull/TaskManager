@@ -18,38 +18,44 @@ class ProjectsTab {
         return this.#projectsModel
     }
 
-    /*addProject(project) {
-        this.#projectsModel.addProject(project);
-        this.show();
-    }*/
-
     async addNewProject(name, creatorId, aimOfTheProject) {
                   
         let id;
 
         this.#projectsModel.addProject(name, creatorId, aimOfTheProject)
             .then( result => {
-
-                if (result.Err == null) {
-
-                    id = result.Data;
-
+                if (result != "error") {
+                    if (result.Err == null) {
+                        this.#projectView.addNewProject(result.Data, name);
+                    } else {
+                        webix.message(result.Severity + " Код:" + result.Code + " " + 
+                                                    result.Message + " " + result.Detail);
+                    }
                 } else {
-                    console.log(result.Err);
-                    return result.Err; //!!!
+                    webix.message("Операция не удалась");
                 }
-
-                projectsTab.addEmployeeToProject(id, 1)
-                    .then( result => {
-                        
-                        this.#projectView.addNewProject(id, name);
-                    });
-            });
+            },
+            error => {
+                webix.message("Операция не удалась");
+            }
+        );
     }
 
     deleteProject(id) {
-        this.#projectsModel.deleteProject(id);
-        this.show();
+        return this.#projectsModel.deleteProject(id)
+                    .then( result => {
+                            if ( result != "error" ) {
+                                if (result.Err == null) {
+                                    this.show();
+                                } else {
+                                    return result.Err;
+                                }
+                            } else {
+                                return "error"
+                            }
+                        },
+                        error => { return "error" }
+                    );
     }
 
     async getProject(id) {
@@ -57,13 +63,25 @@ class ProjectsTab {
     }
 
     updateProject(id, name, creatorId, aimOfTheProject) {
-        this.#projectsModel.updateProject(id, name, creatorId, aimOfTheProject);
-        this.#projectView.updateProject(id, name, creatorId, aimOfTheProject);
-    }
 
-    /*addTaskToProject(projectId, task) {
-        this.#projectsModel.addTaskToProject(projectId, task);
-    }*/
+        this.#projectsModel.updateProject(id, name, creatorId, aimOfTheProject)
+            .then( result => {
+                    if (result != "error") {
+                        if (result.Err == null) {
+                            this.#projectView.updateProject(id, name, creatorId, aimOfTheProject);
+                        } else {
+                            webix.message(result.Severity + " Код:" + result.Code + " " + 
+                                                        result.Message + " " + result.Detail);
+                        }
+                    } else {
+                        webix.message("Операция не удалась");
+                    }
+                },
+                error => {
+                    webix.message("Операция не удалась");
+                }
+            );
+    }
 
     addEmployeeToProject(projectId, employeeId){
         return this.#projectsModel.addEmployeeToProject(+projectId, +employeeId);

@@ -10,26 +10,25 @@ class TasksTab {
         this.#tasksModel = new TasksModel();
     }
 
-    /*addTask(task) {
-        this.#tasksModel.addTask(task.getId(), task.getCreatorId(),
-                                    task.getProjectId() );
-        this.#tasksView.addTask(task);
-    }*/
+    addNewTask(text, creatorId, projectId) {
 
-    async addNewTask(text, creatorId, projectId) {
-
-        let result = await this.#tasksModel.addTask(text, creatorId, projectId);
-
-        let id;
-
-        if (result.Err == null) {
-            id = result.Data;
-        } else {
-            console.log(result.Err);
-            return result.Err;
-        }
-
-        this.#tasksView.addNewTask(text, id);
+        this.#tasksModel.addTask(text, creatorId, projectId)
+            .then( result => {
+                if (result != "error") {
+                    if (result.Err == null){
+                        this.#tasksView.addNewTask(text, result.Data);
+                    } else {
+                        webix.message(result.Severity + " Код:" + result.Code + " " + 
+                                                    result.Message + " " + result.Detail);
+                }
+                } else {
+                    webix.message("Операция не удалась");
+                }
+            },
+            error => {
+                webix.message("Операция не удалась");
+            }
+        );
     }
 
     getTasksModel() {
@@ -75,7 +74,7 @@ class TasksTab {
         }
 
         this.#tasksModel.updateTask(text, +creatorId, +projectId, +id,
-                 +estimatedTime, +spentTime, status, colour, +assignedToId);
+                 +estimatedTime, +spentTime, status, colour, +assignedToId);  
     }
 
     deleteTask(id) {
