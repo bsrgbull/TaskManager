@@ -1,7 +1,6 @@
 package controllers
 
 import (
-	"fmt"
 	"taskmanager/app/entities"
 	"taskmanager/app/providers"
 
@@ -17,12 +16,19 @@ type CEmployee struct {
 //Обработчик POST запросов с /employee
 func (c *CEmployee) AddEmployee() revel.Result {
 	var jsonData map[string]interface{}
-	c.Params.BindJSON(&jsonData)
+	err := c.Params.BindJSON(&jsonData)
 
-	var newEmployee entities.Employee
-	mapstructure.Decode(jsonData, &newEmployee)
+	var id int
 
-	id, err := c.p.AddEmployee(&newEmployee)
+	if err == nil {
+		var newEmployee entities.Employee
+		err = mapstructure.Decode(jsonData, &newEmployee)
+
+		if err == nil {
+			id, err = c.p.AddEmployee(&newEmployee)
+		}
+	}
+
 	response := entities.Resp{Data: id, Err: err}
 
 	return c.RenderJSON(response)
@@ -57,16 +63,19 @@ func (c *CEmployee) GetEmployee(id int) revel.Result {
 
 //Обработчик POST запросов с /updateemployee
 func (c *CEmployee) UpdateEmployee() revel.Result {
+
 	var jsonData map[string]interface{}
-	c.Params.BindJSON(&jsonData)
+	err := c.Params.BindJSON(&jsonData)
 
-	fmt.Println(jsonData)
+	if err == nil {
+		var Employee entities.Employee
+		err = mapstructure.Decode(jsonData, &Employee)
 
-	var newEmployee entities.Employee
-	mapstructure.Decode(jsonData, &newEmployee)
-	fmt.Println(newEmployee)
+		if err == nil {
+			err = c.p.UpdateEmployee(&Employee)
+		}
+	}
 
-	err := c.p.UpdateEmployee(&newEmployee)
 	response := entities.Resp{Data: nil, Err: err}
 
 	return c.RenderJSON(response)

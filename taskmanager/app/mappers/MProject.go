@@ -35,11 +35,13 @@ func (m *MProject) GetAllProjects() ([]*entities.Project, error) {
 		return nil, err
 	}
 
+	defer rows.Close()
+
 	projects := []*entities.Project{}
 
 	for rows.Next() {
 		i := entities.Project{}
-		err := rows.Scan(&i.Name, &i.AimOfTheProject, &i.Id, &i.CreatorId)
+		err = rows.Scan(&i.Name, &i.AimOfTheProject, &i.Id, &i.CreatorId)
 
 		if err != nil {
 			fmt.Println(err)
@@ -47,10 +49,8 @@ func (m *MProject) GetAllProjects() ([]*entities.Project, error) {
 		}
 		projects = append(projects, &i)
 	}
-	defer rows.Close()
 
 	return projects, err
-
 }
 
 //Возвращает проект в виде объекта Project
@@ -70,12 +70,7 @@ func (m *MProject) GetProject(id int) (*entities.Project, error) {
 	i := entities.Project{}
 	err = row.Scan(&i.Name, &i.CreatorId, &i.AimOfTheProject, &i.Id)
 
-	if err != nil {
-		fmt.Println(err)
-	}
-
 	return &i, err
-
 }
 
 //Обновляет проект
@@ -96,9 +91,6 @@ func (m *MProject) DeleteProject(id int) error {
 	query := "DELETE FROM projects WHERE id = $1"
 
 	_, err := app.DB.Exec(query, id)
-	if err != nil {
-		panic(err)
-	}
 
 	return err
 }
@@ -119,9 +111,6 @@ func (m *MProject) DeleteEmployee(employeeId int, projectId int) error {
 	query := "DELETE FROM employees_in_projects WHERE project_id = $1 AND employee_id = $2"
 
 	_, err := app.DB.Exec(query, projectId, employeeId)
-	if err != nil {
-		panic(err)
-	}
 
 	return err
 }

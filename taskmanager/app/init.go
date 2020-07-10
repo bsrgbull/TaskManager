@@ -33,6 +33,8 @@ func InitDB() {
 	}
 	fmt.Println("DB Connected")
 	//	revel.INFO.Println("DB Connected")
+
+	
 	/*	/////////////////////////////////////////////////////////////
 
 		//Карта сотрудников

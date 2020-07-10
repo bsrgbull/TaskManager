@@ -204,7 +204,7 @@ let webixReady = webix.ready(function () {
                         { view: "button", value: "Добавить", click:function(id,event){
 
                             let emplId;
-                            console.log($$("employeesTableInModalWindow").getSelectedItem())
+
                             if ($$("employeesTableInModalWindow").getSelectedItem() != undefined) {
                                 emplId = $$("employeesTableInModalWindow").getSelectedItem().idOfEmployeeInModalWindow;
                             }
@@ -423,8 +423,19 @@ let webixReady = webix.ready(function () {
                 if(result == 0) {
                     employeesTab.deleteEmployee(empId)
                         .then(
-                            result => {  },
-                            error => { webix.message("Операция не удалась") }
+                            result => { 
+                                if (result == "error") {
+                                    webix.message("Операция не удалась");
+                                } else if ( result != undefined ) {
+                                    console.log(result)
+                                    webix.message(result.Severity + " Код:" + result.Code + " " + 
+                                                    result.Message + " " + result.Detail);
+                                    if (result.Code == 23503) {
+                                        webix.message("Невозможно удалить сотрудника, который участвует в проектах или работает с заданиями");
+                                    }
+                                }
+                            },
+                            error => { webix.message("Операция не удалась"); }
                         );
                     type = "success";
                 } else if(result == 1) type = "error";

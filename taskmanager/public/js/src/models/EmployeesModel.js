@@ -18,7 +18,11 @@ class EmployeesModel {
             })
         });
 
-        return await response.json();
+        if (response.status == 200) {
+            return await response.json();
+        } else {
+            return "error"
+        }
     }
 
     async getEmployee(id) {
@@ -141,11 +145,11 @@ class EmployeesModel {
         let response = await fetch(`http://localhost:9000/employee/${id}`, {
             method: 'DELETE',
         });
-console.log(response)
+
         if (response.status == 200) {
             return await response.json();
         } else {
-            return 200
+            return "error"
         }
     }
 

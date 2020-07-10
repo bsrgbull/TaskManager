@@ -9,10 +9,6 @@ type PProject struct {
 	m mappers.MProject
 }
 
-/*func (p PProject) Before() {
-	p.m = mappers.MProject{}
-}*/
-
 func (p *PProject) AddProject(newProject *entities.Project) (int, error) {
 
 	return p.m.AddProject(newProject)
@@ -21,17 +17,13 @@ func (p *PProject) AddProject(newProject *entities.Project) (int, error) {
 //Возвращает все проекты в виде массива объектов и ошибку
 func (p *PProject) GetAllProjects() ([]*entities.Project, error) {
 
-	projects, err := p.m.GetAllProjects()
-
-	return projects, err
+	return p.m.GetAllProjects()
 }
 
 //Возвращает проект в виде объекта, и ошибку
 func (p *PProject) GetProject(id int) (*entities.Project, error) {
 
-	project, err := p.m.GetProject(id)
-
-	return project, err
+	return p.m.GetProject(id)
 }
 
 func (p *PProject) UpdateProject(newProject *entities.Project) error {

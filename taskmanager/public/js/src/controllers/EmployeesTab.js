@@ -13,9 +13,22 @@ class EmployeesTab {
     addNewEmployee(name, surname, password, login, email) {
 
         this.#employeesModel.addEmployee(name, surname, password, login, email)
-            .then( id => {
-                this.#employeesView.addNewEmployee(id.Data, name, surname, password, login, email);
-            });
+            .then( result => {
+                if (result != "error") {
+                    if (result.Err == null){
+                        this.#employeesView.addNewEmployee(result.Data, name, surname, password, login, email);
+                    } else {
+                        webix.message(result.Severity + " Код:" + result.Code + " " + 
+                                                    result.Message + " " + result.Detail);
+                    }
+                } else {
+                    webix.message("Операция не удалась");
+                }
+            },
+            error => {
+                webix.message("Операция не удалась");
+            }
+        );
     }
 
     getEmployeesView() {
@@ -34,9 +47,18 @@ class EmployeesTab {
     deleteEmployee(id) {
         return this.#employeesModel.deleteEmployee(id)
                     .then( result => {
-                        console.log(result)
-                        this.#employeesView.deleteEmployee(id);
-                    });
+                            if ( result != "error" ) {
+                                if (result.Err == null) {
+                                    this.#employeesView.deleteEmployee(id);
+                                } else {
+                                    return result.Err;
+                                }
+                            } else {
+                                return "error"
+                            }
+                        },
+                        error => { return "error" }
+                    );
     }
 
     async getEmployee(id) {

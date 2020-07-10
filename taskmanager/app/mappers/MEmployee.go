@@ -38,11 +38,13 @@ func (m *MEmployee) GetAllEmployees() ([]*entities.Employee, error) {
 		return nil, err
 	}
 
+	defer rows.Close()
+
 	employees := []*entities.Employee{}
 
 	for rows.Next() {
 		i := entities.Employee{}
-		err := rows.Scan(&i.Name, &i.Surname, &i.Login, &i.Email, &i.Password, &i.Id)
+		err = rows.Scan(&i.Name, &i.Surname, &i.Login, &i.Email, &i.Password, &i.Id)
 
 		if err != nil {
 			fmt.Println(err)
@@ -50,7 +52,6 @@ func (m *MEmployee) GetAllEmployees() ([]*entities.Employee, error) {
 		}
 		employees = append(employees, &i)
 	}
-	defer rows.Close()
 
 	return employees, err
 }
@@ -69,11 +70,13 @@ func (m *MEmployee) GetAllEmployeesFromProject(projectId int) ([]*entities.Emplo
 		return nil, err
 	}
 
+	defer rows.Close()
+
 	employees := []*entities.Employee{}
 
 	for rows.Next() {
 		i := entities.Employee{}
-		err := rows.Scan(&i.Name, &i.Surname, &i.Login, &i.Email, &i.Password, &i.Id)
+		err = rows.Scan(&i.Name, &i.Surname, &i.Login, &i.Email, &i.Password, &i.Id)
 
 		if err != nil {
 			fmt.Println(err)
@@ -81,7 +84,6 @@ func (m *MEmployee) GetAllEmployeesFromProject(projectId int) ([]*entities.Emplo
 		}
 		employees = append(employees, &i)
 	}
-	defer rows.Close()
 
 	return employees, err
 }
@@ -102,10 +104,6 @@ func (m *MEmployee) GetEmployee(id int) (*entities.Employee, error) {
 	row.Next()
 	i := entities.Employee{}
 	err = row.Scan(&i.Name, &i.Surname, &i.Login, &i.Email, &i.Password, &i.Id)
-
-	if err != nil {
-		fmt.Println(err)
-	}
 
 	return &i, err
 

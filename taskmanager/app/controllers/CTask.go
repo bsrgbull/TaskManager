@@ -16,12 +16,19 @@ type CTask struct {
 //Обработчик POST запросов с /task
 func (c *CTask) AddTask() revel.Result {
 	var jsonData map[string]interface{}
-	c.Params.BindJSON(&jsonData)
+	err := c.Params.BindJSON(&jsonData)
 
-	var newTask entities.Task
-	mapstructure.Decode(jsonData, &newTask)
+	var id int
 
-	id, err := c.p.AddTask(&newTask)
+	if err == nil {
+		var newTask entities.Task
+		err = mapstructure.Decode(jsonData, &newTask)
+
+		if err == nil {
+			id, err = c.p.AddTask(&newTask)
+		}
+	}
+
 	response := entities.Resp{Data: id, Err: err}
 
 	return c.RenderJSON(response)
@@ -48,12 +55,17 @@ func (c *CTask) GetTask(taskId int) revel.Result {
 //Обработчик POST запросов с /updatetask
 func (c *CTask) UpdateTask() revel.Result {
 	var jsonData map[string]interface{}
-	c.Params.BindJSON(&jsonData)
+	err := c.Params.BindJSON(&jsonData)
 
-	var task entities.Task
-	mapstructure.Decode(jsonData, &task)
+	if err == nil {
+		var task entities.Task
+		err = mapstructure.Decode(jsonData, &task)
 
-	err := c.p.UpdateTask(&task)
+		if err == nil {
+			err = c.p.UpdateTask(&task)
+		}
+	}
+
 	response := entities.Resp{Data: nil, Err: err}
 
 	return c.RenderJSON(response)

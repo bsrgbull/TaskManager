@@ -24,7 +24,7 @@ func (m *MTask) AddTask(newTask *entities.Task) (int, error) {
 		newTask.CreatorId,
 		newTask.EstimatedTime,
 		newTask.SpentTime).Scan(&id)
-	fmt.Println(err)
+
 	return id, err
 }
 
@@ -39,11 +39,13 @@ func (m *MTask) GetAllTasksFromProject(projectId int) ([]*entities.Task, error) 
 		return nil, err
 	}
 
+	defer rows.Close()
+
 	tasks := []*entities.Task{}
 
 	for rows.Next() {
 		i := entities.Task{}
-		err := rows.Scan(&i.Text, &i.Status, &i.Colour, &i.AssignedToId,
+		err = rows.Scan(&i.Text, &i.Status, &i.Colour, &i.AssignedToId,
 			&i.ProjectId, &i.CreatorId, &i.EstimatedTime, &i.SpentTime, &i.Id)
 
 		if err != nil {
@@ -53,7 +55,6 @@ func (m *MTask) GetAllTasksFromProject(projectId int) ([]*entities.Task, error) 
 
 		tasks = append(tasks, &i)
 	}
-	defer rows.Close()
 
 	return tasks, err
 }
@@ -76,10 +77,6 @@ func (m *MTask) GetTask(taskId int) (*entities.Task, error) {
 	err = row.Scan(&i.Text, &i.Status, &i.Colour, &i.AssignedToId,
 		&i.ProjectId, &i.CreatorId, &i.EstimatedTime, &i.SpentTime, &i.Id)
 
-	if err != nil {
-		fmt.Println(err)
-	}
-
 	return &i, err
 }
 
@@ -99,9 +96,6 @@ func (m *MTask) UpdateTask(task *entities.Task) error {
 func (m *MTask) DeleteTask(taskId int) error {
 
 	_, err := app.DB.Exec("DELETE FROM tasks WHERE id = $1", taskId)
-	if err != nil {
-		panic(err)
-	}
 
 	return err
 }

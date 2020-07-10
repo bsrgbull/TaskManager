@@ -1,7 +1,6 @@
 package controllers
 
 import (
-	"fmt"
 	"strconv"
 	"taskmanager/app/entities"
 	"taskmanager/app/providers"
@@ -18,12 +17,19 @@ type CProject struct {
 //Обработчик GET запросов с /project
 func (c *CProject) AddProject() revel.Result {
 	var jsonData map[string]interface{}
-	c.Params.BindJSON(&jsonData)
+	err := c.Params.BindJSON(&jsonData)
 
-	var newProject entities.Project
-	mapstructure.Decode(jsonData, &newProject)
+	var id int
 
-	id, err := c.p.AddProject(&newProject)
+	if err == nil {
+		var newProject entities.Project
+		mapstructure.Decode(jsonData, &newProject)
+
+		if err == nil {
+			id, err = c.p.AddProject(&newProject)
+		}
+	}
+
 	response := entities.Resp{Data: id, Err: err}
 
 	return c.RenderJSON(response)
@@ -50,15 +56,17 @@ func (c *CProject) GetProject(id int) revel.Result {
 //Обработчик POST запросов с /updateproject
 func (c *CProject) UpdateProject() revel.Result {
 	var jsonData map[string]interface{}
-	c.Params.BindJSON(&jsonData)
+	err := c.Params.BindJSON(&jsonData)
 
-	fmt.Println("MProject-------------")
-	fmt.Println(jsonData)
+	if err == nil {
+		var Project entities.Project
+		mapstructure.Decode(jsonData, &Project)
 
-	var newProject entities.Project
-	mapstructure.Decode(jsonData, &newProject)
+		if err == nil {
+			err = c.p.UpdateProject(&Project)
+		}
+	}
 
-	err := c.p.UpdateProject(&newProject)
 	response := entities.Resp{Data: nil, Err: err}
 
 	return c.RenderJSON(response)
@@ -77,9 +85,15 @@ func (c *CProject) DeleteProject(id int) revel.Result {
 func (c *CProject) AddEmployee() revel.Result {
 
 	employeeId, err := strconv.Atoi(c.Params.Query.Get("employeeId"))
-	projectId, err := strconv.Atoi(c.Params.Query.Get("projectId"))
 
-	err = c.p.AddEmployee(employeeId, projectId)
+	if err == nil {
+		projectId, err := strconv.Atoi(c.Params.Query.Get("projectId"))
+
+		if err == nil {
+			err = c.p.AddEmployee(employeeId, projectId)
+		}
+	}
+
 	response := entities.Resp{Data: nil, Err: err}
 
 	return c.RenderJSON(response)
@@ -89,11 +103,15 @@ func (c *CProject) AddEmployee() revel.Result {
 func (c *CProject) DeleteEmployee() revel.Result {
 
 	employeeId, err := strconv.Atoi(c.Params.Query.Get("employeeId"))
-	projectId, err := strconv.Atoi(c.Params.Query.Get("projectId"))
 
-	fmt.Println(employeeId, projectId)
+	if err == nil {
+		projectId, err := strconv.Atoi(c.Params.Query.Get("projectId"))
 
-	err = c.p.DeleteEmployee(employeeId, projectId)
+		if err == nil {
+			err = c.p.DeleteEmployee(employeeId, projectId)
+		}
+	}
+
 	response := entities.Resp{Data: nil, Err: err}
 
 	return c.RenderJSON(response)

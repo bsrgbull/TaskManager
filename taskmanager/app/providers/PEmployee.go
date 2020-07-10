@@ -17,25 +17,18 @@ func (p *PEmployee) AddEmployee(newEmployee *entities.Employee) (int, error) {
 //Возвращает всех сотрудников в виде массива объектов и ошибку
 func (p *PEmployee) GetAllEmployees() ([]*entities.Employee, error) {
 
-	employees, err := p.m.GetAllEmployees()
-
-	return employees, err
+	return p.m.GetAllEmployees()
 }
 
 func (p *PEmployee) GetAllEmployeesFromProject(projectId int) ([]*entities.Employee, error) {
 
-	employees, err := p.m.GetAllEmployeesFromProject(projectId)
-
-	return employees, err
-
+	return p.m.GetAllEmployeesFromProject(projectId)
 }
 
 //Возвращает сотрудника в виде объекта, и ошибку
 func (p *PEmployee) GetEmployee(id int) (*entities.Employee, error) {
 
-	employee, err := p.m.GetEmployee(id)
-
-	return employee, err
+	return p.m.GetEmployee(id)
 }
 
 func (p *PEmployee) UpdateEmployee(newEmployee *entities.Employee) error {
