@@ -40,8 +40,6 @@ let webixReady = webix.ready(function () {
     //В этой переменной запоминаем была ли нажата кнопка комментариев
     let ifCommentsButtonClicked;
 
-    //Промис длязагрузки нажатой каарточки
-    let taskPromise;
 
     //Русификация
     webix.i18n.locales["ru-RU"].kanban = {
@@ -461,8 +459,8 @@ let webixReady = webix.ready(function () {
                                     if (result.Code == 23503) {
                                         webix.message("Невозможно удалить сотрудника, который участвует в проектах или работает с заданиями");
                                     } else {
-                                        console.log(result.Severity + " Код:" + result.Code + " " + 
-                                                        result.Message + " " + result.Detail);
+                                        webix.message("ОШИБКА");
+                                        console.log(result);
                                     }
                                 }
                             },
@@ -759,8 +757,7 @@ let webixReady = webix.ready(function () {
                             webix.message("Логин или пароль не верен");
                         } else {
                             webix.message("ОШИБКА")
-                            console.log(result.Severity + " Код:" + result.Code + " " + 
-                                                        result.Message + " " + result.Detail);
+                            console.log(result);
                         }
                     } else {
                         webix.message("Войти не удалась, попробуйте ещё раз");

@@ -18,8 +18,8 @@ class TasksTab {
                     if (result.Err == null){
                         this.#tasksView.addNewTask(text, result.Data);
                     } else {
-                        webix.message(result.Severity + " Код:" + result.Code + " " + 
-                                                    result.Message + " " + result.Detail);
+                        webix.message("ОШИБКА")
+                        console.log(result);
                 }
                 } else {
                     webix.message("Операция не удалась");

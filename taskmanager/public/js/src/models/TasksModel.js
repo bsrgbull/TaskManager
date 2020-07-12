@@ -51,8 +51,8 @@ class TasksModel {
                                  result.Data.AssignedToId);
             return task;
         } else {
-            webix.message(result.Severity + " Код:" + result.Code + " " + 
-                                         result.Message + " " + result.Detail);
+            webix.message("ОШИБКА");
+            console.log(result);
         }
     }
 
@@ -85,8 +85,8 @@ class TasksModel {
 
             return mapOfTasks;
         } else {
-            webix.message(result.Severity + " Код:" + result.Code + " " + 
-                                           result.Message + " " + result.Detail);
+            console.log("ОШИБКА")
+            webix.message(result);
         }
     }
 

@@ -61,8 +61,8 @@ class ProjectsModel {
 
             return mapOfProjects;
         } else {
-            webix.message(result.Severity + " Код:" + result.Code + " " + 
-                            result.Message + " " + result.Detail);
+            webix.message("ОШИБКА");
+            console.log(result);
         }
     }
 

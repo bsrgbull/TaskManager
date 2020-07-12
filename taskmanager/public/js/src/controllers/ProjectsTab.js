@@ -28,8 +28,8 @@ class ProjectsTab {
                     if (result.Err == null) {
                         this.#projectView.addNewProject(result.Data, name);
                     } else {
-                        webix.message(result.Severity + " Код:" + result.Code + " " + 
-                                                    result.Message + " " + result.Detail);
+                        webix.message("ОШИБКА")
+                        console.log(result);
                     }
                 } else {
                     webix.message("Операция не удалась");
@@ -70,8 +70,8 @@ class ProjectsTab {
                         if (result.Err == null) {
                             this.#projectView.updateProject(id, name, creatorId, aimOfTheProject);
                         } else {
-                            webix.message(result.Severity + " Код:" + result.Code + " " + 
-                                                        result.Message + " " + result.Detail);
+                            webix.message("ОШИБКА")
+                            console.log(result);
                         }
                     } else {
                         webix.message("Операция не удалась");

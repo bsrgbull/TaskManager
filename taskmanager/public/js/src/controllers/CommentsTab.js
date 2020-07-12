@@ -13,11 +13,9 @@ class CommentsTab {
         this.#commentsModel.addComment(authorid, taskid, text)
             .then( result => {
                 if (result != "error") {
-                    if (result.Err == null){
-                      //  this.#commentsView.addNewComment(result.Data, authorid, taskid, text);
-                    } else {
-                        webix.message(result.Severity + " Код:" + result.Code + " " + 
-                                                    result.Message + " " + result.Detail);
+                    if (result.Err != null){
+                        webix.message("ОШИБКА")
+                        console.log(result);
                     }
                 } else {
                     webix.message("Операция не удалась");

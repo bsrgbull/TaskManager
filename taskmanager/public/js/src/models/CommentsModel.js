@@ -40,8 +40,8 @@ class CommentsModel {
             return comment
 
         } else {
-            webix.message(result.Severity + " Код:" + result.Code + " " + 
-                                result.Message + " " + result.Detail);
+            webix.message("ОШИБКА");
+            console.log(result);
         }
     }
 
@@ -68,8 +68,8 @@ class CommentsModel {
 
             return mapOfComments;
         } else {
-            webix.message(result.Severity + " Код:" + result.Code + " " + 
-                            result.Message + " " + result.Detail);
+            webix.message("ОШИБКА");
+            console.log(result);
         }
     }
 

@@ -18,8 +18,8 @@ class EmployeesTab {
                     if (result.Err == null){
                         this.#employeesView.addNewEmployee(result.Data, name, surname, password, login, email);
                     } else {
-                        webix.message(result.Severity + " Код:" + result.Code + " " + 
-                                                    result.Message + " " + result.Detail);
+                        webix.message("ОШИБКИ");
+                        console.log(result);
                     }
                 } else {
                     webix.message("Операция не удалась");
@@ -47,8 +47,8 @@ class EmployeesTab {
                         if (result.Err == null) {
                             this.#employeesView.updateEmployee(id, name, surname, password, login, email);
                         } else {
-                            webix.message(result.Severity + " Код:" + result.Code + " " + 
-                                                        result.Message + " " + result.Detail);
+                            webix.message("ОШИБКА")
+                            console.log(result);
                         }
                     } else {
                         webix.message("Операция не удалась");

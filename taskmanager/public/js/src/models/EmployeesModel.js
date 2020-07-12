@@ -44,8 +44,8 @@ class EmployeesModel {
             return employee
 
         } else {
-            webix.message(result.Severity + " Код:" + result.Code + " " + 
-                                result.Message + " " + result.Detail);
+            webix.message("ОШИБКА");
+            console.log(result);
         }
     }
 
@@ -75,8 +75,8 @@ class EmployeesModel {
 
             return mapOfEmployees;
         } else {
-            webix.message(result.Severity + " Код:" + result.Code + " " + 
-                            result.Message + " " + result.Detail);
+            webix.message("ОШИБКА");
+            console.log(result);
         }
     }
 
@@ -144,8 +144,8 @@ class EmployeesModel {
 
             return mapOfEmployees;
         } else {
-            webix.message(result.Severity + " Код:" + result.Code + " " + 
-                            result.Message + " " + result.Detail);
+            webix.message("ОШИБКА");
+            console.log(result);
         }
     }
 

@@ -92,10 +92,13 @@ class TasksView {
     //Добавление сотрудников UserList виджета kanban
     addEmployeeInList(employee) {
         let users = $$("kanban").getUsers();
-            users.add({ 
-                id: employee.getId(),
-                value: employee.getSurnameAndName(), 
-          //      image: "docs.webix.com/samples/63_kanban/common/imgs/1.jpg"
+
+
+
+        users.add({ 
+            id: employee.getId(),
+            value: employee.getSurnameAndName(),
+            image: `https://docs.webix.com/samples/63_kanban/common/imgs/${employee.getId() % 10}.jpg`
             });
     }
 }
