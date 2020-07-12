@@ -149,28 +149,19 @@ class EmployeesModel {
         }
     }
 
-   /* login(login, password) {
+    async login(login, password) {
 
-        let result = false;
+        let response = await fetch(`http://localhost:9000/login/` + 
+        `?login=${login}&password=${password}`, {
+            method: 'POST',
+        });
 
-        if (login != "" && password != "" && login != undefined && password != undefined ) {
-
-            this.#mapOfEmployees.forEach(function(employee, index, array) {
-
-                if ((employee.getLogin() == login || employee.getEmail() == password)
-                    && employee.getPassword() == password) {
-
-                    alert((employee.getLogin() == login || employee.getEmail() == password)
-                    && employee.getPassword() == password);
-
-                    result = employee.getId();
-                    return;
-                }   
-            });
+        if (response.status == 200) {
+            return await response.json();
+        } else {
+            return "error"
         }
-        return result;
-    }*/
-
+    }
 
 }
 

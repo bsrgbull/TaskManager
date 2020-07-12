@@ -2,11 +2,12 @@
 
 class LoginView {
 
-	showLoginPage() {
-	$$("toolbarButtonsON").hide();
+    showLoginPage() {
+        $$("toolbarButtonsON").hide();
         $$("addTaskButton").hide();
         $$("projectName").hide();
         $$("exitButton").hide();
+        $$("employeesPage").hide();
         $$("tasksPage").hide();
         $$("projectPage").hide();
         $$("taskButtonsOff").show();
@@ -14,5 +15,5 @@ class LoginView {
         $$("registrationButton").show();
         $$("startLabel").show();
         $$("authenticationButtons").show();
-	}
+    }
 } 

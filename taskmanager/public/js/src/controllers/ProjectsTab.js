@@ -108,6 +108,7 @@ class ProjectsTab {
         }  
        
         let employeesInfo = "";
+        let creatorInfo = "";
 
         await employeesTab.getMapOfEmployeesFromProject(projectId)
                 .then( mapOfEmployees => {
@@ -118,8 +119,17 @@ class ProjectsTab {
         
         employeesInfo = employeesInfo.substring(0, employeesInfo.length - 2);
 
+        await projectsTab.getProject(projectId)
+                .then(async function(project) { 
+                        await employeesTab.getEmployee(project.getCreatorId() )
+                        .then( employee =>
+                            {
+                                creatorInfo = employee.getSurnameAndName();
+                        });
+                });
+
         return aim + "<p>" + 
-      //"Создатель проекта: " + employeesTab.getEmployee(this.#creatorId).getSurnameAndName() + "</p>" +
+        "Создатель проекта: " + creatorInfo + "</p>" +
         "<p>" + "Над проектом работают: " + employeesInfo + "<p>";
         
     }

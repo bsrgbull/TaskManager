@@ -3,13 +3,12 @@
 class TasksView {
 
 
-    showTaskPage(mapOfTasks, mapOfEmployees) {
+    showTaskPage(mapOfTasks, mapOfEmployees, mapOfComments, currentUser) {
 
         $$("kanban").clearAll();
         $$("listOfEmployees").clearAll();
 
         $$("kanban").getUserList().$height = 650;
-
 
         $$("toolbarButtonsON").show();
         $$("addTaskButton").show();
@@ -22,10 +21,28 @@ class TasksView {
         $$("registrationButton").hide();
         $$("startLabel").hide();
 
+        $$("comments").setCurrentUser(currentUser.getId());
+
+
         let addtask = this.addTask;
 
         mapOfTasks.forEach(function(task, index, array) {
-            addtask(task);
+
+            let arrayOfComments = [];
+
+            mapOfComments.forEach(comment => {
+
+                if (comment.getTaskId() == task.getId() ) {
+                    arrayOfComments.push(
+                        {
+                            id: comment.getId(),
+                            user_id: comment.getAuthorId(),
+                            text: comment.getText()
+                        });
+                }
+            });
+
+            addtask(task, arrayOfComments);
         });
 
         let addemployee = this.addEmployee;
@@ -36,12 +53,13 @@ class TasksView {
 
     }
     
-    addTask(task) {
+    addTask(task, arrayOfComments) {
         $$("kanban").add({ id:`${task.getId()}`,
                            status:`${task.getStatus()}`,
                            text:`${task.getText()}`,
                            user_id:`${task.getAssignedToId()}`,
-                           color:`${task.getColor()}`
+                           color:`${task.getColor()}`,
+                           comments: arrayOfComments,
                         },0);
     }
 
@@ -77,6 +95,7 @@ class TasksView {
             users.add({ 
                 id: employee.getId(),
                 value: employee.getSurnameAndName(), 
+          //      image: "docs.webix.com/samples/63_kanban/common/imgs/1.jpg"
             });
     }
 }

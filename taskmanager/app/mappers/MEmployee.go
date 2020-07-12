@@ -112,10 +112,21 @@ func (m *MEmployee) GetEmployee(id int) (*entities.Employee, error) {
 //Обновляет сотрудника
 func (m *MEmployee) UpdateEmployee(emp *entities.Employee) error {
 
-	query := "UPDATE employees SET name = $1, surname = $2, login = $3, email = $4, password = $5 WHERE id = $6"
+	var query string;
+	var err error;
 
-	_, err := app.DB.Exec(query,
-		emp.Name, emp.Surname, emp.Login, emp.Email, emp.Password, emp.Id)
+	if emp.Password == "nil" {
+		query = "UPDATE employees SET name = $1, surname = $2, login = $3, email = $4 WHERE id = $6"
+
+		_, err = app.DB.Exec(query,
+			emp.Name, emp.Surname, emp.Login, emp.Email, emp.Id)
+	} else {
+		query = "UPDATE employees SET name = $1, surname = $2, login = $3, email = $4, password = $5 WHERE id = $6"
+
+		fmt.Println(emp.Password)
+		_, err = app.DB.Exec(query,
+			emp.Name, emp.Surname, emp.Login, emp.Email, emp.Password, emp.Id)
+	}
 
 	return err
 }
@@ -126,4 +137,17 @@ func (m *MEmployee) DeleteEmployee(id int) error {
 	_, err := app.DB.Exec("DELETE FROM employees WHERE id = $1", id)
 
 	return err
+}
+
+//Возвращает true если попытка залогиниться удалась, в противном случае - false
+func (m *MEmployee) Login(login string, password string) (int, error) {
+
+	id := 0
+
+	query := "SELECT id FROM employees WHERE (login = $1 OR email = $2) AND password = $3"
+
+	err := app.DB.QueryRow(query, login, login, password).Scan(&id)
+
+	return id, err
+
 }

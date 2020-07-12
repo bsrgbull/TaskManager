@@ -9,12 +9,8 @@ class LoginTab {
     	this.#loginView = new LoginView();
     }
 
- 	login(log, pass, employeesModel) {
-
- 		let ifLogin = this.employeesModel.login(log,pass);
- 		alert(ifLogin);
- 		return ifLogin;
-
+ 	async login(log, pass) {
+ 		return await this.employeesModel.login(log,pass);
  	}
 
  	setEmployeesModel(emp) {
@@ -25,5 +21,9 @@ class LoginTab {
 
  	getLoginView() {
  		return this.#loginView;
- 	}
+	}
+	
+	show() {
+		this.#loginView.showLoginPage();
+	}
 }

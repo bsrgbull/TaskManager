@@ -40,3 +40,8 @@ func (p *PEmployee) DeleteEmployee(id int) error {
 
 	return p.m.DeleteEmployee(id)
 }
+
+func (p *PEmployee) Login(login string, password string) (int, error) {
+
+	return p.m.Login(login, password)
+}

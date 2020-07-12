@@ -16,7 +16,10 @@ class ProjectView {
         $$("tasksPage").hide();
         $$("projectPage").show();
         $$("employeesPage").hide();
-        $$("taskButtonsOff").hide();
+        $$("taskButtonsOff").show();
+        $$("startLabel").hide();
+        $$("loginButton").hide();
+        $$("registrationButton").hide();
 
         let addproject = this.addProject;
 

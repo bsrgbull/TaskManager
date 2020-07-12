@@ -21,8 +21,8 @@ var (
 )
 
 func InitDB() {
-	connStr := "user=postgres password=12348765 dbname=taskManagerDB sslmode=disable"
-	//connStr := "user=postgres password=12348765 dbname=postgres sslmode=disable"
+	//connStr := "user=postgres password=12348765 dbname=taskManagerDB sslmode=disable"
+	connStr := "user=postgres password=12348765 dbname=postgres sslmode=disable"
 	var err error
 	DB, err = sql.Open("postgres", connStr)
 

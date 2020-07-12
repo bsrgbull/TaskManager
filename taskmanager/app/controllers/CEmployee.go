@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"fmt"
 	"taskmanager/app/entities"
 	"taskmanager/app/providers"
 
@@ -86,6 +87,26 @@ func (c *CEmployee) DeleteEmployee(id int) revel.Result {
 
 	err := c.p.DeleteEmployee(id)
 	response := entities.Resp{Data: nil, Err: err}
+
+	return c.RenderJSON(response)
+}
+
+//Обработчик POST запросов с /login
+func (c *CEmployee) Login() revel.Result {
+
+	fmt.Println("CEmployee96---------------------")
+
+
+	login := c.Params.Query.Get("login")
+
+	password := c.Params.Query.Get("password")
+
+	id, err := c.p.Login(login, password)
+
+	fmt.Println("CEmployee---------------------")
+	fmt.Println(err)
+
+	response := entities.Resp{Data: id, Err: err}
 
 	return c.RenderJSON(response)
 }

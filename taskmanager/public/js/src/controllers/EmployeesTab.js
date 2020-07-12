@@ -82,7 +82,6 @@ class EmployeesTab {
     }
 
     show() {
-
         this.#employeesView.showEmployeesPage(this.#employeesModel);
     }
 

@@ -14,6 +14,7 @@ GET     /employee/:id                           CEmployee.getEmployee
 POST    /updateemployee                         CEmployee.updateEmployee
 DELETE  /employee/:id                           CEmployee.deleteEmployee
 GET     /employees/:projectid                   CEmployee.getAllEmployeesFromProject
+POST    /login                                  CEmployee.login
 
 POST    /project                                CProject.addProject
 GET     /project                                CProject.getAllProjects
@@ -29,6 +30,10 @@ GET     /tasks/:projectId                       CTask.getAllTasksFromProject
 GET     /task/:taskId                           CTask.getTask
 POST    /updatetask                             CTask.updateTask
 DELETE  /task/:taskId                           CTask.deleteTask
+
+POST    /comment                                CComment.addComment
+GET     /comments/:projectid                    CComment.getAllCommentsFromProject
+GET     /comment/:id                            CComment.getComment
 
 #GET     /                                       App.Index
 

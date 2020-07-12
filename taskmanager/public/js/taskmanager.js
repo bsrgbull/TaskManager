@@ -4,6 +4,7 @@ let projectsTab;
 let employeesTab;
 let tasksTab;
 let loginTab;
+let commentsTab;
 let projectsModel;
 let tasksView;
 let projectView;
@@ -17,6 +18,7 @@ let webixReady = webix.ready(function () {
     tasksTab = new TasksTab();
     projectsTab = new ProjectsTab(tasksTab);
     loginTab = new LoginTab();
+    commentsTab = new CommentsTab();
     loginTab.setEmployeesModel(employeesTab.getEmployeesModel());
     projectsModel = projectsTab.getProjectsModel();
     projectView = projectsTab.getProjectView();
@@ -30,7 +32,16 @@ let webixReady = webix.ready(function () {
     let currentProject;
 
     //В этой переменной запоминаем задачу, на которую нажали
-    let taskClicked
+    let taskClicked;
+
+    //В этой переменной запоминаем текущего пользователя
+    let currentUser;
+
+    //В этой переменной запоминаем была ли нажата кнопка комментариев
+    let ifCommentsButtonClicked;
+
+    //Промис длязагрузки нажатой каарточки
+    let taskPromise;
 
     //Русификация
     webix.i18n.locales["ru-RU"].kanban = {
@@ -216,15 +227,18 @@ let webixReady = webix.ready(function () {
 
                                         let mapOfTasks;
                                         let mapOfEmployees;
+                                        let mapOfComments;
 
                                         Promise.all([
-                                            tasksTab.getTasksFromProject(currentProject.getId())
+                                            tasksTab.getTasksFromProject(currentProject.getId() )
                                                 .then( map => { mapOfTasks = map } ),
-                                            employeesTab.getMapOfEmployeesFromProject(currentProject.getId())
-                                                .then( map => { mapOfEmployees = map } )
+                                            employeesTab.getMapOfEmployeesFromProject(currentProject.getId() )
+                                                .then( map => { mapOfEmployees = map } ),
+                                            commentsTab.getMapOfCommentsFromProject(currentProject.getId() )
+                                                .then( map => { mapOfComments = map } )
                                         ]).then( () => {
 
-                                            tasksTab.showTaskPage(mapOfTasks, mapOfEmployees);
+                                            tasksTab.showTaskPage(mapOfTasks, mapOfEmployees, mapOfComments, currentUser);
                                             $$("modalWindowForAddingEmployeesToProject").close();
                                                
                                         });                                                                           
@@ -280,7 +294,13 @@ let webixReady = webix.ready(function () {
                 return;
             }
 
-            employeesTab.addNewEmployee(name, surname, password, login, email)
+            employeesTab.addNewEmployee(name, surname, password, login, email);
+
+            if (id == "registrationButton") {
+                webix.message("Сотрудник зарегистрирован, используйте свой логин и пароль чтобы войти");
+                loginForm();
+            }
+
             $$("modalWindowForEmployees").close();
         }
         
@@ -292,11 +312,14 @@ let webixReady = webix.ready(function () {
             let login = $$("modalEmployeeLogin").getValue();
             let email = $$("modalEmployeeEmail").getValue();
 
-            if (!$$("addOrChangeForm").validate() && email != "" 
-            || name == "" || surname == "" /*|| password == ""*/) {
+            if (!$$("addOrChangeForm").validate() && email != "" ) {
 
                 webix.message({ type:"error", text:"Неверные данные" });
                 return;
+            }
+
+            if (currentUser.getId() != $$("employeesTable").getSelectedId() ) {
+                password = null;
             }
 
             employeesTab.updateEmployee(id, name, surname, password, login, email);
@@ -316,7 +339,7 @@ let webixReady = webix.ready(function () {
                 ]
             },
             width: 500,
-            height: 400,
+            height: 500,
             modal:true,
             close:true,
             position: "center",
@@ -327,8 +350,8 @@ let webixReady = webix.ready(function () {
                     { id:"modalEmployeeName", view: "text", value:``, label: 'Имя*', name: "name" },
                     { id:"modalEmployeeSurname", view: "text", label: 'Фамилия*', name: "surname" },
                     { id:"modalEmployeeEmail", view: "text", label: 'Email', name: "email"},
-                    { id:"modalEmployeeLogin", view: "text", label: 'Логин', name: "login", hidden: true },
-                    { id:"modalEmployeePassword", view: "text", label: 'Пароль*', name: "password", hidden: true },
+                    { id:"modalEmployeeLogin", view: "text", label: 'Логин*', name: "login", hidden: false },
+                    { id:"modalEmployeePassword", view: "text", label: 'Пароль*', type:"password", name: "password", hidden: false },
                     { template:"* поле обязательно для заполнения" },
                     { cols:[
                         { id: "addButton", view: "button", value: "Добавить",
@@ -344,6 +367,8 @@ let webixReady = webix.ready(function () {
                     "email":webix.rules.isEmail,
                     "name":webix.rules.isNotEmpty,
                     "surname":webix.rules.isNotEmpty,
+                    "login":webix.rules.isNotEmpty,
+                    "password":webix.rules.isNotEmpty,
                 },
                 elementsConfig: {
                   labelPosition: "top",
@@ -356,6 +381,12 @@ let webixReady = webix.ready(function () {
                 $$("changeButton").show();
                 $$("addButton").hide();
                 $$("addOrChangeLable").setHTML(`<span class='addCard'>Изменить данные</span>`);
+
+                if (currentUser.getId() != $$("employeesTable").getSelectedId() ) {
+                    $$("modalEmployeePassword").hide();
+                } else {
+                    $$("modalEmployeePassword").show();
+                }
 
                 employeesTab.getEmployee($$("employeesTable").getSelectedId())
                     .then( employee => {
@@ -462,7 +493,7 @@ let webixReady = webix.ready(function () {
                 return;
             }
 
-            projectsTab.addNewProject(name, 1, aim)
+            projectsTab.addNewProject(name, +currentUser.getId(), aim)
                 .then( result => {
                     $$("modalWindowForProjects").close();
                 });
@@ -482,7 +513,7 @@ let webixReady = webix.ready(function () {
 
             projectsTab.getProject(id).then( project => {
                 
-                projectsTab.updateProject(+id, name, 1, aim);
+                projectsTab.updateProject(+id, name, project.getCreatorId(), aim);
                 (async () => {
                     let info;
                     await projectsTab.getProjectInfo(employeesTab, id).then( result => { info = result })
@@ -610,12 +641,17 @@ let webixReady = webix.ready(function () {
             close:true,
             position: "center",
             body: {
+                id: "loginForm",
                 view: "form",
                 elements: [
                     { id: "userLogin", view:"text", label:'Логин/Email', name:"user.login" },
-                    { id: "userPassword", view:"text", label:'Пароль', name:"user.password" },
+                    { id: "userPassword", view:"text", type:"password", label:'Пароль', name:"user.password" },
                     { id: "submit", view:"button", value: "Войти", click:tryToLogin}
                 ],
+                rules:{
+                    "user.login":webix.rules.isNotEmpty,
+                    "user.password":webix.rules.isNotEmpty,
+                },
                 elementsConfig: {
                     labelPosition: "top",
                 }
@@ -657,7 +693,7 @@ let webixReady = webix.ready(function () {
                                 return;
                             }
 
-                            tasksTab.addNewTask(text, 1, +currentProject.getId() );
+                            tasksTab.addNewTask(text, +currentUser.getId(), +currentProject.getId() );
                             $$("modalWindowForAddingTasks").close();
                         } },
                         { view: "button", value: "Отмена", click:function(id,event){
@@ -677,19 +713,22 @@ let webixReady = webix.ready(function () {
         if ($$("projectsList").getSelectedId() != "" ){
 
             await projectsTab.getProject(Number($$("projectsList").getSelectedId() ) )
-                .then( result => {currentProject = result} );
+                .then( project => {currentProject = project} );
 
             let mapOfTasks;
             let mapOfEmployees;
+            let mapOfComments;
 
             await Promise.all([
                 tasksTab.getTasksFromProject($$("projectsList").getSelectedId() )
                     .then(result => { mapOfTasks =  result }),
                 employeesTab.getMapOfEmployeesFromProject(currentProject.getId() )
-                    .then(result => { mapOfEmployees = result })
+                    .then(result => { mapOfEmployees = result }),
+                commentsTab.getMapOfCommentsFromProject(currentProject.getId() )
+                    .then( map => { mapOfComments = map } )
                 ])
                 .then(() => {
-                    tasksTab.showTaskPage(mapOfTasks, mapOfEmployees);
+                    tasksTab.showTaskPage(mapOfTasks, mapOfEmployees, mapOfComments, currentUser);
                     $$("projectName").define("template", currentProject.getName());
                     $$("projectName").refresh();
 
@@ -698,9 +737,39 @@ let webixReady = webix.ready(function () {
     }
     
     let tryToLogin = function (id) {
-        
-        loginTab.login($$("userLogin").getValue(), $$("userPassword").getValue(), employeesTab.getEmployeesModel());
 
+        if (!$$("loginForm").validate() ) {
+
+            webix.message({ type:"error", text:"Неверные данные" });
+            return;
+        }
+        
+        loginTab.login($$("userLogin").getValue(), $$("userPassword").getValue() )
+            .then(
+                result => {
+                    if (result != "error") {
+                        if (result.Err == null){
+
+                            employeesTab.getEmployee(result.Data).then( employee => { currentUser = employee; })
+                            projectsTab.show();
+
+                            $$("modalLogin").close();
+
+                        } else if (result.Data == 0) {
+                            webix.message("Логин или пароль не верен");
+                        } else {
+                            webix.message("ОШИБКА")
+                            console.log(result.Severity + " Код:" + result.Code + " " + 
+                                                        result.Message + " " + result.Detail);
+                        }
+                    } else {
+                        webix.message("Войти не удалась, попробуйте ещё раз");
+                    }
+                },
+                error => {
+                    webix.message("Войти не удалась, попробуйте ещё раз");
+                }
+            );
     }
 
     //Изменение списка сотрудников в зависимости от статуса карточки
@@ -708,7 +777,7 @@ let webixReady = webix.ready(function () {
 
         $$("kanban").getUsers().clearAll();
 
-        if ($$("kanban").getItem(id).status != "Создано") { 
+        if ($$("kanban").getItem(id).status != "Создано" && !ifCommentsButtonClicked) { 
                 await tasksTab.addEmployeeInList(id);
         } else {
 
@@ -723,6 +792,8 @@ let webixReady = webix.ready(function () {
                 }
             });
         }
+
+        ifCommentsButtonClicked = false;
     }
 
 
@@ -755,11 +826,11 @@ let webixReady = webix.ready(function () {
                     { id:"taskButtonsOff", cols:[ {}, {}, {}, {} ], hidden:false},
                     { id:"authenticationButtons", cols:[
                         { id:"exitButton", view: "button", type: "form",
-                         label: "Выйти", width: 150, hidden:true},
+                         label: "Выйти", width: 150, align:"right", hidden:true, click:() => { start(); } },
                         { id:"loginButton", view: "button", type: "form",
-                         label: "Войти", width: 150, hidden:false, click:() => { loginForm(); }},
+                         label: "Войти", width: 150, hidden:false, click:() => { loginForm(); } },
                         { id:"registrationButton", view: "button", type: "form", 
-                         label: "Зарегистрироваться", width: 200, hidden:false},
+                         label: "Зарегистрироваться", width: 200, hidden:false, click:addOrChangeEmployee},
                     ], hidden:true},
                 ]
             },
@@ -850,14 +921,13 @@ let webixReady = webix.ready(function () {
                         }
                     ],
                   //  colors:colors,
-                    editor:[    
+                    editor:[
                         { cols:[
                             { rows:[
                                 { id: "estimatedTime", view:"counter", inputAlign:"right",
                                   name:"time", step:Number(1,25), label:"Оценочное время, ч", validate:webix.rules.isNumber },
                                 { id: "spentTime", view:"counter", inputAlign:"right",
                                   name:"time", step:Number(1,25), value: 68, label:"Фактическое время, ч" },
-
                                 ]},
                             { view:"textarea", name:"text", width:380, label:"Текст", height:120 }, 
                         ]},                                                                 
@@ -873,7 +943,7 @@ let webixReady = webix.ready(function () {
                             { view:"richselect", name:"color", hidden:true},  
                         ]},
                     ],
-                    comments:false,
+                    comments:{ id:"comments", currentUser:1 },
                     scheme:{
                         $sort:{
                           dir:"desc",
@@ -976,30 +1046,11 @@ let webixReady = webix.ready(function () {
                             { id:"id", hidden:true},
                             { id:"nameOfEmployee", header:"Имя", sort:"string", width:200},
                             { id:"surnameOfEmployee", header:"Фамилия", sort:"string", width:200},
-                            { id:"login", header:"Логин", width:200, sort:"string", hidden:true},
+                            { id:"login", header:"Логин", width:200, sort:"string", hidden:false},
                             { id:"email", header:"email", width:300, sort:"string"}
                         ],
                         select:true,
                     },
-                   /* { cols:[
-                        { rows:[
-                            { view:"text", label:"Название", hidden:false},
-			                { margin:5, hidden:false, cols:[
-				                    { view:"button", value:"Создать" , css:"webix_primary" },
-				                    { view:"button", value:"Отмена" }
-			                ]},
-                            { view:"list", id:"employeesList",
-                                template:"#title#",
-                                width: 300,
-                                select:true,
-                            },
-                        ]},
-                        /*{ type:"clean", rows:[
-                            { id:"employeesViews", cells:[
-                                { view:"template", id:"emptpl", template:"Информация о сотруднике" },
-                            ]}
-                        ]}
-                    ]}*/
                 ], hidden:true, id:"employeesPage"
             },
         ]
@@ -1229,8 +1280,9 @@ let webixReady = webix.ready(function () {
 
     //Обрабатываем изменение сотрудника, 
     //разрешаем изменять сотрудника только в колонке Создано
-    $$("kanban").getUserList().attachEvent("onBeforeSelect", function (id, selection) {
-        let status = $$("kanban").getItem(idOfTaskClicked).status;
+    $$("kanban").getUserList().attachEvent("onBeforeSelect", async function (id, selection) {
+
+        let statuss = $$("kanban").getItem(idOfTaskClicked).status;
 
         if (status != "Создано") {
             return false;
@@ -1242,20 +1294,33 @@ let webixReady = webix.ready(function () {
     //то сразу перемещаем его в колонку Назначено
     $$("kanban").getUserList().attachEvent("onAfterSelect", function (assignedId) {
 
-        let status = $$("kanban").getItem(idOfTaskClicked).status;
-       
-        if (status == "Создано") {
-            $$("kanban").getItem(idOfTaskClicked).status = "Назначено";
-            $$("kanban").updateItem(idOfTaskClicked);
-        }
+        if (this._area.id == idOfTaskClicked) { //Без этого условия будет баг
 
-        tasksTab.updateTask(taskClicked, null, null, null, taskClicked.getId(),
-            null, null, "Назначено", null, assignedId);
+            let status = $$("kanban").getItem(idOfTaskClicked).status;
+       
+            if (status == "Создано") {
+                $$("kanban").getItem(idOfTaskClicked).status = "Назначено";
+                $$("kanban").updateItem(idOfTaskClicked);
+
+                tasksTab.updateTask(taskClicked, null, null, null, taskClicked.getId(),
+                    null, null, "Назначено", null, assignedId);
+            }
+        }
     })
 
+    //Добавление комментариев
+    $$("comments").attachEvent("onBeforeAdd",function(id,obj,index){
+        commentsTab.addNewComment(currentUser.getId(), taskClicked.getId(), obj.text)
+    });
 
-    function start() {  
-        projectsTab.show();
+    //Отмечаем что было нажатие не просто на карточку, а на кнопку комментариев карточки
+    $$("comments").attachEvent("onBeforeLoad",function(id,obj,index){
+        ifCommentsButtonClicked = true;
+    });
+
+    function start() { 
+        loginTab.show();
+        //projectsTab.show();
     }
 
     start();
@@ -1265,12 +1330,15 @@ let arrayOfScripts = [
     "./public/js/src/models/EmployeesModel.js",
     "./public/js/src/models/ProjectsModel.js",
     "./public/js/src/models/TasksModel.js",
+    "./public/js/src/models/CommentsModel.js",
     "./public/js/src/entities/Task.js",
     "./public/js/src/entities/Employee.js",
     "./public/js/src/entities/Project.js",
+    "./public/js/src/entities/Comment.js",
     "./public/js/src/controllers/EmployeesTab.js",
     "./public/js/src/controllers/ProjectsTab.js",
     "./public/js/src/controllers/TasksTab.js",
+    "./public/js/src/controllers/CommentsTab.js",
     "./public/js/src/views/EmployeesView.js",
     "./public/js/src/views/ProjectView.js",
     "./public/js/src/views/TasksView.js",

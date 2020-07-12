@@ -13,7 +13,10 @@ class EmployeesView {
         $$("tasksPage").hide();
         $$("projectPage").hide();
         $$("employeesPage").show();
-        $$("taskButtonsOff").hide();
+        $$("taskButtonsOff").show();
+        $$("startLabel").hide();
+        $$("loginButton").hide();
+        $$("registrationButton").hide();
 
         let addemployee = this.addEmployee;
 

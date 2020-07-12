@@ -81,8 +81,8 @@ class TasksTab {
         this.#tasksModel.deleteTask(id);
     }
 
-    showTaskPage(mapOfTasks, mapOfEmployees) {
-        this.#tasksView.showTaskPage(mapOfTasks, mapOfEmployees);
+    showTaskPage(mapOfTasks, mapOfEmployees, mapOfComments, currentUser) {
+        this.#tasksView.showTaskPage(mapOfTasks, mapOfEmployees, mapOfComments, currentUser);
     }
 
     async getTasksFromProject(projectId) {
