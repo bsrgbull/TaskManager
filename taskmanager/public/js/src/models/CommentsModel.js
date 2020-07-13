@@ -4,7 +4,7 @@ class CommentsModel {
 
     async addComment(authorid, taskid, text) {
 
-        let response = await fetch('http://localhost:9000/comment', {
+        let response = await fetch('/comment', {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json;charset=utf-8'
@@ -25,7 +25,7 @@ class CommentsModel {
 
     async getComment(id) {
         
-        let response = await fetch(`http://localhost:9000/comment/${id}`);
+        let response = await fetch(`/comment/${id}`);
 
         let result = await response.json();
 
@@ -47,7 +47,7 @@ class CommentsModel {
 
     async getMapOfCommentsFromProject(projectId) {
 
-        let response = await fetch(`http://localhost:9000/comments/${+projectId}`);
+        let response = await fetch(`/comments/${+projectId}`);
         let result = await response.json();
 
         if (response.status != 200) {

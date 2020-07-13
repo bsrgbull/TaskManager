@@ -4,7 +4,7 @@ class ProjectsModel {
 
     async addProject(name, creatorId, aimOfTheProject) {
 
-        let response = await fetch('http://localhost:9000/project', {
+        let response = await fetch('/project', {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json;charset=utf-8'
@@ -24,7 +24,7 @@ class ProjectsModel {
 
     async getProject(id) {
 
-        let response = await fetch(`http://localhost:9000/project/${id}`);
+        let response = await fetch(`/project/${id}`);
 
         let result = await response.json();
 
@@ -42,7 +42,7 @@ class ProjectsModel {
 
     async getMapOfProjects() {
 
-        let response = await fetch(`http://localhost:9000/project`);
+        let response = await fetch(`/project`);
         let result = await response.json();
 
         if (result.Err == null) {
@@ -68,7 +68,7 @@ class ProjectsModel {
 
     async updateProject(id, name, creatorId, aimOfTheProject) {
 
-        let response = await fetch('http://localhost:9000/updateproject', {
+        let response = await fetch('/updateproject', {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json;charset=utf-8'
@@ -86,7 +86,7 @@ class ProjectsModel {
 
     async deleteProject(id) {
 
-        let response = await fetch(`http://localhost:9000/project/${id}`, {
+        let response = await fetch(`/project/${id}`, {
             method: 'DELETE',
         });
 
@@ -95,7 +95,7 @@ class ProjectsModel {
 
     async addEmployeeToProject(projectId, employeeId) {
 
-        let response = await fetch(`http://localhost:9000/projectemp/` + 
+        let response = await fetch(`/projectemp/` + 
         `?employeeId=${employeeId}&projectId=${projectId}`, {
             method: 'POST',
         });
@@ -106,7 +106,7 @@ class ProjectsModel {
 
     async deleteEmployeeFromProject(projectId, employeeId) {
 
-        let response = await fetch(`http://localhost:9000/projectemp/` + 
+        let response = await fetch(`/projectemp/` + 
         `?employeeId=${employeeId}&projectId=${projectId}`, {
             method: 'DELETE',
         });

@@ -19,14 +19,13 @@ class ProjectsTab {
     }
 
     async addNewProject(name, creatorId, aimOfTheProject) {
-                  
-        let id;
 
         this.#projectsModel.addProject(name, creatorId, aimOfTheProject)
             .then( result => {
                 if (result != "error") {
                     if (result.Err == null) {
                         this.#projectView.addNewProject(result.Data, name);
+                        this.addEmployeeToProject(result.Data, creatorId)
                     } else {
                         webix.message("ОШИБКА")
                         console.log(result);

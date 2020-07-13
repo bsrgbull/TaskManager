@@ -110,12 +110,16 @@ let webixReady = webix.ready(function () {
             return false;
 
         } else {
-            tasksTab.getTask(context.start).then( task => { 
-                tasksTab.updateTask(task, null, null, null, +context.start,
-                        null, null, "Назначено", null, 0);
+            if (task.status != "Назначено") {
+                tasksTab.getTask(context.start).then( task => { 
+                    tasksTab.updateTask(task, null, null, null, +context.start,
+                            null, null, "Назначено", null, 0);
 
+                    return true;
+                });
+            } else {
                 return true;
-            });
+            }
         }
     }
 

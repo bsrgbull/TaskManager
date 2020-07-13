@@ -6,7 +6,7 @@ class TasksModel {
 
     async addTask(text, creatorId, projectId) {
 
-        let response = await fetch('http://localhost:9000/task', {
+        let response = await fetch('/task', {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json;charset=utf-8'
@@ -34,7 +34,7 @@ class TasksModel {
 
     async getTask(id) {
 
-        let response = await fetch(`http://localhost:9000/task/${+id}`);
+        let response = await fetch(`/task/${+id}`);
 
         let result = await response.json();
 
@@ -59,7 +59,7 @@ class TasksModel {
 
     async getTasksFromProject(projectId) {
 
-        let response = await fetch(`http://localhost:9000/tasks/${projectId}`);
+        let response = await fetch(`/tasks/${projectId}`);
         let result = await response.json();
 
         if (result.Err == null) {
@@ -93,7 +93,7 @@ class TasksModel {
 
     async updateTask(text, creatorId, projectId, id, estimatedTime, spentTime, status, colour, assignedToId) {
 
-        let response = await fetch('http://localhost:9000/updatetask', {
+        let response = await fetch('/updatetask', {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json;charset=utf-8'
@@ -116,7 +116,7 @@ class TasksModel {
 
     async deleteTask(id) {
 
-        let response = await fetch(`http://localhost:9000/task/${id}`, {
+        let response = await fetch(`/task/${id}`, {
             method: 'DELETE',
         });
     }

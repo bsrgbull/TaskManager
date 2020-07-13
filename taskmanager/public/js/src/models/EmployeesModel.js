@@ -4,7 +4,7 @@ class EmployeesModel {
 
     async addEmployee(name, surname, password, login, email) {
 
-        let response = await fetch('http://localhost:9000/employee', {
+        let response = await fetch('/employee', {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json;charset=utf-8'
@@ -27,7 +27,7 @@ class EmployeesModel {
 
     async getEmployee(id) {
         
-        let response = await fetch(`http://localhost:9000/employee/${id}`);
+        let response = await fetch(`/employee/${id}`);
 
         let result = await response.json();
 
@@ -51,7 +51,7 @@ class EmployeesModel {
 
     async getMapOfEmployees() {
 
-        let response = await fetch(`http://localhost:9000/employee`);
+        let response = await fetch(`/employee`);
         let result = await response.json();
 
         if (response.status != 200) {
@@ -82,7 +82,7 @@ class EmployeesModel {
 
     async updateEmployee(id, name, surname, password, login, email) {
 
-        let response = await fetch('http://localhost:9000/updateemployee', {
+        let response = await fetch('/updateemployee', {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json;charset=utf-8'
@@ -106,7 +106,7 @@ class EmployeesModel {
 
     async deleteEmployee(id) {
 
-        let response = await fetch(`http://localhost:9000/employee/${id}`, {
+        let response = await fetch(`/employee/${id}`, {
             method: 'DELETE',
         });
 
@@ -119,7 +119,7 @@ class EmployeesModel {
 
     async getMapOfEmployeesFromProject(projectId) {
 
-        let response = await fetch(`http://localhost:9000/employees/${+projectId}`);
+        let response = await fetch(`/employees/${+projectId}`);
         let result = await response.json();
 
         if (response.status != 200) {
@@ -151,7 +151,7 @@ class EmployeesModel {
 
     async login(login, password) {
 
-        let response = await fetch(`http://localhost:9000/login/` + 
+        let response = await fetch(`/login/` + 
         `?login=${login}&password=${password}`, {
             method: 'POST',
         });
