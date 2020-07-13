@@ -23,6 +23,7 @@ class TasksView {
 
         $$("comments").setCurrentUser(currentUser.getId());
 
+        let addemployeeinlist = this.addEmployeeInList;
 
         let addtask = this.addTask;
 
@@ -42,7 +43,7 @@ class TasksView {
                 }
             });
 
-            addtask(task, arrayOfComments);
+            addtask(task, arrayOfComments, mapOfEmployees, addemployeeinlist);
         });
 
         let addemployee = this.addEmployee;
@@ -53,7 +54,14 @@ class TasksView {
 
     }
     
-    addTask(task, arrayOfComments) {
+    addTask(task, arrayOfComments, mapOfEmployees, addEmployeeInList) {
+
+        if (task.getAssignedToId() != 0     //Нужно для отображения аватарок при загрузке страницы
+            && !$$("kanban").getUsers().exists(task.getAssignedToId())) {
+                addEmployeeInList(mapOfEmployees.get(task.getAssignedToId()));  
+    
+        }   
+
         $$("kanban").add({ id:`${task.getId()}`,
                            status:`${task.getStatus()}`,
                            text:`${task.getText()}`,
@@ -93,12 +101,25 @@ class TasksView {
     addEmployeeInList(employee) {
         let users = $$("kanban").getUsers();
 
+        let id;
+        
+        if (employee.getId() == 1) {
+            id = 8;
+        } else if (employee.getId() == 2) {
+            id = 2;
+        } else if (employee.getId() == 3) {
+            id = 4;
+        } else if (employee.getId() == 4) {
+            id = 7;
+        } else if (employee.getId() + 1 % 10 != 0) {
+            id = employee.getId() + 1;
+        } else id = 5;
 
 
         users.add({ 
             id: employee.getId(),
             value: employee.getSurnameAndName(),
-            image: `https://docs.webix.com/samples/63_kanban/common/imgs/${employee.getId() % 10}.jpg`
+            image: `https://docs.webix.com/samples/63_kanban/common/imgs/${id % 10}.jpg`
             });
     }
 }

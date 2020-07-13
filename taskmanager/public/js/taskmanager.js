@@ -1277,15 +1277,15 @@ let webixReady = webix.ready(function () {
 
     //Обрабатываем изменение сотрудника, 
     //разрешаем изменять сотрудника только в колонке Создано
-    $$("kanban").getUserList().attachEvent("onBeforeSelect", async function (id, selection) {
+   /* $$("kanban").getUserList().attachEvent("onBeforeSelect", async function (id, selection) {
 
-        let statuss = $$("kanban").getItem(idOfTaskClicked).status;
+        let status = $$("kanban").getItem(idOfTaskClicked).status;
 
         if (status != "Создано") {
             return false;
         }
 
-    })
+    })*/
 
     //Если меняем сотрудника в колонке Создано,
     //то сразу перемещаем его в колонку Назначено
