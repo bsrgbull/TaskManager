@@ -1168,6 +1168,10 @@ let webixReady = webix.ready(function () {
                         taskClicked.setEstimatedTime($$("estimatedTime").getValue());
                         tasksTab.getMapOfTasks().set(+taskClicked.getId(), taskClicked);
 
+                        $$("kanban").getItem(idOfTaskClicked).user_id = null;
+                        changeUserList(idOfTaskClicked);
+                        $$("kanban").updateItem(idOfTaskClicked);
+
                         return true;
                     } 
 

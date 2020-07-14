@@ -24,7 +24,7 @@ func (m *MTask) AddTask(newTask *entities.Task) (int, error) {
 		newTask.CreatorId,
 		newTask.EstimatedTime,
 		newTask.SpentTime).Scan(&id)
-
+	fmt.Println(err)
 	return id, err
 }
 

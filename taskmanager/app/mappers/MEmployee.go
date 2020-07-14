@@ -112,8 +112,8 @@ func (m *MEmployee) GetEmployee(id int) (*entities.Employee, error) {
 //Обновляет сотрудника
 func (m *MEmployee) UpdateEmployee(emp *entities.Employee) error {
 
-	var query string;
-	var err error;
+	var query string
+	var err error
 
 	if emp.Password == "nil" {
 		query = "UPDATE employees SET name = $1, surname = $2, login = $3, email = $4 WHERE id = $6"

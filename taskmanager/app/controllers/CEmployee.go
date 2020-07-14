@@ -1,7 +1,6 @@
 package controllers
 
 import (
-	"fmt"
 	"taskmanager/app/entities"
 	"taskmanager/app/providers"
 
@@ -94,17 +93,11 @@ func (c *CEmployee) DeleteEmployee(id int) revel.Result {
 //Обработчик POST запросов с /login
 func (c *CEmployee) Login() revel.Result {
 
-	fmt.Println("CEmployee96---------------------")
-
-
 	login := c.Params.Query.Get("login")
 
 	password := c.Params.Query.Get("password")
 
 	id, err := c.p.Login(login, password)
-
-	fmt.Println("CEmployee---------------------")
-	fmt.Println(err)
 
 	response := entities.Resp{Data: id, Err: err}
 
