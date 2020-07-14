@@ -47,13 +47,18 @@ class ProjectsTab {
                                 if (result.Err == null) {
                                     this.show();
                                 } else {
+                                    webix.message("Операция не удалась");
                                     return result.Err;
                                 }
                             } else {
+                                webix.message("Операция не удалась");
                                 return "error"
                             }
                         },
-                        error => { return "error" }
+                        error => { 
+                            webix.message("Операция не удалась");
+                            return "error" 
+                        }
                     );
     }
 
