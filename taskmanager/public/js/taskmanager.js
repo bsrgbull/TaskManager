@@ -867,7 +867,8 @@ let webixReady = webix.ready(function () {
                         	let statusList = $$("status").getList();
                         	statusList.parse($$("kanban").getStatuses());
 
-                            await tasksTab.getTask(obj.id).then( task => { 
+                            await tasksTab.getTask(obj.id)
+                            .then( task => { 
                                 
                                 let assignedToId = task.getAssignedToId();
 

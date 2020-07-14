@@ -20,7 +20,7 @@ class TasksTab {
                     } else {
                         webix.message("ОШИБКА")
                         console.log(result);
-                }
+                    }
                 } else {
                     webix.message("Операция не удалась");
                 }
